@@ -10,11 +10,12 @@ module Gemologist
       when UnionType
         other | self
       else
-        UnionType.new(self, T(other))
+        UnionType.new(self, other)
       end
     end
 
-    def matches?(other)
+    def matches?(_)
+      false
     end
 
     protected
@@ -23,6 +24,30 @@ module Gemologist
       return true if a == b
       return false if b.nil?
       return subclass?(a, b.superclass)
+    end
+  end
+
+  class ClassType < Type
+    attr_reader :base_class
+
+    def initialize(base_class)
+      @base_class = base_class
+    end
+
+    def matches?(other)
+      subclass?(base_class, other.base_class)
+    end
+
+    def type
+      T(base_class)
+    end
+
+    def type_matches?(other)
+      type.matches?(other)
+    end
+
+    def ==(other)
+      other.is_a?(ClassType) && other.base_class == self.base_class
     end
   end
 
@@ -108,9 +133,6 @@ module Gemologist
   class AnyType < Type
     Instance = AnyType.new
 
-    def initialize
-    end
-
     def |(other)
       self
     end
@@ -124,8 +146,50 @@ module Gemologist
     end
   end
 
+  class SelfType < Type
+    Instance = SelfType.new
+  end
+
+  class SelfClassType < ClassType
+    Instance = SelfClassType.new
+    def initialize
+      super(nil)
+    end
+  end
+
+  class PlaceholderType < Type
+  end
+
   Any = AnyType::Instance
+  Self = SelfType::Instance
+  SelfClass = SelfClassType::Instance
   Nil = SingleType.new(NilClass)
+  Bool = T(TrueClass) | T(FalseClass)
+
+  A = PlaceholderType.new
+  B = PlaceholderType.new
+  D = PlaceholderType.new
+  E = PlaceholderType.new
+  F = PlaceholderType.new
+  G = PlaceholderType.new
+  H = PlaceholderType.new
+  I = PlaceholderType.new
+  J = PlaceholderType.new
+  K = PlaceholderType.new
+  L = PlaceholderType.new
+  M = PlaceholderType.new
+  N = PlaceholderType.new
+  O = PlaceholderType.new
+  P = PlaceholderType.new
+  Q = PlaceholderType.new
+  R = PlaceholderType.new
+  S = PlaceholderType.new
+  U = PlaceholderType.new
+  V = PlaceholderType.new
+  W = PlaceholderType.new
+  X = PlaceholderType.new
+  Y = PlaceholderType.new
+  Z = PlaceholderType.new
 
   def determine_types(sexps)
     sexps.map { |x| determine_type(x) }.reduce { |a, b| a | b }
@@ -165,4 +229,8 @@ def T(type, *other_types)
   else
     Gemologist::GenericType.new(type, *other_types)
   end
+end
+
+def C(klass)
+  Gemologist::ClassType.new(klass)
 end
