@@ -10,10 +10,6 @@ def T(type, *other_types)
   end
 end
 
-def C(klass)
-  Gemologist::ClassType.new(klass)
-end
-
 module Gemologist
   class Type
     def |(other)
@@ -37,30 +33,6 @@ module Gemologist
       return true if a == b
       return false if b.nil?
       return subclass?(a, b.superclass)
-    end
-  end
-
-  class ClassType < Type
-    attr_reader :base_class
-
-    def initialize(base_class)
-      @base_class = base_class
-    end
-
-    def matches?(other)
-      subclass?(base_class, other.base_class)
-    end
-
-    def type
-      T(base_class)
-    end
-
-    def type_matches?(other)
-      type.matches?(other)
-    end
-
-    def ==(other)
-      other.is_a?(ClassType) && other.base_class == self.base_class
     end
   end
 
@@ -163,24 +135,18 @@ module Gemologist
     Instance = SelfType.new
   end
 
-  class SelfClassType < ClassType
-    def initialize
-      super(nil)
-    end
-    Instance = SelfClassType.new
-  end
-
   class PlaceholderType < Type
   end
 
   Any = AnyType::Instance
   Self = SelfType::Instance
-  SelfClass = SelfClassType::Instance
+  SelfClass = T(Class, Self)
   Nil = SingleType.new(NilClass)
   Bool = T(TrueClass) | T(FalseClass)
 
   A = PlaceholderType.new
   B = PlaceholderType.new
+  C = PlaceholderType.new
   D = PlaceholderType.new
   E = PlaceholderType.new
   F = PlaceholderType.new

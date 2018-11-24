@@ -5,8 +5,8 @@ Geomologist::Definition.add_class_definition(Object) do
   add_method_definition :=~, Any, Any
   add_method_definition :eq?, Bool, Any
   
-  add_method_definition :class, T(SelfClass)
-  add_method_definition :singleton_class, T(SelfClass)
+  add_method_definition :class, SelfClass
+  add_method_definition :singleton_class, SelfClass
 
   add_method_definition :clone, Self
   add_method_definition :dclone, Self
