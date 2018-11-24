@@ -27,6 +27,24 @@ module Gemologist
       false
     end
 
+    def variadic?
+      !!@variadic
+    end
+
+    def optional?
+      !!@optional
+    end
+
+    def +
+      @variadic = true
+      self
+    end
+
+    def !
+      @optional = true
+      self
+    end
+
     protected
 
     def subclass?(a, b)
@@ -165,10 +183,11 @@ module Gemologist
   Q = PlaceholderType.new
   R = PlaceholderType.new
   S = PlaceholderType.new
+  T = PlaceholderType.new
   U = PlaceholderType.new
   V = PlaceholderType.new
   W = PlaceholderType.new
-  X = PlaceholderType.new
+  T = PlaceholderType.new
   Y = PlaceholderType.new
   Z = PlaceholderType.new
 

@@ -106,8 +106,8 @@ Geomologist::Definition.add_class_definition(Object) do
   add_method_definition :hash, T(Integer)
   add_method_definition :hex, T(Integer)
   add_method_definition :include?, Bool, T(String)
-  add_method_definition :index, T(Integer) | Nil, T(String) | T(Regexp)
-  add_method_definition :index, T(Integer) | Nil, T(String) | T(Regexp), T(Integer)
+  add_method_definition :index, T(Integer) | Nil, Pattern
+  add_method_definition :index, T(Integer) | Nil, Pattern, T(Integer)
   add_method_definition :replace, T(String), T(String)
   add_method_definition :insert, T(String), T(Integer), T(String)
   add_method_definition :inspect, T(String)
@@ -127,19 +127,19 @@ Geomologist::Definition.add_class_definition(Object) do
   add_method_definition :next!, T(String)
   add_method_definition :oct, T(String)
   add_method_definition :ord, T(Integer)
-  add_method_definition :partition, T(Array, String), T(String) | T(Regexp)
+  add_method_definition :partition, T(Array, String), Pattern
   add_method_definition :prepend, T(String) # TODO: variadic
   add_method_definition :reverse, T(String)
   add_method_definition :reverse!, T(String)
-  add_method_definition :rindex, T(Integer) | Nil, T(String) | T(Regexp)
-  add_method_definition :rindex, T(Integer) | Nil, T(String) | T(Regexp), T(Integer)
+  add_method_definition :rindex, T(Integer) | Nil, Pattern
+  add_method_definition :rindex, T(Integer) | Nil, Pattern, T(Integer)
   add_method_definition :rjust, T(String), T(Integer)
   add_method_definition :rjust, T(String), T(Integer), T(String)
-  add_method_definition :rpartition, T(Array, String), T(String) | T(Regexp)
+  add_method_definition :rpartition, T(Array, String), Pattern
   add_method_definition :rstrip, T(String)
   add_method_definition :rstrip!, Self | Nil
-  add_method_definition :scan!, T(Array, Any), T(String) | T(Regexp)
-  add_method_definition :scan!, T(String), T(String) | T(Regexp) # TODO: takes a block
+  add_method_definition :scan!, T(Array, Any), Pattern
+  add_method_definition :scan!, T(String), Pattern # TODO: takes a block
   add_method_definition :scanf, T(Array, Any), T(String) # TODO: takes a block
   add_method_definition :scrub, T(String) # TODO: takes a block
   add_method_definition :scrub, T(String), T(String)
@@ -156,17 +156,17 @@ Geomologist::Definition.add_class_definition(Object) do
   add_method_definition :slice!, T(String) | Nil, T(Integer), T(Integer)
   add_method_definition :slice!, T(String) | Nil, T(Regexp), T(Integer) | T(String)
   add_method_definition :split, T(Array, String)
-  add_method_definition :split, T(Array, String), T(String) | T(Regexp)
-  add_method_definition :split, T(Array, String), T(String) | T(Regexp), T(Integer)
+  add_method_definition :split, T(Array, String), Pattern
+  add_method_definition :split, T(Array, String), Pattern, T(Integer)
   add_method_definition :squeeze, T(String) # TODO: variadic
   add_method_definition :squeeze!, T(String) | Nil # TODO: variadic
   add_method_definition :start_with?, Bool, T(String) # TODO: variadic
   add_method_definition :strip, T(String)
   add_method_definition :strip!, T(String) | Nil
-  add_method_definition :sub, T(String), T(String) | T(Regexp), T(String) | T(Hash, String, Any)
-  add_method_definition :sub, T(String), T(String) | T(Regexp) # TODO: takes a block
-  add_method_definition :sub!, T(String) | Nil, T(String) | T(Regexp), T(String) | T(Hash, String, Any)
-  add_method_definition :sub!, T(String) | Nil, T(String) | T(Regexp) # TODO: takes a block
+  add_method_definition :sub, T(String), Pattern, T(String) | T(Hash, String, Any)
+  add_method_definition :sub, T(String), Pattern # TODO: takes a block
+  add_method_definition :sub!, T(String) | Nil, Pattern, T(String) | T(Hash, String, Any)
+  add_method_definition :sub!, T(String) | Nil, Pattern # TODO: takes a block
   add_method_definition :succ, T(String)
   add_method_definition :succ!, T(String)
   add_method_definition :sum, T(Integer)
