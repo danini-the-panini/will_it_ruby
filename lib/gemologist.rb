@@ -50,7 +50,7 @@ module Gemologist
       when UnionType
         UnionType.new(*(self.types | other.types))
       else
-        UnionTypes.new(*(self.types | [T(other)]))
+        UnionType.new(*(self.types | [T(other)]))
       end
     end
 
@@ -143,6 +143,8 @@ module Gemologist
   SelfClass = T(Class, Self)
   Nil = SingleType.new(NilClass)
   Bool = T(TrueClass) | T(FalseClass)
+  Pattern = T(String) | T(Regexp)
+  Real = T(Integer) | T(Float) | T(Rational)
 
   A = PlaceholderType.new
   B = PlaceholderType.new
