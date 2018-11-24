@@ -48,10 +48,10 @@ Geomologist::Definition.add_class_definition(Numeric) do
 
   add_method_definition :step, T(Enumerator, Numeric)
   add_method_definition :step, Self, T(Numeric) => Any
-  add_method_definition :step, {by: !T(Numeric), to: !T(Numeric)} => Self, T(Numeric) => Any
-  add_method_definition :step, {by: !T(Numeric), to: !T(Numeric)} => T(Enumerator, Numeric)
+  add_method_definition :step, { [by: !T(Numeric), to: !T(Numeric)] => Self }, T(Numeric) => Any
+  add_method_definition :step, [by: !T(Numeric), to: !T(Numeric)] => T(Enumerator, Numeric)
   add_method_definition :step, [T(Numeric), !T(Numeric)] => T(Enumerator, Numeric)
-  add_method_definition :step, [T(Numeric), !T(Numeric)] => Self, T(Numeric) => Any
+  add_method_definition :step, { [T(Numeric), !T(Numeric)] => Self }, T(Numeric) => Any
 
   add_method_definition :to_c, T(Complex)
   add_method_definition :to_int, T(Integer)

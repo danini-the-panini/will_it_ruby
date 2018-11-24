@@ -51,7 +51,7 @@ Geomologist::Definition.add_class_definition(Object) do
   add_method_definition :public_methods, !Bool => T(Array, Symbol)
 
   add_method_definition :public_send, [T(String) | T(Symbol), +Any] => Any
-  add_method_definition :public_send, [T(String) | T(Symbol), +Any] => Any, +Any => Any
+  add_method_definition :public_send, { [T(String) | T(Symbol), +Any] => Any }, +Any => Any
 
   add_method_definition :respond_to?, [T(String) | T(Symbol), !Bool] => Bool
   add_method_definition :respond_to_missing?, [T(String) | T(Symbol), !Bool] => Bool
@@ -59,9 +59,9 @@ Geomologist::Definition.add_class_definition(Object) do
   add_method_definition :tap, Self, !Self => Any
 
   add_method_definition :enum_for, [!T(Symbol), +Any] => T(Enumerator)
-  add_method_definition :enum_for, [!T(Symbol), +Any] => T(Enumerator), +Args => Any
+  add_method_definition :enum_for, { [!T(Symbol), +Any] => T(Enumerator) }, +Args => Any
   add_method_definition :to_enum, [!T(Symbol), +Any] => T(Enumerator)
-  add_method_definition :to_enum, [!T(Symbol), +Any] => T(Enumerator), +Args => Any
+  add_method_definition :to_enum, { [!T(Symbol), +Any] => T(Enumerator) }, +Args => Any
 
   add_method_definition :to_s, T(String)
   add_method_definition :to_yaml, !T(Hash, Symbol, Any) => T(String)
@@ -69,7 +69,7 @@ Geomologist::Definition.add_class_definition(Object) do
   add_method_definition :yield_self, T, !Self => T
 
   add_method_definition :sysread, Nil, T(IO), T(Integer)
-  add_method_definition :timeout, +Args => Any, +Any => Any
+  add_method_definition :timeout, { +Args => Any }, +Any => Any
 
   add_method_definition :xmp, [T(String), !Any] => Any
 

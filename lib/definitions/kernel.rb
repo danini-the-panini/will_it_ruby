@@ -3,7 +3,7 @@ require 'gemologist/definition'
 Geomologist::Definition.add_class_definition(BasicObject) do
   add_class_method_definition :URI, [T(URI::Generic) | T(String)] => T(URI)
   add_class_method_definition :open, [T(String), !T(Integer), !T(Hash, Symbol, Any)] => T(IO) | Nil
-  add_class_method_definition :open, [T(String), !T(Integer), !T(Hash, Symbol, Any)] => T, T(IO) => T
+  add_class_method_definition :open, { [T(String), !T(Integer), !T(Hash, Symbol, Any)] => T }, T(IO) => T
 
   add_class_method_definition :pp, T => T
   add_class_method_definition :pp, [T, +T] => T(Array, T)
@@ -59,7 +59,7 @@ Geomologist::Definition.add_class_definition(BasicObject) do
   add_method_definition :caller_locations, [!T(Integer), !T(Integer)] => T(Array, String) | Nil
   add_method_definition :caller_locations, T(Range, Integer) => T(Array, String) | Nil
 
-  add_method_definition :catch, !T => E, T => E
+  add_method_definition :catch, { !T => E }, T => E
   add_method_definition :throw, [Any, !Any] => Nil
 
   add_method_definition :chomp, !T(String) => T(String)
@@ -90,7 +90,7 @@ Geomologist::Definition.add_class_definition(BasicObject) do
 
   add_method_definition :global_variables, T(Array, Symbol)
 
-  add_method_definition :gsub, Pattern => T(String), !T(String) => Any
+  add_method_definition :gsub, { Pattern => T(String) }, !T(String) => Any
   add_method_definition :gsub, [Pattern, T(String)] => T(String)
 
   add_method_definition :lambda, T(Proc, R, +T), +T => R
@@ -153,7 +153,7 @@ Geomologist::Definition.add_class_definition(BasicObject) do
 
   add_method_definition :srand, !T(Integer) => T(Integer)
 
-  add_method_definition :sub, Pattern => T(String), !T(String) => Any
+  add_method_definition :sub, { Pattern => T(String) }, !T(String) => Any
   add_method_definition :sub, [Pattern, T(String)] => T(String)
 
   add_method_definition :syscall, [T(Integer), +Any] => T(Integer)
@@ -161,9 +161,9 @@ Geomologist::Definition.add_class_definition(BasicObject) do
   add_method_definition :test, T(String) => T(Integer) | T(Time) | Bool | Nil
 
   add_method_definition :trace_var, [T(Symbol), T(String) | T(Proc)] => Nil
-  add_method_definition :trace_var, T(Symbol) => Nil, !Any => Any
+  add_method_definition :trace_var, { T(Symbol) => Nil }, !Any => Any
 
-  add_method_definition :trap, T(Integer) | T(String) => Any, [] => Any
+  add_method_definition :trap, { [T(Integer) | T(String)] => Any }, [] => Any
   add_method_definition :trap, [T(Integer) | T(String), T(String) | T(Proc)] => Any
 
   add_method_definition :untrace_var, T(Symbol) => T(Array, Proc) | Nil, 

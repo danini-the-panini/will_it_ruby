@@ -2,21 +2,22 @@ require 'gemologist'
 
 module Gemologist
   class Definition
-    def self.add_class_definition(base_class, &block)
+    def self.add_class_definition(base_class, *generics, &block)
       @classes ||= {}
-      c = @classes[base_class] = Class.new
+      c = @classes[base_class] = Class.new(base_class, *generics)
       c.intance_eval(&block) if block_given?
       c
     end
 
     class Class
-      attr_reader :base_class
+      attr_reader :base_class, :generics, :instance_methods, :class_methods, :constants
 
-      def initialize(base_class)
+      def initialize(base_class, *generics)
         @base_class = base_class
+        @generics = generics
         @instance_methods = {}
         @class_methods = {}
-        @contants = {}
+        @constants = {}
       end
 
       def add_method_definition(name, sig = [] => Nil, block_sig = nil)
@@ -30,7 +31,7 @@ module Gemologist
       end
 
       def add_constant_definition(name, type)
-        @contants[name] ||= type
+        @constants[name] ||= type
       end
 
       private

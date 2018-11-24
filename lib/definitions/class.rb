@@ -2,7 +2,7 @@ require 'gemologist/definition'
 
 Geomologist::Definition.add_class_definition(Class, C) do
   add_class_method_definition :new, !Class(Y) => T(Class, T)
-  add_class_method_definition :new, !Class(Y) => T(Class, T), !Class => Any
+  add_class_method_definition :new, { !Class(Y) => T(Class, T) }, !Class => Any
 
   add_method_definition :allocate, C
   add_method_definition :json_creatable?, Bool
