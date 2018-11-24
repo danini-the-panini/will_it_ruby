@@ -1,6 +1,19 @@
 require "gemologist/version"
 require "ruby_parser"
 
+def T(type, *other_types)
+  if other_types.empty?
+    return type if type.is_a?(Gemologist::Type)
+    Gemologist::SingleType.new(type)
+  else
+    Gemologist::GenericType.new(type, *other_types)
+  end
+end
+
+def C(klass)
+  Gemologist::ClassType.new(klass)
+end
+
 module Gemologist
   class Type
     def |(other)
@@ -151,10 +164,10 @@ module Gemologist
   end
 
   class SelfClassType < ClassType
-    Instance = SelfClassType.new
     def initialize
       super(nil)
     end
+    Instance = SelfClassType.new
   end
 
   class PlaceholderType < Type
@@ -220,17 +233,4 @@ module Gemologist
       T(Hash, key_types, value_types)
     end
   end
-end
-
-def T(type, *other_types)
-  if other_types.empty?
-    return type if type.is_a?(Gemologist::Type)
-    Gemologist::SingleType.new(type)
-  else
-    Gemologist::GenericType.new(type, *other_types)
-  end
-end
-
-def C(klass)
-  Gemologist::ClassType.new(klass)
 end
