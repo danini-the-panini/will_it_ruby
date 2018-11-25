@@ -1,15 +1,13 @@
-require 'gemologist'
-
 module Gemologist
   class Definition
     def self.add_class_definition(base_class, *generics, &block)
       @classes ||= {}
-      c = @classes[base_class] = Class.new(base_class, *generics)
-      c.intance_eval(&block) if block_given?
+      c = @classes[base_class] = ClassDefinition.new(base_class, *generics)
+      c.instance_eval(&block) if block_given?
       c
     end
 
-    class Class
+    class ClassDefinition
       attr_reader :base_class, :generics, :instance_methods, :class_methods, :constants
 
       def initialize(base_class, *generics)
@@ -20,12 +18,12 @@ module Gemologist
         @constants = {}
       end
 
-      def add_method_definition(name, sig = [] => Nil, block_sig = nil)
-        m = (@methods[name] ||= [])
+      def add_method_definition(name, sig = { [] => Nil }, block_sig = nil)
+        m = (@instance_methods[name] ||= [])
         m << method_from_sig(sig, block_sig)
       end
 
-      def add_class_method_definition(name, return_type, argument_types)
+      def add_class_method_definition(name, sig = { [] => Nil }, block_sig = nil)
         m = (@class_methods[name] ||= [])
         m << method_from_sig(sig, block_sig)
       end
@@ -38,30 +36,23 @@ module Gemologist
 
       def method_from_sig(sig, block_sig = nil)
         args, kwargs, return_type = args_from_sig(sig)
-
-        args, return_type = sig.first
-        kwargs = {}
-        if args.last.is_a?(Hash)
-          kwargs = args.last
-          args = args.take(args.size - 1)
-        end
         block_args, _, block_return_type = args_from_sig(block_sig)
-        Method.new(self, return_type, args, kargs, block_args, block_return_type)
+        Method.new(self, return_type, args, kwargs, block_args, block_return_type)
       end
 
       def args_from_sig(sig)
-        return nil, nil, nil if sig.nil?
+        return [nil, nil, nil] if sig.nil?
 
         case sig
         when Hash
           args, return_type = sig.first
           pargs, kwargs = kwargs_from_args(args)
-          args, kwargs, return_type
+          [args, kwargs, return_type]
         when Array
           pargs, kwargs =  kwargs_from_args(sig)
-          pargs, kwargs, Nil
+          [pargs, kwargs, Nil]
         else
-          [], {}, sig
+          [[], {}, sig]
         end
       end
 
@@ -74,11 +65,11 @@ module Gemologist
             kwargs = args.last
             pargs = args.take(args.size - 1)
           end
-          pargs, kwargs
+          [pargs, kwargs]
         when Hash
-          [], args
+          [[], args]
         else
-          [args], {}
+          [[args], {}]
         end
       end
     end
