@@ -27,6 +27,7 @@ class Gemologist::ScopeTest < Minitest::Test
       add_method_definition :foo, [T(Integer), !T(Integer), !T(Numeric), a: T(Integer), b: !T(Integer), c: !T(Integer)] => T(String)
       add_method_definition :foo, { [T(Integer), !T(Integer), !T(Numeric), a: T(Integer), b: !T(Integer), c: !T(Integer)] => T(Integer) },
         [!T(Integer), !T(Integer)] => Gemologist::Any
+      add_method_definition :bar, [T(String), +T(String)] => T(Array, T(String))
     end
     scope = Gemologist::Scope.new
 
@@ -54,6 +55,12 @@ class Gemologist::ScopeTest < Minitest::Test
       s(:hash, s(:lit, :a), s(:lit, 1), s(:lit, :b), s(:lit, 2)))
 
     assert_equal T(String), scope.analyze_expression(sexp3)
+
+    # foo(1, 2, 3.5, a:1, b:2, c: 3)
+    sexp3 = s(:call, nil, :bar,
+      s(:str, 'asdf'), s(:str, 'qwer'), s(:str, 'zxcv'))
+
+    assert_equal T(Array, T(String)), scope.analyze_expression(sexp3)
   end
 end
 
