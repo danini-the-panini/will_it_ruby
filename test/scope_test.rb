@@ -56,7 +56,7 @@ class Gemologist::ScopeTest < Minitest::Test
 
     assert_equal T(String), scope.determine_type(sexp3)
 
-    # foo(1, 2, 3.5, a:1, b:2, c: 3)
+    # bar('asdf', 'qwer', 'zxcv')
     sexp4 = s(:call, nil, :bar,
       s(:str, 'asdf'), s(:str, 'qwer'), s(:str, 'zxcv'))
 
