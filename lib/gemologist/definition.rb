@@ -119,16 +119,35 @@ module Gemologist
         @argument_list = ArgumentList.new(argument_types)
         @kwarg_types = kwarg_types
         if !block_argument_types.nil?
-          @block_type = Block.new(block_argument_types, block_return_type)
+          @block_type = Block.new(block_return_type, block_argument_types)
         end
       end
 
-      def match_call?(at, kt = {})
-        argument_list.match?(at)
+      def match_call?(at, kt = {}, brt = nil)
+        return false unless argument_list.match?(at)
+        return false unless kwarg_match?(kt)
+        true
+      end
+
+      def match_method?(other)
+        return false unless match_call?(other.argument_list.types, kwarg_types)
+        return false unless other.requires_block? == requires_block?
+        return false unless return_type.match?(other.return_type)
+        if requires_block?
+          return false unless block_type.match?(other.block_type.return_type)
+          return false unless block_type.argument_list.zip(other.block_type.argument_list).all? { |a,b| a.match?(b) }
+        end
+        true
       end
 
       def requires_block?
         !block_type.nil?
+      end
+
+      def kwarg_match?(kt)
+        return true if kwarg_types.empty? && kt.empty?
+        return false unless kwarg_types.reject { |_,v| v.optional? }.all? { |k,_| kt.key?(k) }
+        kt.all? { |k,v| kwarg_types[k].match?(v) }
       end
     end
 
@@ -140,7 +159,7 @@ module Gemologist
       end
 
       def match?(rt)
-        return false unless return_type.match?(rt)
+        return_type.match?(rt)
       end
     end
 

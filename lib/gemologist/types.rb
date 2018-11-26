@@ -156,6 +156,21 @@ module Gemologist
     end
   end
 
+  class DuckType < Type
+    attr_reader :methods
+
+    def initialize(methods)
+      @methods = methods
+    end
+
+    def match?(other)
+      case other
+      when DuckType
+        other.methods.all? { |oo| methods.any? { |m| m.match_method?(om) } }
+      end
+    end
+  end
+
   class AnyType < Type
     Instance = AnyType.new
 

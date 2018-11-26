@@ -14,15 +14,8 @@ module Gemologist
       @local_variables.has_key?(name) || @parent_scope&.has_key?(name) || false
     end
 
-    def analyze_expression(sexp)
-      case sexp[0]
-      when :lasgn
-        @local_variables[sexp[1]] = determine_type(sexp[2])
-      when :block
-        _, *expressions = sexp
-        expressions.map { |x| analyze_expression(x) }.last
-      else determine_type(sexp)
-      end
+    def assign_local_variable(name, type)
+      @local_variables[name] = type
     end
 
     def determine_types(sexps)
@@ -52,6 +45,10 @@ module Gemologist
         key_types = determine_types(keys)
         value_types = determine_types(values)
         T(Hash, key_types, value_types)
+      when :lasgn
+        assign_local_variable(sexp[1], determine_type(sexp[2]))
+      when :lvar
+        local_variable(sexp[1])
       when :call
         receiver, name, args, kwargs = get_call_parameters(sexp)
 
@@ -61,11 +58,25 @@ module Gemologist
       when :iter
         receiver, name, args, kwargs = get_call_parameters(sexp[1])
 
-        _, *block_args = sexp[2]
+        if sexp[2] == 0
+          block_args = []
+        else
+          _, *block_args = sexp[2]
+        end
 
         method = Definition.for_type(receiver).find_matching_method_call_with_block(name, args, kwargs)
 
-        method.return_type
+        block_scope = Scope.new(@self_type, self)
+
+        block_args.zip(method.block_type.argument_list.types).each do |blarg, type|
+          block_scope.assign_local_variable(blarg, type)
+        end
+
+        block_rt = block_scope.determine_type(sexp[3])
+
+        if method.block_type.match?(block_rt)
+          method.return_type
+        end
       end
     end
 
@@ -85,7 +96,7 @@ module Gemologist
         receiver = T(receiver)
       end
 
-      pargs = args.map { |a| analyze_expression(a) }
+      pargs = args.map { |a| determine_type(a) }
       kwargs = {}
 
       if !pargs.empty? && T(Hash, Symbol, Any).match?(pargs.last)
