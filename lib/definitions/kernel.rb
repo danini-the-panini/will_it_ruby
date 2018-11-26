@@ -1,7 +1,7 @@
 require 'gemologist/definition'
 
 module Gemologist
-  Definition.add_class_definition(BasicObject) do
+  Definition.add_class_definition(Kernel) do
     add_class_method_definition :URI, [T(URI::Generic) | T(String)] => T(URI)
     add_class_method_definition :open, [T(String), !T(Integer), !T(Hash, Symbol, Any)] => T(IO) | Nil
     add_class_method_definition :open, { [T(String), !T(Integer), !T(Hash, Symbol, Any)] => T }, T(IO) => T

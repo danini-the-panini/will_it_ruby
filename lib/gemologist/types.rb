@@ -11,6 +11,11 @@ end
 
 module Gemologist
   class Type
+    def initialize
+      @variadic = false
+      @optional = false
+    end
+
     def |(other)
       case other
       when AnyType
@@ -22,7 +27,11 @@ module Gemologist
       end
     end
 
-    def matches?(_)
+    def native_type
+      nil
+    end
+
+    def match?(_)
       false
     end
 
@@ -56,7 +65,12 @@ module Gemologist
   class UnionType < Type
     attr_reader :types
 
+    def native_type
+      Object
+    end
+
     def initialize(*types)
+      super()
       @types = types.map { |t| T(t) }
     end
 
@@ -71,10 +85,10 @@ module Gemologist
       end
     end
 
-    def matches?(other)
+    def match?(other)
       case other
-      when UnionType then other.types.all? { |t| self.types.any? { |t2| t2.matches?(t) } }
-      else self.types.any? { |t| t.matches?(other) }
+      when UnionType then other.types.all? { |t| self.types.any? { |t2| t2.match?(t) } }
+      else self.types.any? { |t| t.match?(other) }
       end
     end
 
@@ -88,18 +102,23 @@ module Gemologist
     attr_reader :type
 
     def initialize(native_type)
+      super()
       raise ArgumentError.new("Only native types can be used in SingleType") if native_type.is_a?(Type)
       @type = case native_type
-              when Class then native_type
+              when Class, Module then native_type
               else native_type.class
               end
     end
 
-    def matches?(other)
+    def native_type
+      type
+    end
+
+    def match?(other)
       case other
       when SingleType then subclass?(self.type, other.type)
       when GenericType then subclass?(self.type, pther.main_type)
-      when UnionType then other.types.all? { |t| self.matches?(t) }
+      when UnionType then other.types.all? { |t| self.match?(t) }
       else false
       end
     end
@@ -113,15 +132,20 @@ module Gemologist
     attr_reader :main_type, :subtypes
 
     def initialize(main_type, *subtypes)
+      super()
       @main_type = T(main_type)
       @subtypes = subtypes.map { |t| T(t) }
     end
 
-    def matches?(other)
+    def native_type
+      main_type.native_type
+    end
+
+    def match?(other)
       return false unless other.is_a?(GenericType)
-      return false unless self.main_type.matches?(other.main_type)
+      return false unless self.main_type.match?(other.main_type)
       return false unless other.subtypes.count == self.subtypes.count
-      other.subtypes.zip(self.subtypes).all? { |ot, t| t.matches?(ot) }
+      other.subtypes.zip(self.subtypes).all? { |ot, t| t.match?(ot) }
     end
 
     def ==(other)
@@ -135,11 +159,15 @@ module Gemologist
   class AnyType < Type
     Instance = AnyType.new
 
+    def native_type
+      Object
+    end
+
     def |(other)
       self
     end
 
-    def matches?(_)
+    def match?(_)
       true
     end
 

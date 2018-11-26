@@ -1,7 +1,7 @@
 require 'gemologist/definition'
 
 module Gemologist
-  Definition.add_class_definition(Object) do
+  Definition.add_class_definition(String) do
     add_method_definition :iseuc, Bool
     add_method_definition :isjis, Bool
     add_method_definition :issjis, Bool

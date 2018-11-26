@@ -18,15 +18,15 @@ class Gemologist::UnionTypeTest < Minitest::Test
     b = T(Numeric) | T(NilClass)
     c = T(Float) | T(Integer)
 
-    assert a.matches?(a)
-    assert a.matches?(T(String))
-    assert a.matches?(T(Integer))
-    assert a.matches?(T(Float))
-    refute a.matches?(T(NilClass))
+    assert a.match?(a)
+    assert a.match?(T(String))
+    assert a.match?(T(Integer))
+    assert a.match?(T(Float))
+    refute a.match?(T(NilClass))
 
-    assert b.matches?(T(Integer))
-    assert b.matches?(T(NilClass))
-    assert b.matches?(c)
-    refute c.matches?(b)
+    assert b.match?(T(Integer))
+    assert b.match?(T(NilClass))
+    assert b.match?(c)
+    refute c.match?(b)
   end
 end

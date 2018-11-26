@@ -18,12 +18,12 @@ class Gemologist::SingleTypeTest < Minitest::Test
     b = T(Integer)
     c = T(String)
 
-    assert a.matches?(a)
-    assert a.matches?(b)
-    refute b.matches?(a)
-    refute a.matches?(c)
-    refute c.matches?(a)
-    refute b.matches?(c)
-    refute c.matches?(b)
+    assert a.match?(a)
+    assert a.match?(b)
+    refute b.match?(a)
+    refute a.match?(c)
+    refute c.match?(a)
+    refute b.match?(c)
+    refute c.match?(b)
   end
 end

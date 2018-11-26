@@ -19,15 +19,15 @@ class Gemologist::AnyTypeTest < Minitest::Test
 
     T(Proc, T(String), T(Integer), T(Integer))
 
-    assert a.matches?(a)
-    assert a.matches?(b)
-    assert a.matches?(c)
-    assert a.matches?(d)
-    assert a.matches?(e)
+    assert a.match?(a)
+    assert a.match?(b)
+    assert a.match?(c)
+    assert a.match?(d)
+    assert a.match?(e)
 
-    refute b.matches?(a)
-    refute c.matches?(a)
-    refute d.matches?(a)
-    refute e.matches?(a)
+    refute b.match?(a)
+    refute c.match?(a)
+    refute d.match?(a)
+    refute e.match?(a)
   end
 end

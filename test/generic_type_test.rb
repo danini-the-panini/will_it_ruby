@@ -20,11 +20,11 @@ class Gemologist::GenericTypeTest < Minitest::Test
     c = T(Hash, T(Symbol) | T(String), T(Numeric))
     d = T(Hash, T(Symbol), T(Integer))
 
-    assert a.matches?(a)
-    assert a.matches?(b)
-    refute b.matches?(a)
+    assert a.match?(a)
+    assert a.match?(b)
+    refute b.match?(a)
 
-    assert c.matches?(d)
-    refute d.matches?(c)
+    assert c.match?(d)
+    refute d.match?(c)
   end
 end
