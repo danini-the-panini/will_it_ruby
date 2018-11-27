@@ -29,12 +29,12 @@ module Gemologist
 
       def add_method_definition(name, sig = { [] => Nil }, block_sig = nil)
         m = (@instance_methods[name] ||= [])
-        m << method_from_sig(sig, block_sig)
+        m << method_from_sig(name, sig, block_sig)
       end
 
       def add_class_method_definition(name, sig = { [] => Nil }, block_sig = nil)
         m = (@class_methods[name] ||= [])
-        m << method_from_sig(sig, block_sig)
+        m << method_from_sig(name, sig, block_sig)
       end
 
       def add_constant_definition(name, type)
@@ -69,12 +69,20 @@ module Gemologist
         Definition.for_class(superclass).find_methods_by_name(name)
       end
 
+      def has_matching_method?(method)
+        methods = find_methods_by_name(method.name)
+        return false if methods.nil?
+        methods.any? do |m|
+          m.match_method?(method)
+        end
+      end
+
       private
 
-      def method_from_sig(sig, block_sig = nil)
+      def method_from_sig(name, sig, block_sig = nil)
         args, kwargs, return_type = args_from_sig(sig)
         block_args, _, block_return_type = args_from_sig(block_sig)
-        Method.new(self, return_type, args, kwargs, block_args, block_return_type)
+        Method.new(self, name, return_type, args, kwargs, block_args, block_return_type)
       end
 
       def args_from_sig(sig)
@@ -111,10 +119,11 @@ module Gemologist
     end
 
     class Method
-      attr_reader :class_definition, :return_type, :argument_list, :kwarg_types, :block_type
+      attr_reader :class_definition, :name, :return_type, :argument_list, :kwarg_types, :block_type
 
-      def initialize(class_definition, return_type, argument_types = [], kwarg_types = {}, block_argument_types = nil, block_return_type = nil)
+      def initialize(class_definition, name, return_type, argument_types = [], kwarg_types = {}, block_argument_types = nil, block_return_type = nil)
         @class_definition = class_definition
+        @name = name
         @return_type = return_type
         @argument_list = ArgumentList.new(argument_types)
         @kwarg_types = kwarg_types

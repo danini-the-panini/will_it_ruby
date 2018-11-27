@@ -166,8 +166,18 @@ module Gemologist
     def match?(other)
       case other
       when DuckType
-        other.methods.all? { |oo| methods.any? { |m| m.match_method?(om) } }
+        other.methods.all? { |om| methods.any? { |m| m.match_method?(om) } }
+      when SingleType, GenericType
+        match_definition?(Definition.for_type(other))
+      when UnionType
+        other.types.all? { |t| match_definition?(Definition.by_type(other.native_type)) }
+      when AnyType
+        false
       end
+    end
+
+    def match_definition?(definition)
+      methods.all? { |m| definition.has_matching_method?(m) }
     end
   end
 
