@@ -77,6 +77,27 @@ module Gemologist
         if method.block_type.match?(block_rt)
           method.return_type
         end
+      when :defn
+        _, name, args_exp, *statements = sexp
+
+        _, *arg_names = args_exp
+
+        method_scope = Scope.new(@self_type, nil)
+
+        arg_types = arg_names.map do |a|
+          t = MutableDuckType.new
+          method_scope.assign_local_variable(a, t)
+          t
+        end
+
+        return_type = statements.map { |s| method_scope.determine_type(s) }.last
+
+        definition = Definition.for_type(@self_type || Kernel)
+        method = Definition::Method.new(definition, name, return_type, arg_types.map(&:to_regular_duck_type))
+
+        (definition.instance_methods[name] ||= []) << method
+
+        T(Symbol)
       end
     end
 

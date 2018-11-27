@@ -12,8 +12,12 @@ module Gemologist
     end
 
     def self.for_type(type)
-      binding.irb if @classes[type.native_type].nil?
-      @classes[type.native_type]
+      case type
+      when DuckType
+        type.definition
+      else
+        @classes[type.native_type]
+      end
     end
 
     class ClassDefinition
@@ -42,11 +46,11 @@ module Gemologist
       end
 
       def resolve_method_call(name, args = [], kwargs = {})
-        find_matching_method_call(name, args, kwargs).return_type
+        find_matching_method_call(name, args, kwargs)&.return_type
       end
 
       def find_matching_method_call(name, args = [], kwargs = {})
-        find_methods_by_name(name).each do |method|
+        find_methods_by_name(name)&.each do |method|
           next if method.requires_block?
           return method if method.match_call?(args, kwargs)
         end
@@ -54,7 +58,7 @@ module Gemologist
       end
 
       def find_matching_method_call_with_block(name, args = [], kwargs = {})
-        find_methods_by_name(name).each do |method|
+        find_methods_by_name(name)&.each do |method|
           next if !method.requires_block?
           return method if method.match_call?(args, kwargs)
         end
@@ -64,7 +68,7 @@ module Gemologist
       def find_methods_by_name(name)
         methods = @instance_methods[name]
         return methods unless methods.nil?
-        superclass = base_class.superclass
+        superclass = base_class&.superclass
         return nil if superclass.nil?
         Definition.for_class(superclass).find_methods_by_name(name)
       end
@@ -212,6 +216,35 @@ module Gemologist
           return ArgumentList.new(types.drop(1))
         end
       end
+    end
+
+    class DuckDefinition < ClassDefinition
+      def initialize
+        super(nil)
+        @type = MutableDuckType.new(self)
+      end
+
+      def resolve_method_call(name, args = [], kwargs = {})
+        m = super
+        return m.return_type unless m.nil?
+        m = Method.new(self, name, Any, args, kwargs)
+        (@instance_methods[name] ||= []) << m
+        m.return_type
+      end
+
+      def to_type
+        @type
+      end
+    end
+  end
+
+  class MutableDuckType < DuckType
+    def initialize(definition = Definition::DuckDefinition.new)
+      @definition = definition
+    end
+
+    def to_regular_duck_type
+      DuckType.new(definition.instance_methods.values.flatten)
     end
   end
 end

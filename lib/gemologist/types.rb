@@ -157,10 +157,17 @@ module Gemologist
   end
 
   class DuckType < Type
-    attr_reader :methods
+    attr_reader :definition
 
     def initialize(methods)
-      @methods = methods
+      @definition = Definition::ClassDefinition.new(nil)
+      methods.each do |m|
+        (@definition.instance_methods[m.name] ||= []) << m
+      end
+    end
+
+    def methods
+      @definition.instance_methods.values.flatten
     end
 
     def match?(other)
