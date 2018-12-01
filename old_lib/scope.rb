@@ -4,6 +4,17 @@ module Gemologist
       @self_type = self_type
       @parent_scope = parent_scope
       @local_variables = {}
+      @constants = {}
+      @ivars = {}
+      @cvars = {}
+    end
+
+    def get_constant(name)
+      return @constants[name] if @constants.key?(name) 
+      @parent_scope.get_constant(name)
+    end
+
+    def get_ivar
     end
 
     def local_variable(name)
