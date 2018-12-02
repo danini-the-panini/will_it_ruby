@@ -164,6 +164,7 @@ module Gemologist
       def resolve_pargs_until_finished
         @last_free_type_values = @free_type_values
         resolve_pargs(callable.pargs, call.pargs)
+        resolve_kwargs(callable.kwargs, call.kwargs)
         resolve_block unless callable.block.nil?
 
         # puts
@@ -187,10 +188,17 @@ module Gemologist
         m, *m_rest = m_pargs
         c, *c_rest = c_pargs
 
-        new_values = resolve(m.type, c, free_types, @free_type_values)
-        @free_type_values = new_values
+        @free_type_values = resolve(m.type, c, free_types, @free_type_values)
 
         resolve_pargs(m_rest, c_rest)
+      end
+
+      def resolve_kwargs(m_kwargs, c_kwargs)
+        c_kwargs.each do |k,c|
+          m = m_kwargs[k]
+
+          @free_type_values = resolve(m.type, c, free_types, @free_type_values)
+        end
       end
 
       def resolve_block
