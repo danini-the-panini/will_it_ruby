@@ -39,5 +39,16 @@ module Gemologist
 
       assert_equal Thing, a.resolve([IntThing, IntThing])
     end
+
+    def test_resolve_call_with_block
+      a_type = Duck.new name: "A"
+      r_type = Duck.new name: "R"
+
+      e_type = Duck.new name: "E"
+
+      a = Callable.new(r_type, [Callable::Argument.new(a_type)], {}, Block.new(r_type, [Callable::Argument.new(a_type)]), [a_type, r_type])
+
+      assert_equal Thing, a.resolve([Thing], {}, Block.new(e_type, [Callable::Argument.new(e_type)], {}, nil, [e_type]))
+    end
   end
 end

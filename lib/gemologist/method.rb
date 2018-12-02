@@ -13,7 +13,7 @@ module Gemologist
     end
 
     def to_s
-      "#{name}(#{args_to_s}) #{block ? "#{block.to_s} " : ''}-> #{return_type.to_s}"
+      "#{name}#{super}"
     end
 
     def dup

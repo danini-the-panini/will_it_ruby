@@ -459,6 +459,12 @@ end
 # BLOCK MATCHING
 
 class Foo
+  def foo(a) # Foo#foo(E) { |E| -> T } -> T
+    yield a
+  end
+end
+
+class Foo
   def foo(a) # Foo#foo(Duck(+(Integer) -> E, +(T) -> R)) { |E| -> T } -> R
     a + yield a + 1
   end

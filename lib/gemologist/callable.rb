@@ -14,13 +14,17 @@ module Gemologist
       pargs_match?(other) && kwargs_match?(other) && block_match?(other)
     end
 
-    def resolve(ps = [], ks = {}, block = nil)
+    def resolve(ps = [], ks = {}, block = nil, ft = [], ftv = {})
       call = Call.new(ps, ks, block)
-      Resolution.new(self, call).perform
+      Resolution.new(self, call, [*free_types, *ft], ftv).perform
     end
 
     def free_type?(t)
       free_types.include?(t)
+    end
+
+    def to_s
+      "(#{args_to_s}) #{block ? "#{block.to_s} " : ''}-> #{return_type.to_s}"
     end
 
     def dup
@@ -138,18 +142,19 @@ module Gemologist
     end
 
     class Resolution
-      attr_reader :callable, :call
+      attr_reader :callable, :call, :free_types, :free_type_values
 
-      def initialize(callable, call)
+      def initialize(callable, call, free_types = callable.free_types, free_type_values = {})
         @callable = callable
         @call = call
-        @last_free_type_values = nil
-        @free_type_values = {}
+        @free_types = free_types
+        @last_free_type_values = free_type_values
+        @free_type_values = free_type_values
       end
 
       def perform
         resolve_pargs_until_finished
-        if callable.free_type?(callable.return_type)
+        if free_type?(callable.return_type)
           @free_type_values[callable.return_type]
         else
           callable.return_type
@@ -157,33 +162,57 @@ module Gemologist
       end
 
       def resolve_pargs_until_finished
+        @last_free_type_values = @free_type_values
         resolve_pargs(callable.pargs, call.pargs)
+        resolve_block unless callable.block.nil?
 
-        if @free_type_values.count < callable.free_types.count && @last_free_type_values.count < @free_type_values.count
-          resolve_pargs(callable.pargs, call.pargs)
+        # puts
+        # puts callable.to_s
+        # puts ">>> values = #{@free_type_values.transform_keys(&:to_s).transform_values(&:to_s)}"
+        # puts
+
+        if @free_type_values.count < free_types.count && @last_free_type_values.count < @free_type_values.count
+          resolve_pargs_until_finished
         end
       end
 
       def resolve_pargs(m_pargs, c_pargs)
-        # puts "\nresolve_pargs(#{m_pargs.map(&:to_s)}, #{c_pargs.map(&:to_s)})"
+        # puts
+        # puts callable.to_s
+        # puts "> resolve_pargs(#{m_pargs.map(&:to_s)}, #{c_pargs.map(&:to_s)})"
+        # puts
 
         return if m_pargs.empty? || c_pargs.empty?
 
         m, *m_rest = m_pargs
         c, *c_rest = c_pargs
 
-        new_values = resolve(m.type, c, callable.free_types, @free_type_values)
-        @last_free_type_values = @free_type_values
+        new_values = resolve(m.type, c, free_types, @free_type_values)
         @free_type_values = new_values
 
         resolve_pargs(m_rest, c_rest)
       end
 
+      def resolve_block
+        # puts
+        # puts callable.to_s
+        # puts "> resolve_block #{callable.block} --- #{call.block}, #{free_types.map(&:to_s)}, #{free_type_values.transform_keys(&:to_s).transform_values(&:to_s)}"
+        # puts
+        block_return = call.block.resolve(callable.block.pargs.map(&:type), callable.kwargs.transform_values(&:type), callable.block.block, free_types, free_type_values)
+
+        if free_type?(callable.block.return_type)
+          @free_type_values.merge!(callable.block.return_type => block_return)
+        end
+      end
+
       def resolve(generic_type, concrete_type, free_types, free_type_values)
-        # puts "\tresolve(#{generic_type.to_s}, #{concrete_type.to_s}, #{free_types.map(&:to_s)}, #{free_type_values.transform_keys(&:to_s).transform_values(&:to_s)})"
+        # puts
+        # puts callable.to_s
+        # puts "> resolve(#{generic_type.to_s}, #{concrete_type.to_s}, #{free_types.map(&:to_s)}, #{free_type_values.transform_keys(&:to_s).transform_values(&:to_s)})"
+        # puts
 
         if free_types.include?(generic_type)
-          return free_type_values.merge({ generic_type => concrete_type })
+          return free_type_values.merge({ generic_type => value_for_free_type(concrete_type) })
         end
 
         generic_type.methods.values.flatten.each do |method|
@@ -214,6 +243,10 @@ module Gemologist
 
       def value_for_free_type(t)
         @free_type_values[t] || t
+      end
+
+      def free_type?(t)
+        free_types.include?(t)
       end
     end
   end
