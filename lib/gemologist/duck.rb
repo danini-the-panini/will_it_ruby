@@ -10,7 +10,7 @@ module Gemologist
 
     def to_s
       return name unless name.nil?
-      "Duck(#{methods.map(&:to_s).join(', ')})"
+      "Duck(#{methods.values.flatten.map(&:to_s).join(', ')})"
     end
 
     def <=(other)

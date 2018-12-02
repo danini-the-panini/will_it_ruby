@@ -13,7 +13,11 @@ module Gemologist
     end
 
     def to_s
-      "#{name}(#{args_to_s}) #{block&.to_s || ' '}-> #{return_type.to_s}"
+      "#{name}(#{args_to_s}) #{block ? "#{block.to_s} " : ''}-> #{return_type.to_s}"
+    end
+
+    def dup
+      Method.new(scope, name, return_type, pargs.map(&:dup), kwargs.transform_values(&:dup), block.dup, free_types)
     end
   end
 end

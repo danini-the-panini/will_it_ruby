@@ -28,5 +28,16 @@ module Gemologist
 
       assert_equal Thing, a.resolve([IntThing])
     end
+
+    def test_resolve_call_with_multiple_arguments
+      b_type = Duck.new name: "B"
+      r_type = Duck.new name: "R"
+      other_type = Duck.new(Any)
+      other_type.add_method_definition(Method.new(other_type, :+, r_type, [Callable::Argument.new(b_type)]))
+
+      a = Callable.new(r_type, [Callable::Argument.new(other_type), Callable::Argument.new(b_type)], {}, nil, [b_type, r_type])
+
+      assert_equal Thing, a.resolve([IntThing, IntThing])
+    end
   end
 end
