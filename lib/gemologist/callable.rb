@@ -11,10 +11,16 @@ module Gemologist
     end
 
     def <=(other)
-      # puts "pargs_match?(other) -- #{pargs_match?(other)}"
-      # puts "kwargs_match?(other) -- #{kwargs_match?(other)}"
-      # puts "block_match?(other) -- #{block_match?(other)}"
       pargs_match?(other) && kwargs_match?(other) && block_match?(other)
+    end
+
+    def resolve(ps = [], ks = {}, block = nil)
+      call = Call.new(ps, ks, block)
+      Resolution.new(self, call).perform
+    end
+
+    def free_type?(t)
+      free_types.include?(t)
     end
 
     protected
@@ -106,6 +112,71 @@ module Gemologist
 
       def variadic?
         @variadic
+      end
+
+      def to_s
+        "#{variadic? ? '*' : ''}#{type.to_s}#{optional? ? '?' : ''}"
+      end
+    end
+
+    class Call
+      attr_reader :pargs, :kwargs, :block
+
+      def initialize(pargs = [], kwargs = {}, block = nil)
+        @pargs = pargs
+        @kwargs = kwargs
+        @block = block
+      end
+    end
+
+    class Resolution
+      attr_reader :callable, :call
+
+      def initialize(callable, call)
+        @callable = callable
+        @call = call
+        @free_type_values = {}
+      end
+
+      def perform
+        resolve_pargs(callable.pargs, call.pargs)
+        if callable.free_type?(callable.return_type)
+          @free_type_values[callable.return_type]
+        else
+          callable.return_type
+        end
+      end
+
+      def resolve_pargs(m_pargs, c_pargs)
+        return if m_pargs.empty? || c_pargs.empty?
+
+        m, *m_rest = m_pargs
+        c, *c_rest = c_pargs
+
+        new_values = resolve(m.type, c, callable.free_types, @free_type_values)
+        @free_type_values = new_values
+
+        resolve_pargs(m_rest, c_rest)
+      end
+
+      def resolve(generic_type, concrete_type, free_types, free_type_values)
+        if free_types.include?(generic_type)
+          return free_type_values.merge({ generic_type => concrete_type })
+        end
+
+        generic_type.methods.values.flatten.each do |method|
+          matching_method = concrete_type.methods[method.name].find { |m|
+            method <= m
+          }
+
+          free_type_values = resolve(method.return_type, matching_method.return_type, free_types, free_type_values)
+        end
+
+        free_type_values
+      end
+
+      def value_for_free_type(t)
+        @free_type_values[t]
       end
     end
   end

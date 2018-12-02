@@ -1,7 +1,7 @@
 require "test_helper"
 
 module Gemologist
-  class CallableTest < Minitest::Test
+  class CallableMatchTest < Minitest::Test
     Any = Duck.new
     Thing = Duck.new(Any)
 

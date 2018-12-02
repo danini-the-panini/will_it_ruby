@@ -35,5 +35,10 @@ module Gemologist
       return true if super_duck == other
       super_duck.super_duck?(other)
     end
+
+    def add_method_definition(method)
+      methods[method.name] ||= []
+      methods[method.name] << method
+    end
   end
 end

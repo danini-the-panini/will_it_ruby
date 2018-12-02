@@ -507,6 +507,73 @@ end
 
 x = fib(5) # x = Integer
 
+# RESOLVING FREE TYPES
+
+def foo(a) # foo(A) -> A
+  a
+end
+
+foo(1) #-> A = Integer
+
+resolve(A, Integer, [A], {}) #=> { A => Integer }
+
+def foo(a)
+  a + 1
+end
+
+foo(1)
+
+resolve(Duck(+(Numeric) -> A), Integer, [A], {})
+resolve(A, Integer, [A], {}) #=> { A: Numeric }
+
+def foo(a, b) # foo(Duck(+(B) -> R), B) -> R
+  a + b
+end
+
+foo(1, 2.7)
+
+resolve(Duck(+(B) -> R), Integer, [B, R], {}) #=> {}
+resolve(B, Float, [B, R], {}) #=> { B: Float }
+
+resolve(Duck(+(B) -> R), Integer, [B, R], { B: Float })
+resolve(R, Float, [B, R], { B: Float }) #=> { B: Float, R: Float }
+
+def foo(a) # foo(A) { |A| -> B } -> B
+  yield a
+end
+
+foo("asdf") { |a| a.upcase } # foo(String) { |Duck(upcase() -> R)| -> R }
+
+resolve(A, String, [A, B], {}) #=> { A: String }
+_.merge({ B: block.resolve([A]) })
+resolve(Duck(upcase() -> R), String, [R], {}) #=> { R: String }
+#=> { A: String, B: String }
+
+def foo(a) # foo(Duck(+(Integer) -> E, +(T) -> R)) { |E| -> T } -> R
+  a + yield a + 1
+end
+
+foo(1) { |x| x + 2.4 } # foo(Integer) { |Duck(+(Float) -> R)| -> R }
+
+resolve(Duck(+(Integer) -> E, +(T) -> R), Integer, [E, R, T], {}) #=> { E: Integer }
+_.merge({ T: block.resolve([E]) })
+resolve(Duck(+(Float) -> R), Integer, [R], {}) #=> { R: Integer }
+#=> { E: Integer, T: Integer}
+resolve(Duck(+(Integer) -> E, +(T) -> R), Integer, [E, R, T], { E: Integer, T: Integer})
+#=> { E: Integer, T: Integer, R: Integer}
+
+def foo(a) # foo(Duck(strip() -> Duck(upcase() -> R))) -> R
+  a.strip.upcase
+end
+
+foo "asdf"
+
+resolve(Duck(strip() -> Duck(upcase() -> R)), String, [R], {})
+
+def foo(a) # foo(Duck(strip() -> A, upcase() -> B)) -> Array<A|B>
+  [a.strip, a.upcase]
+end
+
 ##################################
 
 # Methods have the following attributes
