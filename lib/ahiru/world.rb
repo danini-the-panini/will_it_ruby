@@ -1,4 +1,4 @@
-module Gemologist
+module Ahiru
   class World
     def initialize
       @listeners = {}

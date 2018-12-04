@@ -1,6 +1,6 @@
 require "test_helper"
 
-module Gemologist
+module Ahiru
   class CallableMatchTest < Minitest::Test
     Any = Duck.new
     Thing = Duck.new(Any)

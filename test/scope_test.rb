@@ -1,6 +1,6 @@
 require 'test_helper'
 
-module Gemologist
+module Ahiru
   class ScopeTest < Minitest::Test
     def test_process_lit_expression
       scope = Scope.new

@@ -1,4 +1,4 @@
-module Gemologist
+module Ahiru
   class Method < Callable
     attr_accessor :scope, :name
 

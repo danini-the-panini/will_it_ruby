@@ -1,11 +1,11 @@
 
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "gemologist/version"
+require "ahiru/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "gemologist"
-  spec.version       = Gemologist::VERSION
+  spec.name          = "ahiru"
+  spec.version       = Ahiru::VERSION
   spec.authors       = ["Daniel Smith"]
   spec.email         = ["jellymann@gmail.com"]
 

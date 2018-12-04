@@ -1,4 +1,4 @@
-module Gemologist
+module Ahiru
   T_Object.define do
     m :===, T_Any => T_Bool
     m :=~, T_Any => T_Any

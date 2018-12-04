@@ -1,4 +1,4 @@
-module Gemologist
+module Ahiru
   class Duck
     attr_reader :name, :super_duck, :generics, :concretes
     attr_accessor :methods

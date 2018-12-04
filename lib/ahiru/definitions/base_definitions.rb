@@ -1,4 +1,4 @@
-module Gemologist
+module Ahiru
   A = Duck.new name: 'A', free: true
   B = Duck.new name: 'B', free: true
   C = Duck.new name: 'C', free: true

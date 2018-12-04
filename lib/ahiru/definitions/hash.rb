@@ -1,4 +1,4 @@
-module Gemologist
+module Ahiru
   T_Hash.define do
     m :<, T_Hash => T_Bool
     m :<=, T_Hash => T_Bool

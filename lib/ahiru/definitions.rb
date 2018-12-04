@@ -1,0 +1,11 @@
+require "ahiru/definitions/base_definitions"
+
+require "ahiru/definitions/array"
+require "ahiru/definitions/basic_object"
+require "ahiru/definitions/class"
+require "ahiru/definitions/hash"
+require "ahiru/definitions/integer"
+require "ahiru/definitions/kernel"
+require "ahiru/definitions/numeric"
+require "ahiru/definitions/object"
+require "ahiru/definitions/string"

@@ -1,4 +1,4 @@
-module Gemologist
+module Ahiru
   T_Kernel.define do
     m :Array, T_Nil => T_Array[T_Any]
     m :Array, T_Hash[T, Y] => T_Array[T | Y]

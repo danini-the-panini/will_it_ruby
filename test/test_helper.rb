@@ -1,4 +1,4 @@
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
-require "gemologist"
+require "ahiru"
 
 require "minitest/autorun"

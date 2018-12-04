@@ -1,4 +1,4 @@
-module Gemologist
+module Ahiru
   class Callable
     attr_accessor :return_type, :pargs, :kwargs, :block, :free_types
 

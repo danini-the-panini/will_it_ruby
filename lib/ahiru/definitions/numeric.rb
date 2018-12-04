@@ -1,4 +1,4 @@
-module Gemologist
+module Ahiru
   T_Numeric.define do
     m :modulo, T_Real => T_Real
     m :+, t_self

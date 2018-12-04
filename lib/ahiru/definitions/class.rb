@@ -1,4 +1,4 @@
-module Gemologist
+module Ahiru
   T_Class.define do
     m :allocate, C
     m :json_creatable?, T_Bool

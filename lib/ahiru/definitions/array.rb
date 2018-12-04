@@ -1,4 +1,4 @@
-module Gemologist
+module Ahiru
   T_Array.define do
     m :&, T_Array[G] => T_Array[T] # TODO: do an intersection of types?
     m :|, T_Array[G] => T_Array[T | G]

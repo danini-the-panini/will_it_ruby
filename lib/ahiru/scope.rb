@@ -1,4 +1,4 @@
-module Gemologist
+module Ahiru
   class Scope
     def initialize(parent_scope = nil)
       @parent_scope = parent_scope

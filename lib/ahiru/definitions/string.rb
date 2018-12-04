@@ -1,4 +1,4 @@
-module Gemologist
+module Ahiru
   T_String.define do
     m :iseuc, T_Bool
     m :isjis, T_Bool
