@@ -60,11 +60,11 @@ module Gemologist
   C_Rational = T_Class[T_Rational]
   T_Real     = T_Integer | T_Float | T_Rational
 
-  T_TrueClass  = Duck.define "TrueClass",  T_Object
-  C_TrueClass  = T_Class[T_TrueClass]
-  T_FalseClass = Duck.define "FalseClass", T_Object
-  C_FalseClass = T_Class[T_FalseClass]
-  T_Bool       = T_TrueClass | T_FalseClass
+  T_True  = T_TrueClass  = Duck.define "TrueClass",  T_Object
+  C_True  = C_TrueClass  = T_Class[T_TrueClass]
+  T_False = T_FalseClass = Duck.define "FalseClass", T_Object
+  C_False = C_FalseClass = T_Class[T_FalseClass]
+  T_Bool  = T_TrueClass | T_FalseClass
 
   T_Symbol = Duck.define "Symbol", T_Object
   C_Symbol = T_Class[T_Symbol]

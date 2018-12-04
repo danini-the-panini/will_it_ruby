@@ -378,12 +378,12 @@ class Foo2
   end
 end
 
-class foo3
+class Foo3
   def foo(a, b) # foo(A, B) -> Nil
   end
 end
 
-class foo4
+class Foo4
   def foo(a, *b) # foo(A, *B) -> Nil
   end
 end
@@ -466,7 +466,7 @@ end
 
 class Foo
   def foo(a) # Foo#foo(Duck(+(Integer) -> E, +(T) -> R)) { |E| -> T } -> R
-    a + yield a + 1
+    a + yield(a + 1)
   end
 end
 
@@ -521,7 +521,8 @@ end
 
 foo(1) #-> A = Integer
 
-resolve(A, Integer, [A], {}) #=> { A => Integer }
+# resolve(A, Integer, [A], {})
+# => { A => Integer }
 
 def foo(a)
   a + 1
@@ -529,8 +530,9 @@ end
 
 foo(1)
 
-resolve(Duck(+(Numeric) -> A), Integer, [A], {})
-resolve(A, Integer, [A], {}) #=> { A: Numeric }
+# resolve(Duck(+(Numeric) -> A), Integer, [A], {})
+# resolve(A, Numeric, [A], {})
+# => { A: Numeric }
 
 def foo(a, b) # foo(Duck(+(B) -> R), B) -> R
   a + b
@@ -538,35 +540,42 @@ end
 
 foo(1, 2.7)
 
-resolve(Duck(+(B) -> R), Integer, [B, R], {}) #=> {}
-resolve(B, Float, [B, R], {}) #=> { B: Float }
+# resolve(Duck(+(B) -> R), Integer, [B, R], {})
+# => {}
+# resolve(B, Float, [B, R], {})
+# => { B: Float }
 
-resolve(Duck(+(B) -> R), Integer, [B, R], { B: Float })
-resolve(R, Float, [B, R], { B: Float }) #=> { B: Float, R: Float }
+# resolve(Duck(+(B) -> R), Integer, [B, R], { B: Float })
+# resolve(R, Float, [B, R], { B: Float })
+# => { B: Float, R: Float }
 
 def foo(a) # foo(A) { |A| -> B } -> B
   yield a
 end
 
-foo("asdf") { |a| a.upcase } # foo(String) { |Duck(upcase() -> R)| -> R }
+foo("asdf") { |s| s.upcase } # foo(String) { |Duck(upcase() -> R)| -> R }
 
-resolve(A, String, [A, B], {}) #=> { A: String }
-_.merge({ B: block.resolve([A]) })
-resolve(Duck(upcase() -> R), String, [R], {}) #=> { R: String }
-#=> { A: String, B: String }
+# resolve(A, String, [A, B], {})
+# => { A: String }
+# _.merge({ B: block.resolve([A]) })
+# resolve(Duck(upcase() -> R), String, [R], {}) #=> { R: String }
+# => { A: String, B: String }
 
 def foo(a) # foo(Duck(+(Integer) -> E, +(T) -> R)) { |E| -> T } -> R
-  a + yield a + 1
+  a + yield(a + 1)
 end
 
-foo(1) { |x| x + 2.4 } # foo(Integer) { |Duck(+(Float) -> R)| -> R }
+foo(1) { |i| i + 2.4 } # foo(Integer) { |Duck(+(Float) -> R)| -> R }
 
-resolve(Duck(+(Integer) -> E, +(T) -> R), Integer, [E, R, T], {}) #=> { E: Integer }
-_.merge({ T: block.resolve([E]) })
-resolve(Duck(+(Float) -> R), Integer, [R], {}) #=> { R: Integer }
-#=> { E: Integer, T: Integer}
-resolve(Duck(+(Integer) -> E, +(T) -> R), Integer, [E, R, T], { E: Integer, T: Integer})
-#=> { E: Integer, T: Integer, R: Integer}
+# resolve(Duck(+(Integer) -> E, +(T) -> R), Integer, [E, R, T], {})
+# => { E: Integer }
+# _.merge({ T: block.resolve([E]) })
+# resolve(Duck(+(Float) -> R), Integer, [R], {})
+# => { R: Float }
+# => { E: Integer, T: Float}
+# resolve(Duck(+(Integer) -> E, +(T) -> R), Integer, [E, R, T], { E: Integer, T: Float})
+# resolve(R, T, [E, R, T], { E: Integer, T: Float })
+# => { E: Integer, T: Float, R: Float}
 
 def foo(a) # foo(Duck(strip() -> Duck(upcase() -> R))) -> R
   a.strip.upcase
@@ -574,11 +583,19 @@ end
 
 foo "asdf"
 
-resolve(Duck(strip() -> Duck(upcase() -> R)), String, [R], {})
+# resolve(Duck(strip() -> Duck(upcase() -> R)), String, [R], {})
+# resolve(Duck(upcase() -> R), String, [R], {})
+# resolve(R, String, [R], {})
+# => { R: String }
 
 def foo(a) # foo(Duck(strip() -> A, upcase() -> B)) -> Array<A|B>
   [a.strip, a.upcase]
 end
+
+# TYPE RESOLUTION
+
+# resolve(Array<T>, Array<Integer>, [T], {})
+# => { T => Integer }
 
 ##################################
 

@@ -1,13 +1,14 @@
 module Gemologist
   class Duck
-    attr_reader :name, :super_duck, :generics
+    attr_reader :name, :super_duck, :generics, :concretes
     attr_accessor :methods
 
-    def initialize(super_duck = nil, name: nil, generics: [], methods: {}, free: false)
+    def initialize(super_duck = nil, name: nil, generics: [], concretes: [], methods: {}, free: false)
       @name       = name
       @super_duck = super_duck
       @methods    = methods
       @generics   = generics
+      @concretes  = concretes
       @free       = free
     end
 
@@ -37,6 +38,10 @@ module Gemologist
       "Duck(#{methods.values.flatten.map(&:to_s).join(', ')})"
     end
 
+    def inspect
+      "#{name}(#{methods.values.flatten.map(&:to_s).join(', ')})"
+    end
+
     def rewrite(free_type_values)
       @_rewrites ||= {}
       return @_rewrites[free_type_values] if @_rewrites[free_type_values]
@@ -46,7 +51,9 @@ module Gemologist
         ft && !ft.free?
       }
 
-      Duck.new(self, name: "#{name}<#{free_type_values.keys.map(&:to_s).join(', ')}>", generics: new_generics).tap do |new_duck|
+      new_concretes = [*concretes, *generics.map { |t| free_type_values[t] }].compact.uniq
+
+      Duck.new(self, name: "#{name}<#{free_type_values.values.map(&:to_s).join(', ')}>", generics: new_generics, concretes: new_concretes).tap do |new_duck|
         @_rewrites[free_type_values] = new_duck
         new_duck.methods = methods.transform_values { |ms| ms.map { |m| m.rewrite(free_type_values) } }
       end

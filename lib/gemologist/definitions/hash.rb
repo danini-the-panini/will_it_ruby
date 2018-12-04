@@ -19,7 +19,7 @@ module Gemologist
     m :clear, t_self
     
     m :compact, T_Hash[K, V]
-    m :compac!, T_Hash[K, V] | T_Nil
+    m :compact!, T_Hash[K, V] | T_Nil
 
     m :compare_by_identity, t_self
     m :compare_by_identity?, T_Bool
@@ -179,10 +179,10 @@ module Gemologist
     m :[], T_Array[T] => T_Hash[T, T]
     m :[], T_Any => T_Hash
 
-    m :new, T_Hash
-    m :new, V => T_Hash[K, V]
-    m :new, T_Hash[K, V] do
-      { [o(T_Hash[K, V]), K] => V }
+    m :new, T_Hash[T_Any, T_Any]
+    m :new, V => T_Hash[T_Any, V]
+    m :new, T_Hash[T_Any, V] do
+      { [o(T_Hash[T_Any, V]), o(T_Any)] => V }
     end
 
     m :try_convert, T_Any => T_Hash
