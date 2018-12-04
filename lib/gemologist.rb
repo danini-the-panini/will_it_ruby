@@ -7,3 +7,5 @@ require "gemologist/duck"
 require "gemologist/callable"
 require "gemologist/method"
 require "gemologist/block"
+
+require "gemologist/definitions"

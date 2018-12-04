@@ -4,7 +4,9 @@ module Gemologist
   class CallableResolveTest < Minitest::Test
     Any = Duck.new(name: "Any")
     Thing = Duck.new(Any, name: "Thing")
+    FloatThing = Duck.new(Any, name: "FloatThing")
     IntThing = Duck.new(Any, name: "IntThing")
+    IntThing.add_method_definition(Method.new(IntThing, :+, Thing, [Callable::Argument.new(IntThing)]))
     IntThing.add_method_definition(Method.new(IntThing, :+, Thing, [Callable::Argument.new(IntThing)]))
 
     def test_resolve_call

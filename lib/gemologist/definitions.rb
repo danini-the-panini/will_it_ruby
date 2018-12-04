@@ -1,0 +1,11 @@
+require "gemologist/definitions/base_definitions"
+
+require "gemologist/definitions/array"
+require "gemologist/definitions/basic_object"
+require "gemologist/definitions/class"
+require "gemologist/definitions/hash"
+require "gemologist/definitions/integer"
+require "gemologist/definitions/kernel"
+require "gemologist/definitions/numeric"
+require "gemologist/definitions/object"
+require "gemologist/definitions/string"

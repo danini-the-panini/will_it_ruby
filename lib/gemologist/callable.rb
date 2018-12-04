@@ -31,6 +31,26 @@ module Gemologist
       Callable.new(return_type, pargs.map(&:dup), kwargs.transform_values(&:dup), block.dup, free_types)
     end
 
+    def rewrite(free_type_values)
+      new_free_types = free_types.reject { |t|
+        ft = free_type_values[t]
+        ft && !ft.free?
+      }
+
+      dup.tap do |m|
+        m.return_type = free_type_values[m.return_type] || m.return_type
+
+        m.pargs.each { |a| a.type = free_type_values[a.type]&.rewrite(free_type_values) || a.type }
+        m.kwargs.each { |_,a| a.type = free_type_values[a.type]&.rewrite(free_type_values) || a.type }
+        m.block = m.block.rewrite(free_type_values) unless m.block.nil?
+        m.free_types = new_free_types
+      end
+    end
+
+    def [](*gen_types)
+      rewrite(free_types.zip(gen_types).to_h.compact)
+    end
+
     protected
 
     def minimum_required_arguments
@@ -128,6 +148,16 @@ module Gemologist
 
       def dup
         Argument.new(type, optional: optional?, variadic: variadic?)
+      end
+
+      def !
+        @optional = true
+        self
+      end
+
+      def +
+        @variadic = true
+        self
       end
     end
 
@@ -240,13 +270,7 @@ module Gemologist
       def rewrite_method_free_variables(method)
         return nil if method.nil?
 
-        method.dup.tap do |m|
-          m.return_type = value_for_free_type(m.return_type)
-
-          m.pargs.each { |a| a.type = value_for_free_type(a.type) }
-          m.kwargs.each { |_,a| a.type = value_for_free_type(a.type) }
-          m.block = rewrite_method_free_variables(m.block)
-        end
+        method.rewrite(@free_type_values)
       end
 
       def value_for_free_type(t)
