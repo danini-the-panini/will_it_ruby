@@ -6,7 +6,7 @@ module Ahiru
 
     def setup
       @world = World.new
-      @scope = Scope.new @world
+      @scope = Scope.new @world, T_Object
     end
 
     def test_process_lit_expression
@@ -97,6 +97,10 @@ module Ahiru
       scope.assign_local_variable(:a, T_Integer)
 
       assert_equal T_Integer, scope.process_expression(s(:lvar, :a))
+    end
+
+    def test_self_expression
+      assert_equal T_Object, scope.process_expression(s(:self))
     end
   end
 end

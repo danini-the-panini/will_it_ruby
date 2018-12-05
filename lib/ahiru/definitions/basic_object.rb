@@ -1,5 +1,5 @@
 module Ahiru
-T_BasicObject.define do
+  T_BasicObject.define do
     m :!, T_Bool
     m :!=, T_Any => T_Bool
     m :==, T_Any => T_Bool

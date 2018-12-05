@@ -36,77 +36,73 @@ module Ahiru
   T_Class = Duck.define "Class", T_Module, [C]
   C_Class = T_Class[T_Class]
 
-  T_Method = Duck.define "Method", T_Object
-  C_Method = T_Class[T_Method]
-
   C_BasicObject = Duck.define "Class(BasicObject)", T_Class[T_BasicObject]
   C_Object      = T_Class[T_Object]
 
-  T_Nil = T_NilClass = Duck.define "NilClass", T_Object
-  C_Nil = C_NilClass = T_Class[T_Nil]
-  
-  T_Kernel = Duck.define "Kernel"
-  M_Kernel = T_Module[T_Kernel]
+  def self.define_class(name, super_type = T_Object, generics = [], enclosing_module = nil)
+    normal_name = name.gsub('::', '_')
+    type = Duck.define name, super_type, generics, enclosing_module
+    const_set :"T_#{normal_name}", type
+    const_set :"C_#{normal_name}", type.class_type
+  end
 
-  T_Numeric  = Duck.define "Numeric",  T_Object
-  C_Numeric  = T_Class[T_Numeric]
-  T_Integer  = Duck.define "Integer",  T_Numeric
-  C_Integer  = T_Class[T_Integer]
-  T_Float    = Duck.define "Float",    T_Numeric
-  C_Float    = T_Class[T_Float]
-  T_Complex  = Duck.define "Complex",  T_Numeric
-  C_Complex  = T_Class[T_Complex]
-  T_Rational = Duck.define "Rational", T_Numeric
-  C_Rational = T_Class[T_Rational]
-  T_Real     = T_Integer | T_Float | T_Rational
+  def self.define_module(name, enclosing_module = nil)
+    normal_name = name.gsub('::', '_')
+    type = Duck.define name, nil, [], enclosing_module
+    const_set :"T_#{normal_name}", type
+    const_set :"M_#{normal_name}", T_Module[type]
+  end
 
-  T_True  = T_TrueClass  = Duck.define "TrueClass",  T_Object
-  C_True  = C_TrueClass  = T_Class[T_TrueClass]
-  T_False = T_FalseClass = Duck.define "FalseClass", T_Object
-  C_False = C_FalseClass = T_Class[T_FalseClass]
+  define_module "Kernel"
+
+  define_class "Method"
+  define_class "NilClass"
+  T_Nil = T_NilClass
+  C_Nil = C_NilClass
+
+  define_class "Numeric"
+  define_class "Integer", T_Numeric
+  define_class "Float", T_Numeric
+  define_class "Complex", T_Numeric
+  define_class "Rational", T_Numeric
+  T_Real = T_Integer | T_Float | T_Rational
+
+  define_class "TrueClass"
+  T_True = T_TrueClass
+  C_True = C_TrueClass
+  define_class "FalseClass"
+  T_False = T_FalseClass
+  C_False = C_FalseClass
   T_Bool  = T_TrueClass | T_FalseClass
 
-  T_Symbol = Duck.define "Symbol", T_Object
-  C_Symbol = T_Class[T_Symbol]
+  define_class "Symbol"
 
-  T_String  = Duck.define "String", T_Object
-  C_String  = T_Class[T_String]
-  T_Regexp  = Duck.define "Regexp", T_Object
-  C_Regexp  = T_Class[T_Regexp]
+  define_class "String"
+  define_class "Regexp"
   T_Pattern = T_String | T_Regexp
   
-  T_Encoding = Duck.define "Encoding", T_Object
-  C_Encoding = T_Class[T_Encoding]
+  define_class "Encoding"
   
-  T_MatchData = Duck.define "MatchData", T_Object
-  C_MatchData = T_Class[T_MatchData]
+  define_class "MatchData"
 
-  T_IO = Duck.define "IO", T_Object
-  C_IO = T_Class[T_IO]
+  define_class "IO"
+  define_class "File", T_IO
 
-  T_Exception = Duck.define "Exception", T_Object
-  C_Exception = T_Class[T_Exception]
+  define_class "ARGF"
 
-  T_Enumerator = Duck.define "Enumerator", T_Object, [E]
-  C_Enumerator = T_Class[T_Enumerator]
-  T_Array = Duck.define "Array", T_Object, [T]
-  C_Array = T_Class[T_Array]
-  T_Hash  = Duck.define "Hash", T_Object, [K, V]
-  C_Hash  = T_Class[T_Hash]
-  T_Range = Duck.define "Range", T_Object, [R]
-  C_Range = T_Class[T_Range]
+  define_class "Exception"
 
-  T_Proc = Duck.define "Proc", T_Object, [R]
-  C_Proc = T_Class[T_Proc]
+  define_class "Enumerator", T_Object, [E]
+  define_class "Array", T_Object, [T]
+  define_class "Hash", T_Object, [K, V]
+  define_class "Range", T_Object, [R]
 
-  T_Binding = Duck.define "Binding", T_Object
-  C_Binding = T_Class[T_Binding]
+  define_class "Proc", T_Object, [R]
 
-  T_Time = Duck.define "Time", T_Object
-  C_Time = T_Class[T_Time]
+  define_class "Binding"
 
-  T_URI = Duck.define "URI", T_Object
-  C_URI = T_Class[T_URI]
-  T_URI_Generic = Duck.define "URI::Generic", T_Object
-  C_URI_Generic = T_Class[T_URI_Generic]
+  define_class "Time"
+
+  define_module "URI"
+  define_class "URI::Generic", T_Object, [], M_URI
 end

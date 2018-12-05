@@ -84,28 +84,28 @@ module Ahiru
 
     m :xmp, [T_String, o(T_Any)] => T_Any
 
-    # add_constant_definition :ARGF, T_ARGF
-    # add_constant_definition :ARGV, T_Array String)
-    # add_constant_definition :Bignum, T_Class
-    # add_constant_definition :CROSS_COMPILING, T_Any
-    # add_constant_definition :DATA, T_File
-    # add_constant_definition :ENV, T_Hash String, String)
-    # add_constant_definition :FALSE, T_FalseClass
-    # add_constant_definition :TRUE, T_TrueClass
-    # add_constant_definition :Fixnum, T_Class
-    # add_constant_definition :NIL, Nil
-    # add_constant_definition :RUBY_COPYRIGHT, T_String
-    # add_constant_definition :RUBY_DESCRIPTION, T_String
-    # add_constant_definition :RUBY_ENGINE, T_String
-    # add_constant_definition :RUBY_ENGINE_VERSION, T_String
-    # add_constant_definition :RUBY_PATCHLEVEL, T_Integer
-    # add_constant_definition :RUBY_PLATFORM, T_String
-    # add_constant_definition :RUBY_RELEASE_DATE, T_String
-    # add_constant_definition :RUBY_REVISION, T_Integer
-    # add_constant_definition :STDERR, T_IO
-    # add_constant_definition :STDIN, T_IO
-    # add_constant_definition :STDOUT, T_IO
-    # add_constant_definition :TOPLEVEL_BINDING, T_Binding
+    c :ARGF, T_ARGF
+    c :ARGV, T_Array[T_String]
+    c :Bignum, T_Class
+    c :CROSS_COMPILING, T_Any
+    c :DATA, T_File
+    c :ENV, T_Hash[T_String, T_String]
+    c :FALSE, T_FalseClass
+    c :TRUE, T_TrueClass
+    c :Fixnum, T_Class
+    c :NIL, T_Nil
+    c :RUBY_COPYRIGHT, T_String
+    c :RUBY_DESCRIPTION, T_String
+    c :RUBY_ENGINE, T_String
+    c :RUBY_ENGINE_VERSION, T_String
+    c :RUBY_PATCHLEVEL, T_Integer
+    c :RUBY_PLATFORM, T_String
+    c :RUBY_RELEASE_DATE, T_String
+    c :RUBY_REVISION, T_Integer
+    c :STDERR, T_IO
+    c :STDIN, T_IO
+    c :STDOUT, T_IO
+    c :TOPLEVEL_BINDING, T_Binding
   end
 
   C_Object.define do

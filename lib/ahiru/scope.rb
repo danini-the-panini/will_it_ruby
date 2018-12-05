@@ -1,11 +1,15 @@
 module Ahiru
   class Scope
-    def initialize(world, parent_scope = nil, ceiling_scope = nil, method_scope = nil)
+    attr_reader :t_self
+
+    def initialize(world, t_self, parent_scope = nil, ceiling_scope = nil, method_scope = nil)
       @world = world
+      @t_self = t_self
       @parent_scope = parent_scope
       @ceiling_scope = nil
       @method_scope = nil
       @local_variables = {}
+      @constants = {}
     end
 
     def local_variable_defined?(name)
@@ -172,6 +176,10 @@ module Ahiru
       local_variable(name)
     end
 
+    def process_self_expression
+      t_self
+    end
+
     def process_call_expression(receiver, name, args, kwargs)
       # TODO
     end
@@ -197,6 +205,10 @@ module Ahiru
     end
 
     def process_const_expression(name)
+      # TODO
+    end
+
+    def process_colon2_expression(left, right)
       # TODO
     end
 

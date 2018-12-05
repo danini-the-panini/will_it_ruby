@@ -3,19 +3,25 @@ module Ahiru
     attr_reader :name, :super_duck, :generics, :concretes
     attr_accessor :methods
 
-    def initialize(super_duck = nil, name: nil, generics: [], concretes: [], methods: {}, free: false)
+    def initialize(super_duck = nil, name: nil, enclosing_module: nil, generics: [], concretes: [], methods: {}, constants: {}, free: false)
       @name       = name
       @super_duck = super_duck
+      @module     = enclosing_module
       @methods    = methods
+      @constants  = constants
       @generics   = generics
       @concretes  = concretes
       @free       = free
     end
 
-    def self.define(name, super_duck = nil, generics = [], &block)
-      Duck.new(super_duck, name: name, generics: generics).tap do |duck|
+    def self.define(name, super_duck = nil, generics = [], enclosing_module = nil, &block)
+      Duck.new(super_duck, name: name, generics: generics, enclosing_module: enclosing_module).tap do |duck|
         duck.define(&block) if block_given?
       end
+    end
+    
+    def class_type
+      T_Class[self]
     end
 
     def define(&block)
@@ -91,6 +97,10 @@ module Ahiru
       methods[method.name] << method
     end
 
+    def add_constant(name, type)
+      @constants[name] = type
+    end
+
     class Definition
       def initialize(duck)
         @duck = duck
@@ -102,6 +112,10 @@ module Ahiru
 
       def m(name, sig = { [] => Nil })
         @duck.add_method_definition(method_from_sig(name, sig, (yield if block_given?)))
+      end
+
+      def c(name, type)
+        @duck.add_constant(name, type)
       end
 
       def a(type)
