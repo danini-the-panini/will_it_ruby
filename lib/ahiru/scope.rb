@@ -9,7 +9,6 @@ module Ahiru
       @ceiling_scope = nil
       @method_scope = nil
       @local_variables = {}
-      @constants = {}
     end
 
     def local_variable_defined?(name)
@@ -173,6 +172,7 @@ module Ahiru
     end
 
     def process_lvar_expression(name)
+      # TODO: check if local variable exists
       local_variable(name)
     end
 
@@ -192,6 +192,10 @@ module Ahiru
       # TODO
     end
 
+    def process_defs_expression(name, receiver, args, *expressions)
+      # TODO
+    end
+
     def process_class_expression(name, superclass, *expressions)
       # TODO
     end
@@ -201,15 +205,25 @@ module Ahiru
     end
 
     def process_cdecl_expression(name, value)
-      # TODO
+      # TODO: warn about dynamic constant assignment if not in class/module scope
+      #       except when in main scope?
+      t_self.add_constant(name, process_expression(value))
     end
 
     def process_const_expression(name)
-      # TODO
+      # TODO: check if constant exists
+      t_self.constant(name)
     end
 
     def process_colon2_expression(left, right)
-      # TODO
+      # TODO: check if constant exists
+      left_type = process_expression(left)
+      left_type.immediate_constant(right)
+    end
+
+    def process_colon3_expression(name)
+      # TODO: check if constant exists
+      T_Object.immediate_constant(name)
     end
 
     def process_for_expression(iterable, variable, block)

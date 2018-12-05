@@ -102,5 +102,26 @@ module Ahiru
     def test_self_expression
       assert_equal T_Object, scope.process_expression(s(:self))
     end
+
+    def test_cdecl_expression
+      scope.process_expression(s(:cdecl, :A, s(:lit, 1)))
+
+      assert T_Integer, scope.t_self.constant_defined?(:A)
+      assert_equal T_Integer, scope.t_self.constant(:A)
+    end
+
+    def test_const_expression
+      assert_equal T_IO, scope.process_expression(s(:const, :STDIN))
+    end
+
+    def test_colon2_expression
+      assert_equal C_URI_Generic, scope.process_expression(s(:colon2, s(:const, :URI), :Generic))
+    end
+
+    def test_colon3_expression
+      scope = Scope.new @world, T_String
+
+      assert_equal C_Float, scope.process_expression(s(:colon3, :Float))
+    end
   end
 end

@@ -83,16 +83,20 @@ module Ahiru
     end
 
     m :xmp, [T_String, o(T_Any)] => T_Any
+  end
+
+  C_Object.define do
+    m :yaml_tag, T_String => T_String
 
     c :ARGF, T_ARGF
     c :ARGV, T_Array[T_String]
-    c :Bignum, T_Class
+    c :Bignum, C_Integer
     c :CROSS_COMPILING, T_Any
     c :DATA, T_File
     c :ENV, T_Hash[T_String, T_String]
     c :FALSE, T_FalseClass
     c :TRUE, T_TrueClass
-    c :Fixnum, T_Class
+    c :Fixnum, C_Integer
     c :NIL, T_Nil
     c :RUBY_COPYRIGHT, T_String
     c :RUBY_DESCRIPTION, T_String
@@ -106,9 +110,9 @@ module Ahiru
     c :STDIN, T_IO
     c :STDOUT, T_IO
     c :TOPLEVEL_BINDING, T_Binding
-  end
 
-  C_Object.define do
-    m :yaml_tag, T_String => T_String
+    c :BasicObject, C_BasicObject
+    c :Object, C_Object
+    c :Class, C_Class
   end
 end

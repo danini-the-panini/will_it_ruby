@@ -21,7 +21,9 @@ module Ahiru
     end
     
     def class_type
-      T_Class[self]
+      @_class_type ||= T_Class[self].tap do |c|
+        c.super_duck = super_duck&.class_type || T_Class
+      end
     end
 
     def define(&block)
@@ -100,6 +102,33 @@ module Ahiru
     def add_constant(name, type)
       @constants[name] = type
     end
+
+    def constant_defined?(name)
+      @constants.key?(name) ||
+      class_type.constant_defined?(name) ||
+      @super_duck&.constant_defined?(name) ||
+      @enclosing_module&.constant_defined?(name)
+    end
+    
+    def constant(name)
+      @constants[name] ||
+      class_type.constant(name) ||
+      @super_duck&.constant(name) ||
+      @enclosing_module&.constant(name)
+    end
+
+    def immediate_constant_defined?(name)
+      @constants.key?(name) ||
+      @super_duck&.immediate_constant_defined?(name)
+    end
+
+    def immediate_constant(name)
+      @constants[name] ||
+      @super_duck&.immediate_constant(name)
+    end
+
+    protected
+    attr_writer :super_duck
 
     class Definition
       def initialize(duck)

@@ -42,15 +42,19 @@ module Ahiru
   def self.define_class(name, super_type = T_Object, generics = [], enclosing_module = nil)
     normal_name = name.gsub('::', '_')
     type = Duck.define name, super_type, generics, enclosing_module
+    c_type = type.class_type
     const_set :"T_#{normal_name}", type
-    const_set :"C_#{normal_name}", type.class_type
+    const_set :"C_#{normal_name}", c_type
+    (enclosing_module || T_Object).add_constant name.split('::').last.to_sym, c_type
   end
 
   def self.define_module(name, enclosing_module = nil)
     normal_name = name.gsub('::', '_')
     type = Duck.define name, nil, [], enclosing_module
+    m_type = T_Module[type]
     const_set :"T_#{normal_name}", type
-    const_set :"M_#{normal_name}", T_Module[type]
+    const_set :"M_#{normal_name}", m_type
+    (enclosing_module || T_Object).add_constant name.split('::').last.to_sym, m_type
   end
 
   define_module "Kernel"
