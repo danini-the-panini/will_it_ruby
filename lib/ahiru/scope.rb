@@ -1,7 +1,27 @@
 module Ahiru
   class Scope
-    def initialize(parent_scope = nil)
+    def initialize(world, parent_scope = nil, ceiling_scope = nil, method_scope = nil)
+      @world = world
       @parent_scope = parent_scope
+      @ceiling_scope = nil
+      @method_scope = nil
+      @local_variables = {}
+    end
+
+    def local_variable_defined?(name)
+      @local_variables.key?(name) || @parent_scope&.local_variable_defined?(name)
+    end
+
+    def local_variable(name)
+      @local_variables.key?(name) ? @local_variables[name] : @parent_scope&.local_variable(name)
+    end
+
+    def assign_local_variable(name, value)
+      if @parent_scope&.local_variable_defined?(name)
+        @parent_scope.assign_local_variable(name, value)
+      else
+        @local_variables[name] = value
+      end
     end
 
     def process_expression(sexp)
@@ -145,11 +165,11 @@ module Ahiru
     end
 
     def process_lasgn_expression(name, value)
-      # TODO
+      assign_local_variable(name, process_expression(value))
     end
 
     def process_lvar_expression(name)
-      # TODO
+      local_variable(name)
     end
 
     def process_call_expression(receiver, name, args, kwargs)

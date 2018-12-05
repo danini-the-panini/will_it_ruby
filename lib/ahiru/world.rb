@@ -2,7 +2,7 @@ module Ahiru
   class World
     def initialize
       @listeners = {}
-      @root_scope = Scope.new
+      @root_scope = Scope.new self
     end
 
     def process_expression(sexp)
