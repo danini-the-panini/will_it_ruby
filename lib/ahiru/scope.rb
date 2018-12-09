@@ -1,6 +1,6 @@
 module Ahiru
   class Scope
-    attr_reader :t_self
+    attr_reader :t_self, :world, :parent_scope, :ceiling_scope, :method_scope, :local_variables
 
     def initialize(world, t_self, parent_scope = nil, ceiling_scope = nil, method_scope = nil)
       @world = world
@@ -180,12 +180,50 @@ module Ahiru
       t_self
     end
 
-    def process_call_expression(receiver, name, args, kwargs)
-      # TODO
+    def process_call_expression(receiver, name, *args)
+      return local_variable(name) if receiver.nil? && local_variable_defined?(name)
+
+      pargs, kwargs, block = process_args(args)
+
+      if receiver.nil?
+        rt = process_method_call(t_self, name, pargs, kwargs, block)
+        return rt if rt
+        rt = process_method_call(T_Object, name, pargs, kwargs, block)
+        return rt if rt
+        # else ERROR
+        raise "Undefined method or local variable #{name}"
+      else
+        receiver_type = process_expression(receiver)
+        rt = process_method_call(receiver_type, name, pargs, kwargs, block)
+        return rt if rt
+        # else ERROR
+        raise "#{receiver}: #{receiver_type} has no method #{name} matching signature #{pargs}, #{kwargs}, #{block}"
+      end
     end
     
     def process_iter_expression(call, blargs, blexp)
-      # TODO
+      _, receiver, name, *args = call
+      block_expressions = case blexp[0]
+                          when :block then blexp[1..-1]
+                          else [blexp]
+                          end
+
+      pargs, kwargs, _ = process_args(args)
+
+      block = Block.from_callable(generate_callable(blargs, blarg_expressions))
+
+      if receiver.nil?
+         rt = process_method_call(t_self, name, pargs, kwargs, block)
+        return rt if rt
+        rt = process_method_call(T_Object, name, pargs, kwargs, block)
+        return rt if rt
+        # else ERROR
+      else
+        receiver_type = process_expression(receiver)
+        rt = process_method_call(receiver_type, name, pargs, kwargs, block)
+        return rt if rt
+        # else ERROR
+      end
     end
 
     def process_defn_expression(name, args, *expressions)
@@ -197,6 +235,11 @@ module Ahiru
     end
 
     def process_class_expression(name, superclass, *expressions)
+      superclass ||= C_Object
+      # TODO
+    end
+
+    def process_sclass_expression(receiver, *expressions)
       # TODO
     end
 
@@ -247,7 +290,12 @@ module Ahiru
     end
 
     def process_return_expression(value = nil)
-      # TODO
+      t = case value
+          when nil then T_Nil
+          else process_expression(value)
+          end
+      method_scope&.process_return_from_child_scope(t)
+      t
     end
 
     def process_break_expression(value = nil)
@@ -259,6 +307,48 @@ module Ahiru
     end
 
     def process_yield_expression(*args)
+      # TODO
+    end
+
+    def process_block_expression(*expressions)
+    end
+
+    def process_args(args)
+      return [[], {}, nil] if args.nil? || args.empty?
+      last_arg = args.last
+      case last_arg[0]
+      when :hash
+        *pargs, kwarg_hash = args
+        kwargs = process_kwarg_hash(kwarg_hash)
+        [pargs, kwargs, nil]
+      when :splat
+        # TODO
+      when :block_pass
+        # TODO
+      else
+        [process_pargs(args), {}, nil]
+      end
+    end
+
+    def process_pargs(pargs)
+      pargs.map { |a| process_expression(a) }
+    end
+
+    def process_kwarg_hash(kwarg_hash)
+      _, *entries = kwarg_hash
+      keys, values = [:even?, :odd?].map { |x| entries.values_at(*entries.each_index.select(&x)) }
+      keys = keys.map { |k| k[1] } # check that they're all symbols
+      values = values.map { |v| process_expression(v) }
+      keys.zip(values).to_h
+    end
+
+    def process_method_call(receiver, name, pargs = [], kwargs = {}, block = nil)
+      m = receiver.find_method_by_call(name, pargs, kwargs, block)
+      return false if m.nil?
+      m.resolve(pargs, kwargs, block)
+    end
+
+    def generate_callable(args_exp, expressions, new_scope)
       # TODO
     end
   end

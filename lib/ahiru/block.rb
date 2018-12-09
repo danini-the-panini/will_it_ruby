@@ -8,6 +8,10 @@ module Ahiru
       Block.new(return_type, pargs.map(&:dup), kwargs.transform_values(&:dup), block.dup, free_types)
     end
 
+    def to_block
+      self
+    end
+
     private
 
     def simple_block_to_s

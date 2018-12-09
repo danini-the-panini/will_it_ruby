@@ -432,13 +432,13 @@ end
 
 # a and b are methods
 
-a.match?(b)
+a <= b
 # true iff the set of possible ways to call a is a subset of the set of possible ways to call b
 # and a's name == b's name
 
 # A and B are types
 
-A.match?(B)
+A <= B
 # true iff, for every method a in A, there is a method b in B where a.match?(b)
 
 def foo(a:, b:, c:1, d:1)
@@ -596,6 +596,11 @@ end
 
 # resolve(Array<T>, Array<Integer>, [T], {})
 # => { T => Integer }
+
+# CHECKING CALLS
+
+def foo
+end
 
 ##################################
 

@@ -63,5 +63,17 @@ module Ahiru
 
       assert_equal Thing, a.resolve([Thing], {}, Block.new(e_type, [Callable::Argument.new(e_type)], {}, nil, [e_type]))
     end
+
+    def test_resolve_call_with_concrete_types
+      a = Callable.new(T_Integer, [Callable::Argument.new(T_Integer)])
+
+      assert_equal T_Integer, a.resolve([T_Integer])
+    end
+
+    def test_resolve_call_with_concrete_super_types
+      a = Callable.new(T_Integer, [Callable::Argument.new(T_Numeric)])
+
+      assert_equal T_Integer, a.resolve([T_Integer])
+    end
   end
 end

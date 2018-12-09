@@ -123,5 +123,12 @@ module Ahiru
 
       assert_equal C_Float, scope.process_expression(s(:colon3, :Float))
     end
+
+    def test_call_expression
+      scope = Scope.new @world, T_Object
+
+      assert_equal T_String, scope.process_expression(s(:call, s(:lit, 1), :to_s))
+      assert_equal T_Float, scope.process_expression(s(:call, s(:lit, 1), :+, s(:lit, 1.5)))
+    end
   end
 end

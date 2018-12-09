@@ -26,6 +26,9 @@ module Ahiru
   Y = Duck.new name: 'Y', free: true
   Z = Duck.new name: 'Z', free: true
 
+  Self      = Duck.new name: 'Self',      free: true
+  SelfClass = Duck.new name: 'SelfClass', free: true
+
   T_Any         = Duck.new name: "Any"
 
   T_BasicObject = Duck.define "BasicObject", T_Any

@@ -21,9 +21,23 @@ module Ahiru
     end
     
     def class_type
+      return if class_type? || module_type?
       @_class_type ||= T_Class[self].tap do |c|
         c.super_duck = super_duck&.class_type || T_Class
       end
+    end
+
+    def instance_type
+      return unless class_type?
+      self.concretes.first
+    end
+
+    def class_type?
+      self == T_Class || super_duck&.class_type?
+    end
+
+    def module_type?
+      (self == T_Module || super_duck&.module_type?) && !class_type?
     end
 
     def define(&block)
@@ -33,12 +47,33 @@ module Ahiru
     end
 
     def |(other)
-      # TODO: union duck type?
-      self
+      case other
+      when Duck
+        return self if other == self
+        return self if self <= other
+        return other if other <= self
+        Union.new([self, other])
+      when Union
+        other | self
+      end
     end
 
     def free?
       @free
+    end
+
+    def free_types
+      if free?
+        [self]
+      else
+        generics.zip(concretes).flat_map do |g,c|
+          if c.nil?
+            g
+          else
+            g.free_types
+          end
+        end.compact
+      end
     end
 
     def to_s
@@ -73,11 +108,18 @@ module Ahiru
 
     def <=(other)
       return false if other.nil?
+
+      if other.is_a?(Union)
+        return other.types.all? { |t| self <= t }
+      end
+
       return true if other == self 
       return true if self <= other.super_duck
       return false if super_duck?(other)
 
-      @methods.each do |name, signatures|
+      return false unless methods.keys.all? { |m| other.methods.key?(m) }
+
+      methods.each do |name, signatures|
         return false unless signatures.all? { |signature|
           other.methods.key?(name) && other.methods[name].any? { |other_signature|
             signature <= other_signature
@@ -104,6 +146,7 @@ module Ahiru
     end
 
     def constant_defined?(name)
+      # TODO: class/module vs instances
       @constants.key?(name) ||
       class_type.constant_defined?(name) ||
       @super_duck&.constant_defined?(name) ||
@@ -123,8 +166,30 @@ module Ahiru
     end
 
     def immediate_constant(name)
-      @constants[name] ||
+    @constants[name] ||
       @super_duck&.immediate_constant(name)
+    end
+
+    def find_method(om)
+      ms = @methods[om.name]
+      if ms.nil? || ms.empty?
+        return nil if super_duck.nil?
+        return super_duck.find_method(om)
+      end
+      ms.find { |m| om <= m }
+    end
+
+    def find_method_by_call(name, pargs = [], kwargs = {}, block = nil)
+      om = Method.new(self, name, T_Any, pargs.map { |a| Callable::Argument.new(a) }, kwargs.transform_values { |v| Callable::Argument.new(v) }, block)
+      find_method(om)
+    end
+
+    def normalize
+      self
+    end
+
+    def to_duck
+      self
     end
 
     protected

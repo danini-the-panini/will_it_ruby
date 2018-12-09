@@ -3,6 +3,12 @@ module Ahiru
     attr_accessor :return_type, :pargs, :kwargs, :block, :free_types
 
     def initialize(return_type = Duck.new(), pargs = [], kwargs = {}, block = nil, free_types = [])
+      raise ArgumentError.new("return_type must be a Duck, got #{return_type.class}") unless return_type.is_a?(Duck)
+      raise ArgumentError.new("pargs must be an Array, got #{pargs.class}") unless pargs.is_a?(Array)
+      raise ArgumentError.new("kwargs must be a Hash, got #{kwargs.class}") unless kwargs.is_a?(Hash)
+      raise ArgumentError.new("block must be a Block?, got #{block.class}") unless block.is_a?(Block) || block.nil?
+      raise ArgumentError.new("free_types must be an Array, got #{free_types.class}") unless free_types.is_a?(Array)
+
       @return_type = return_type
       @pargs = pargs
       @kwargs = kwargs
@@ -31,6 +37,10 @@ module Ahiru
       Callable.new(return_type, pargs.map(&:dup), kwargs.transform_values(&:dup), block.dup, free_types)
     end
 
+    def self.from_callable(c)
+      new(c.return_type, c.pargs, c.kwargs, c.block, c.free_types)
+    end
+
     def rewrite(free_type_values)
       new_free_types = free_types.reject { |t|
         ft = free_type_values[t]
@@ -49,6 +59,14 @@ module Ahiru
 
     def [](*gen_types)
       rewrite(free_types.zip(gen_types).to_h.compact)
+    end
+
+    def to_method(scope=Duck.new, name="UNKNOWN")
+      Method.from_callable(self, scope, name)
+    end
+
+    def to_block
+      Block.from_callable(self)
     end
 
     protected
@@ -120,9 +138,11 @@ module Ahiru
 
     class Argument
       attr_accessor :type
+      attr_reader :name
 
-      def initialize(type, optional: false, variadic: false)
+      def initialize(type, name: nil, optional: false, variadic: false)
         @type = type
+        @name = name
         @optional = optional
         @variadic = variadic
       end
@@ -143,7 +163,11 @@ module Ahiru
       end
 
       def to_s
-        "#{variadic? ? '*' : ''}#{type.to_s}#{optional? ? '?' : ''}"
+        "#{variadic? ? '*' : ''}#{type}#{optional? ? '?' : ''}"
+      end
+
+      def inspect
+        to_s
       end
 
       def dup
@@ -253,9 +277,13 @@ module Ahiru
           return free_type_values.merge({ generic_type => value_for_free_type(concrete_type) })
         end
 
+        if generic_type == concrete_type
+          return free_type_values
+        end
+
         generic_type.methods.values.flatten.each do |method|
           gm = rewrite_method_free_variables(method)
-          matching_method = concrete_type.methods[method.name].find { |cm|
+          matching_method = concrete_type.methods[method.name]&.find { |cm|
             gm <= cm
           }
 
