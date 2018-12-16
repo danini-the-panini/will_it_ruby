@@ -16,5 +16,6 @@ require "ahiru/method_scope"
 require "ahiru/module_scope"
 require "ahiru/class_scope"
 require "ahiru/method_definition_resolver"
+require "ahiru/class_definition_resolver"
 
 require "ahiru/definitions"

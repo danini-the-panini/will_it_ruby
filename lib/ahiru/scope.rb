@@ -6,8 +6,8 @@ module Ahiru
       @world = world
       @t_self = t_self
       @parent_scope = parent_scope
-      @ceiling_scope = nil
-      @method_scope = nil
+      @ceiling_scope = ceiling_scope
+      @method_scope = method_scope
       @local_variables = {}
     end
 
