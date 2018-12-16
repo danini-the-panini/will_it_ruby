@@ -191,13 +191,13 @@ module Ahiru
         rt = process_method_call(T_Object, name, pargs, kwargs, block)
         return rt if rt
         # else ERROR
-        raise "Undefined method or local variable #{name}"
+        raise NameError.new("undefined local variable or method #{name} for #{t_self}")
       else
         receiver_type = process_expression(receiver)
         rt = process_method_call(receiver_type, name, pargs, kwargs, block)
         return rt if rt
         # else ERROR
-        raise "#{receiver}: #{receiver_type} has no method #{name} matching signature #{pargs}, #{kwargs}, #{block}"
+        raise NameError.new("#{receiver}: #{receiver_type} has no method #{name} matching signature #{pargs}, #{kwargs}, #{block}")
       end
     end
     
