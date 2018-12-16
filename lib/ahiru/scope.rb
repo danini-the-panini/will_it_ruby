@@ -236,9 +236,9 @@ module Ahiru
       # TODO
     end
 
-    def process_class_expression(name, superclass, *expressions)
-      superclass ||= C_Object
-      # TODO
+    def process_class_expression(name, super_exp, *expressions)
+      ClassDefinitionResolver.new(name, super_exp, expressions, self)
+      T_Nil
     end
 
     def process_sclass_expression(receiver, *expressions)
