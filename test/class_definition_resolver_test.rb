@@ -14,6 +14,28 @@ module Ahiru
       type = klass.instance_type
 
       assert_equal :Foo, type.name
+      assert_equal T_Object, type.super_duck
+    end
+
+    def test_resolve_with_super_class
+      r = ClassDefinitionResolver.new(:Foo, s(:const, :BasicObject), [], @scope)
+
+      klass = r.resolve
+      type = klass.instance_type
+
+      assert_equal :Foo, type.name
+      assert_equal T_BasicObject, type.super_duck
+    end
+
+    def test_resolve_with_method
+      r = ClassDefinitionResolver.new(:Foo, nil, [s(:defn, :foo, s(:args), s(:str, "foo"))], @scope)
+
+      klass = r.resolve
+      type = klass.instance_type
+
+      method = type.find_method_by_call(:foo)
+      refute_nil method
+      assert_equal T_String, method.return_type
     end
   end
 end

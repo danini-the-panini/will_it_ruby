@@ -39,7 +39,7 @@ module Ahiru
   T_Class = Duck.define "Class", T_Module, [C]
   C_Class = T_Class[T_Class]
 
-  C_BasicObject = Duck.define "Class(BasicObject)", T_Class[T_BasicObject]
+  C_BasicObject = T_Class[T_BasicObject]
   C_Object      = T_Class[T_Object]
 
   def self.define_class(name, super_type = T_Object, generics = [], enclosing_module = nil)

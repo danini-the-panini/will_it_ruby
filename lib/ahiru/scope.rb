@@ -227,7 +227,9 @@ module Ahiru
     end
 
     def process_defn_expression(name, args, *expressions)
-      # TODO
+      define_method MethodDefinitionResolver.new(name, args, expressions, self).resolve
+
+      T_Symbol
     end
 
     def process_defs_expression(name, receiver, args, *expressions)
@@ -350,6 +352,10 @@ module Ahiru
 
     def generate_callable(args_exp, expressions, new_scope)
       # TODO
+    end
+
+    def define_method(method)
+      # TODO, perhaps defined in subclasses
     end
   end
 end
