@@ -6,7 +6,7 @@ module Ahiru
 
     def setup
       @world = World.new
-      @scope = Scope.new @world, T_Object
+      @scope = Scope.new @world, C_Object
     end
 
     def test_process_lit_expression
@@ -100,7 +100,7 @@ module Ahiru
     end
 
     def test_self_expression
-      assert_equal T_Object, scope.process_expression(s(:self))
+      assert_equal C_Object, scope.process_expression(s(:self))
     end
 
     def test_cdecl_expression

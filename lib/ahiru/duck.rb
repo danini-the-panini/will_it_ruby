@@ -4,14 +4,15 @@ module Ahiru
     attr_accessor :methods
 
     def initialize(super_duck = nil, name: nil, enclosing_module: nil, generics: [], concretes: [], methods: {}, constants: {}, free: false)
-      @name       = name
-      @super_duck = super_duck
-      @module     = enclosing_module
-      @methods    = methods
-      @constants  = constants
-      @generics   = generics
-      @concretes  = concretes
-      @free       = free
+      @name             = name
+      @super_duck       = super_duck
+      @module           = enclosing_module
+      @methods          = methods
+      @constants        = constants
+      @generics         = generics
+      @concretes        = concretes
+      @enclosing_module = enclosing_module
+      @free             = free
     end
 
     def self.define(name, super_duck = nil, generics = [], enclosing_module = nil, &block)
@@ -21,7 +22,7 @@ module Ahiru
     end
     
     def class_type
-      return if class_type? || module_type?
+      return T_Class if class_type? || module_type?
       @_class_type ||= T_Class[self].tap do |c|
         c.super_duck = super_duck&.class_type || T_Class
       end
@@ -38,6 +39,10 @@ module Ahiru
 
     def module_type?
       (self == T_Module || super_duck&.module_type?) && !class_type?
+    end
+
+    def instance_type?
+      !class_type? && !module_type?
     end
 
     def define(&block)
@@ -146,28 +151,27 @@ module Ahiru
     end
 
     def constant_defined?(name)
-      # TODO: class/module vs instances
-      @constants.key?(name) ||
-      class_type.constant_defined?(name) ||
-      @super_duck&.constant_defined?(name) ||
-      @enclosing_module&.constant_defined?(name)
+      if instance_type?
+        return class_type.constant_defined?(name) || @super_duck&.constant_defined?(name)
+      end
+      @constants.key?(name) || @enclosing_module&.constant_defined?(name)
     end
     
     def constant(name)
-      @constants[name] ||
-      class_type.constant(name) ||
-      @super_duck&.constant(name) ||
-      @enclosing_module&.constant(name)
+      if instance_type?
+        return class_type.constant(name) || @super_duck&.constant(name)
+      end
+      @constants[name] || @enclosing_module&.constant(name)
     end
 
     def immediate_constant_defined?(name)
-      @constants.key?(name) ||
-      @super_duck&.immediate_constant_defined?(name)
+      return false if instance_type?
+      @constants.key?(name) || @super_duck&.immediate_constant_defined?(name)
     end
 
     def immediate_constant(name)
-    @constants[name] ||
-      @super_duck&.immediate_constant(name)
+      return if instance_type?
+      @constants[name] || @super_duck&.immediate_constant(name)
     end
 
     def find_method(om)

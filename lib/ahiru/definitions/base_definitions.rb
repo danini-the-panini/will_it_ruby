@@ -38,6 +38,7 @@ module Ahiru
 
   T_Class = Duck.define "Class", T_Module, [C]
   C_Class = T_Class[T_Class]
+  C_Module = T_Class[T_Module]
 
   C_BasicObject = T_Class[T_BasicObject]
   C_Object      = T_Class[T_Object]
@@ -48,7 +49,7 @@ module Ahiru
     c_type = type.class_type
     const_set :"T_#{normal_name}", type
     const_set :"C_#{normal_name}", c_type
-    (enclosing_module || T_Object).add_constant name.split('::').last.to_sym, c_type
+    (enclosing_module || C_Object).add_constant name.split('::').last.to_sym, c_type
   end
 
   def self.define_module(name, enclosing_module = nil)
@@ -57,7 +58,7 @@ module Ahiru
     m_type = T_Module[type]
     const_set :"T_#{normal_name}", type
     const_set :"M_#{normal_name}", m_type
-    (enclosing_module || T_Object).add_constant name.split('::').last.to_sym, m_type
+    (enclosing_module || C_Object).add_constant name.split('::').last.to_sym, m_type
   end
 
   define_module "Kernel"

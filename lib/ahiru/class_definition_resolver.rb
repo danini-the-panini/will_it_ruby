@@ -16,6 +16,7 @@ module Ahiru
 
       @instance_type = Duck.new(@super_class.instance_type, name: @name, enclosing_module: @parent_scope.t_self)
       @class_type = T_Class[@instance_type]
+      @parent_scope.t_self.add_constant @name, @class_type
 
       @class_scope = ClassScope.new(@parent_scope.world, @class_type, @parent_scope)
 

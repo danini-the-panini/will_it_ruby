@@ -15,6 +15,7 @@ module Ahiru
 
       assert_equal :Foo, type.name
       assert_equal T_Object, type.super_duck
+      assert_equal klass, C_Object.constant(:Foo)
     end
 
     def test_resolve_with_super_class

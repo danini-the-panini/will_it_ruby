@@ -268,7 +268,7 @@ module Ahiru
 
     def process_colon3_expression(name)
       # TODO: check if constant exists
-      T_Object.immediate_constant(name)
+      C_Object.immediate_constant(name)
     end
 
     def process_for_expression(iterable, variable, block)
