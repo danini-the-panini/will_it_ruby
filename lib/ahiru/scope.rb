@@ -180,6 +180,16 @@ module Ahiru
       t_self
     end
 
+    def process_safe_call_expression(receiver, name, *args)
+      return T_Nil if receiver == T_Nil
+      result = process_call_expression(receiver, name, *args)
+      if receiver.could_be_nil?
+        result | T_Nil
+      else
+        result
+      end
+    end
+
     def process_call_expression(receiver, name, *args)
       return local_variable(name) if receiver.nil? && local_variable_defined?(name)
 

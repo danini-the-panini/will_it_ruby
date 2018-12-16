@@ -61,6 +61,10 @@ module Ahiru
       types == other.types
     end
 
+    def could_be_nil?
+      types.any?(&:could_be_nil?)
+    end
+
     protected
     
 

@@ -196,6 +196,12 @@ module Ahiru
       self
     end
 
+    def could_be_nil?
+      return true if self == T_Nil
+      return true if free?
+      false
+    end
+
     protected
     attr_writer :super_duck
 
