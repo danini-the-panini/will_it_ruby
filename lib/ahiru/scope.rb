@@ -207,7 +207,7 @@ module Ahiru
         rt = process_method_call(receiver_type, name, pargs, kwargs, block)
         return rt if rt
         # else ERROR
-        raise NameError.new("#{receiver}: #{receiver_type} has no method #{name} matching signature #{pargs}, #{kwargs}, #{block}")
+        raise NameError.new("#{receiver}: #{receiver_type} has no method `#{name}' matching signature #{pargs}, #{kwargs}, #{block}")
       end
     end
     
@@ -247,7 +247,7 @@ module Ahiru
     end
 
     def process_class_expression(name, super_exp, *expressions)
-      ClassDefinitionResolver.new(name, super_exp, expressions, self)
+      ClassDefinitionResolver.new(name, super_exp, expressions, self).resolve
       T_Nil
     end
 
@@ -262,7 +262,7 @@ module Ahiru
     def process_cdecl_expression(name, value)
       # TODO: warn about dynamic constant assignment if not in class/module scope
       #       except when in main scope?
-      t_self.add_constant(name, process_expression(value))
+      declare_constant(name, process_expression(value))
     end
 
     def process_const_expression(name)
@@ -366,6 +366,10 @@ module Ahiru
 
     def define_method(method)
       # TODO, perhaps defined in subclasses
+    end
+
+    def declare_constant(name, value)
+      t_self.add_constant(name, value)
     end
   end
 end

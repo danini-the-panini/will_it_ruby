@@ -63,6 +63,8 @@ module Ahiru
 
   define_module "Kernel"
 
+  T_Object.include_module(T_Kernel)
+
   define_class "Method"
   define_class "NilClass"
   T_Nil = T_NilClass

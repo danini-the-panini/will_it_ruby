@@ -3,15 +3,15 @@ module Ahiru
     attr_reader :name, :super_duck, :generics, :concretes
     attr_accessor :methods
 
-    def initialize(super_duck = nil, name: nil, enclosing_module: nil, generics: [], concretes: [], methods: {}, constants: {}, free: false)
+    def initialize(super_duck = nil, name: nil, enclosing_module: nil, generics: [], concretes: [], methods: {}, constants: {}, included_modules: [], free: false)
       @name             = name
       @super_duck       = super_duck
-      @module           = enclosing_module
       @methods          = methods
       @constants        = constants
       @generics         = generics
       @concretes        = concretes
       @enclosing_module = enclosing_module
+      @included_modules = included_modules
       @free             = free
     end
 
@@ -147,7 +147,11 @@ module Ahiru
     end
 
     def add_constant(name, type)
-      @constants[name] = type
+      if instance_type?
+        class_type.add_constant(name, type)
+      else
+        @constants[name] = type
+      end
     end
 
     def constant_defined?(name)
@@ -177,6 +181,10 @@ module Ahiru
     def find_method(om)
       ms = @methods[om.name]
       if ms.nil? || ms.empty?
+        @included_modules.each do |mod|
+          m = mod.find_method(om)
+          return m if m
+        end
         return nil if super_duck.nil?
         return super_duck.find_method(om)
       end
@@ -200,6 +208,11 @@ module Ahiru
       return true if self == T_Nil
       return true if free?
       false
+    end
+
+    def include_module(module_duck)
+      # TODO: check if all methods are compatible with this object?
+      @included_modules << module_duck
     end
 
     protected

@@ -2,11 +2,11 @@ module Ahiru
   class World
     def initialize
       @listeners = {}
-      @root_scope = Scope.new self, T_Object
+      @root_scope = MainScope.new self
     end
 
     def process_expression(sexp)
-      @root_scope.process_expression
+      @root_scope.process_expression(sexp)
     end
 
     def fire_event(event, data = {})

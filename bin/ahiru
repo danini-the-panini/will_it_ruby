@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "ahiru"
+
+tool = Ahiru::Tool.new
+
+ARGV.each do |path|
+  tool.process_file(path)
+end
