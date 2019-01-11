@@ -1,0 +1,33 @@
+Deps
+
+- dependencies
+- dependants
+
+Types of deps
+1. constants
+   - Fully qualified: 'A::B::C'
+   - partially qualified (in scope A::B, C) which could be fulfilled by (::C, A::C, or A::B::C)
+   - need to provide fulfillments as found
+   - sometimes there are multiple, always favour one closest to scope
+2. methods
+   - def foo
+       bar
+     end
+    - foo depends on either
+      - self.bar
+      - Object#bar
+    - def foo
+        Foo.bar
+      end
+    - foo depends on both
+      - Foo (constant)
+      - Foo.bar (method defined on constant)
+
+Handling Circular Deps:
+1. constants
+   - pretend it exists until found
+   - the other parties do the same
+   - eventually the last one in the chain will complete it +1
+2. methods
+   - recursiveness
+   - something has to have a base-case somewhere
