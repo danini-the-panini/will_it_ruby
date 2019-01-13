@@ -31,6 +31,7 @@ module Ahiru
         new_method.free_types.delete(new_method.return_type)
       end
       new_method.return_type = @instance_type
+      @instance_type.methods[:initialize] = [init_method]
       @class_type.methods[:new] = [new_method]
 
       @class_type
