@@ -1,5 +1,5 @@
 module Ahiru
-  class MainScope < Scope
+  class MainScope <  Scope
     def initialize(world)
       super(world, T_Object)
     end

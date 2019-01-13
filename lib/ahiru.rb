@@ -12,6 +12,7 @@ require "ahiru/block"
 
 require "ahiru/scope"
 require "ahiru/main_scope"
+require "ahiru/file_scope"
 require "ahiru/child_scope"
 require "ahiru/block_scope"
 require "ahiru/method_scope"
