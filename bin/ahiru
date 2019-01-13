@@ -8,3 +8,7 @@ tool = Ahiru::Tool.new
 ARGV.each do |path|
   tool.process_file(path)
 end
+
+tool.issues.each do |i|
+  puts i.to_s
+end

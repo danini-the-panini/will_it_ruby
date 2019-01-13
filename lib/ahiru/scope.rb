@@ -11,6 +11,10 @@ module Ahiru
       @local_variables = {}
     end
 
+    def register_issue(issue)
+      world.register_issue(issue)
+    end
+
     def local_variable_defined?(name)
       @local_variables.key?(name) || @parent_scope&.local_variable_defined?(name)
     end
@@ -28,11 +32,13 @@ module Ahiru
     end
 
     def process_expression(sexp)
+      @current_sexp = sexp
       name, *args = sexp
       send(:"process_#{name}_expression", *args)
     end
 
     private
+    attr_reader :current_sexp
 
     def process_lit_expression(value)
       case value
@@ -201,13 +207,15 @@ module Ahiru
         rt = process_method_call(T_Object, name, pargs, kwargs, block)
         return rt if rt
         # else ERROR
-        raise NameError.new("undefined local variable or method #{name} for #{t_self}")
+        register_issue Issue.new("undefined local variable or method #{name} for #{t_self}", current_sexp.line, world)
+        return T_Any
       else
         receiver_type = process_expression(receiver)
         rt = process_method_call(receiver_type, name, pargs, kwargs, block)
         return rt if rt
         # else ERROR
-        raise NameError.new("#{receiver}: #{receiver_type} has no method `#{name}' matching signature #{pargs}, #{kwargs}, #{block}")
+        register_issue Issue.new("#{receiver}: #{receiver_type} has no method `#{name}' matching signature #{pargs}, #{kwargs}, #{block}", current_sexp.line, world)
+        return T_Any
       end
     end
     
@@ -228,11 +236,15 @@ module Ahiru
         rt = process_method_call(T_Object, name, pargs, kwargs, block)
         return rt if rt
         # else ERROR
+        register_issue Issue.new("undefined local variable or method #{name} for #{t_self}", current_sexp.line, world)
+        return T_Any
       else
         receiver_type = process_expression(receiver)
         rt = process_method_call(receiver_type, name, pargs, kwargs, block)
         return rt if rt
         # else ERROR
+        register_issue Issue.new("#{receiver}: #{receiver_type} has no method `#{name}' matching signature #{pargs}, #{kwargs}, #{block}", current_sexp.line, world)
+        return T_Any
       end
     end
 
@@ -323,6 +335,9 @@ module Ahiru
     end
 
     def process_block_expression(*expressions)
+      expressions.each do |e|
+        process_expression(e)
+      end
     end
 
     def process_args(args)

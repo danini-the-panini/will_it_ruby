@@ -2,7 +2,9 @@ require "ruby_parser"
 
 require "ahiru/version"
 
+require "ahiru/issue"
 require "ahiru/world"
+require "ahiru/source_file"
 require "ahiru/tool"
 require "ahiru/duck"
 require "ahiru/union"
