@@ -30,6 +30,7 @@ module Ahiru
   SelfClass = Duck.new name: 'SelfClass', free: true
 
   T_Any         = Duck.new name: "Any"
+  T_Broken      = BrokenDuck.instance
 
   T_BasicObject = Duck.define "BasicObject", T_Any
   T_Object      = Duck.define "Object",      T_BasicObject
