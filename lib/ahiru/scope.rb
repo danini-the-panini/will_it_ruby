@@ -11,6 +11,10 @@ module Ahiru
       @local_variables = {}
     end
 
+    def register_issue(issue)
+      world.register_issue(issue)
+    end
+
     def local_variable_defined?(name)
       @local_variables.key?(name) || @parent_scope&.local_variable_defined?(name)
     end
@@ -28,11 +32,13 @@ module Ahiru
     end
 
     def process_expression(sexp)
+      @current_sexp = sexp
       name, *args = sexp
       send(:"process_#{name}_expression", *args)
     end
 
     private
+    attr_reader :current_sexp
 
     def process_lit_expression(value)
       case value
@@ -201,17 +207,19 @@ module Ahiru
         rt = process_method_call(T_Object, name, pargs, kwargs, block)
         return rt if rt
         # else ERROR
-        raise NameError.new("undefined local variable or method #{name} for #{t_self}")
+        register_issue Issue.new("undefined local variable or method #{name} for #{t_self}", current_sexp.line, world)
+        return T_Broken
       else
         receiver_type = process_expression(receiver)
         rt = process_method_call(receiver_type, name, pargs, kwargs, block)
         return rt if rt
         # else ERROR
-        raise NameError.new("#{receiver}: #{receiver_type} has no method `#{name}' matching signature #{pargs}, #{kwargs}, #{block}")
+        register_issue Issue.new("#{receiver}: #{receiver_type.to_s} has no method `#{name}' matching signature #{pargs}, #{kwargs}, #{block}", current_sexp.line, world)
+        return T_Broken
       end
     end
     
-    def process_iter_expression(call, blargs, blexp)
+    def process_iter_expression(call, blargs, blexp = s(:nil))
       _, receiver, name, *args = call
       block_expressions = case blexp[0]
                           when :block then blexp[1..-1]
@@ -220,7 +228,7 @@ module Ahiru
 
       pargs, kwargs, _ = process_args(args)
 
-      block = Block.from_callable(generate_callable(blargs, blarg_expressions))
+      block = BlockDefinitionResolver.new(blargs, block_expressions, self).resolve
 
       if receiver.nil?
          rt = process_method_call(t_self, name, pargs, kwargs, block)
@@ -228,11 +236,15 @@ module Ahiru
         rt = process_method_call(T_Object, name, pargs, kwargs, block)
         return rt if rt
         # else ERROR
+        register_issue Issue.new("undefined local variable or method #{name} for #{t_self}", current_sexp.line, world)
+        return T_Broken
       else
         receiver_type = process_expression(receiver)
         rt = process_method_call(receiver_type, name, pargs, kwargs, block)
         return rt if rt
         # else ERROR
+        register_issue Issue.new("#{receiver}: #{receiver_type} has no method `#{name}' matching signature #{pargs}, #{kwargs}, #{block}", current_sexp.line, world)
+        return T_Broken
       end
     end
 
@@ -243,6 +255,7 @@ module Ahiru
     end
 
     def process_defs_expression(name, receiver, args, *expressions)
+      puts "STUB: process_defs_expression"
       # TODO
     end
 
@@ -252,16 +265,18 @@ module Ahiru
     end
 
     def process_sclass_expression(receiver, *expressions)
+      puts "STUB: process_sclass_expression"
       # TODO
     end
 
     def process_module_expression(name, *expressions)
+      puts "STUB: process_module_expression"
       # TODO
     end
 
     def process_cdecl_expression(name, value)
       # TODO: warn about dynamic constant assignment if not in class/module scope
-      #       except when in main scope?
+      #       except when in main/file scope?
       declare_constant(name, process_expression(value))
     end
 
@@ -282,22 +297,27 @@ module Ahiru
     end
 
     def process_for_expression(iterable, variable, block)
+      puts "STUB: process_for_expression"
       # TODO
     end
 
     def process_while_expression(condition, block)
+      puts "STUB: process_while_expression"
       # TODO
     end
 
     def process_until_expression(condition, block)
+      puts "STUB: process_until_expression"
       # TODO
     end
 
     def process_if_expression(condition, true_block, false_block)
+      puts "STUB: process_if_expression"
       # TODO
     end
 
     def process_case_expression(input, *expressions)
+      puts "STUB: process_case_expression"
       # TODO
     end
 
@@ -311,18 +331,26 @@ module Ahiru
     end
 
     def process_break_expression(value = nil)
+      puts "STUB: process_break_expression"
       # TODO
     end
 
     def process_next_expression(value = nil)
+      puts "STUB: process_next_expression"
       # TODO
     end
 
     def process_yield_expression(*args)
+      puts "STUB: process_yield_expression"
       # TODO
     end
 
     def process_block_expression(*expressions)
+      r = T_Nil
+      expressions.each do |e|
+        r = process_expression(e)
+      end
+      r
     end
 
     def process_args(args)
@@ -358,10 +386,6 @@ module Ahiru
       m = receiver.find_method_by_call(name, pargs, kwargs, block)
       return false if m.nil?
       m.resolve(pargs, kwargs, block)
-    end
-
-    def generate_callable(args_exp, expressions, new_scope)
-      # TODO
     end
 
     def define_method(method)

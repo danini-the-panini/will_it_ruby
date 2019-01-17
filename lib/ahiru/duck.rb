@@ -60,6 +60,8 @@ module Ahiru
         Union.new([self, other])
       when Union
         other | self
+      when BrokenDuck
+        other
       end
     end
 
@@ -83,7 +85,7 @@ module Ahiru
 
     def to_s
       return name unless name.nil?
-      "Duck(#{methods.values.flatten.map(&:to_s).join(', ')})"
+      "🦆(#{methods.values.flatten.map(&:to_s).join(', ')})"
     end
 
     def inspect
