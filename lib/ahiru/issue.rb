@@ -1,13 +1,13 @@
 module Ahiru
   class Issue
-    def initialize(message, line, world)
-      @message = message
+    def initialize(file, line, message)
+      @file = file
       @line = line
-      @world = world
+      @message = message
     end
 
     def to_s
-      "#{@world.to_s}:#{@line} #{@message}"
+      "#{@file}:#{@line} #{@message}"
     end
   end
 end

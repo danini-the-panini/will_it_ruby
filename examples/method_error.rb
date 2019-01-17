@@ -2,4 +2,4 @@ def foo
   'asdf'
 end
 
-foo
+bar

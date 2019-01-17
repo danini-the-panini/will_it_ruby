@@ -3,12 +3,12 @@
 require "bundler/setup"
 require "ahiru"
 
-tool = Ahiru::Tool.new
+processor = Ahiru::Processor.new
 
 ARGV.each do |path|
-  tool.process_file(path)
+  processor.process_file(path)
 end
 
-tool.issues.each do |i|
+processor.issues.each do |i|
   puts i.to_s
 end

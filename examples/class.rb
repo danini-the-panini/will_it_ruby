@@ -4,4 +4,4 @@ class Foo
   end
 end
 
-puts Foo.new.foo.upcase
+Foo.new.foo

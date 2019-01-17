@@ -1,20 +1,17 @@
 module Ahiru
-  class SourceFile < World
-    def initialize(path, source, sexp, world)
-      super()
+  class SourceFile
+    attr_reader :path, :source, :sexp, :processor
+
+    def initialize(path, source, sexp, processor)
       @path = path
       @source = source
       @sexp = sexp
-      @world = world
-      @scope = FileScope.new(self)
+      @processor = processor
+      @scope = FileScope.new(processor, sexp, self)
     end
 
     def process
-      process_expression(@sexp)
-    end
-
-    def to_s
-      @path
+      @scope.process
     end
   end
 end
