@@ -5,10 +5,12 @@ module Ahiru
     def test_happy_case
       processor = Processor.new
       processor.process_string <<-RUBY
-        def foo
+        class Foo
+          def foo
+          end
         end
 
-        foo
+        Foo.new.foo
       RUBY
 
       assert_predicate processor.issues, :empty?
@@ -17,13 +19,16 @@ module Ahiru
     def test_sad_case
       processor = Processor.new
       processor.process_string <<-RUBY
-        def bar
+        class Foo
+          def foo
+          end
         end
 
-        foo
+        Foo.new.bar
       RUBY
 
       refute_predicate processor.issues, :empty?
+      assert_equal "(unknown):6 Undefined method `bar' for #<Foo>", processor.issues.first.to_s
     end
   end
 end

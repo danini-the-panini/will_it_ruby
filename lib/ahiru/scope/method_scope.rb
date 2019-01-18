@@ -1,7 +1,7 @@
 module Ahiru
   class MethodScope < Scope
-    def initialize(processor, sexp)
-      super(processor, sexp, nil)
+    def initialize(processor, expressions, parent)
+      super(processor, expressions, parent)
     end
   end
 end
