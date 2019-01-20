@@ -1,4 +1,5 @@
 require "ahiru/definitions/arguments/argument"
+require "ahiru/definitions/arguments/call"
 
 module Ahiru
   class Arguments
@@ -29,7 +30,7 @@ module Ahiru
     def check_call(in_args)
       pargs = in_args
       in_kwargs = s(:hash)
-      if in_args.last&.first == :hash && !@kwargs.empty?
+      if in_args.last&.first == :hash && takes_kwargs?
         *pargs, in_kwargs = in_args
       end
       _, *kwarg_entries = in_kwargs
@@ -43,27 +44,48 @@ module Ahiru
         errors << "given #{nargs.count}, expected #{count_string}"
       end
 
-      kwsplats, kwarg_pairs = kwarg_entries.partition { |k| k.first == :kwsplat }
-      kwarg_hash = kwarg_pairs.each_slice(2).to_h.transform_keys { |k| k[1] }
+      if takes_kwargs?
+        kwsplats, kwarg_pairs = kwarg_entries.partition { |k| k.first == :kwsplat }
+        # TODO: check that all the keys are symbols
+        kwarg_hash = kwarg_pairs.each_slice(2).to_h.transform_keys { |k| k[1] }
 
-      if kwsplats.empty?
-        missing_keys = required_keywords - kwarg_hash.keys
-        if !missing_keys.empty?
-          errors << "missing required keywords: #{missing_keys.join(', ')}"
+        if kwsplats.empty?
+          missing_keys = required_keywords - kwarg_hash.keys
+          if !missing_keys.empty?
+            errors << "missing required keywords: #{missing_keys.join(', ')}"
+          end
         end
-      end
 
-      extra_keys = kwarg_hash.keys - allowed_keywords
-      if !extra_keys.empty?
-        errors << "unknown keywords: #{extra_keys.join(', ')}"
+        extra_keys = kwarg_hash.keys - allowed_keywords
+        if !extra_keys.empty?
+          errors << "unknown keywords: #{extra_keys.join(', ')}"
+        end
       end
 
       return nil if errors.empty?
       "Wrong number of arguments (#{errors.join "; "})"
     end
 
-    def evaluate_call(args, scope)
-      # TODO
+    def evaluate_call(call, method_scope)
+      result = {}
+
+      # TODO: handle splats, both incoming and outgoing
+
+      @pargs.zip(call.pargs).each do |(l,r)|
+        result[l.name] = r || method_scope.process_expression(l.default)
+      end
+
+      @kwargs.each do |k,v|
+        result[k] = call.kwargs[k] || method_scope.process_expression(v.default)
+      end
+
+      result
+    end
+
+    def assign_arguments_to_scope(call, method_scope)
+      evaluate_call(call, method_scope).each do |k, v|
+        method_scope.local_variable_set(k, v)
+      end
     end
 
     def min_count
@@ -92,6 +114,10 @@ module Ahiru
       else
         "#{min_count}+"
       end
+    end
+
+    def takes_kwargs?
+      !@kwargs.empty? || varikwardic?
     end
 
     def variadic?

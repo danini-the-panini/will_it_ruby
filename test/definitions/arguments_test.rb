@@ -121,5 +121,50 @@ module Ahiru
       assert_predicate args, :variadic?
       assert_predicate args, :varikwardic?
     end
+
+    def test_evaluate_call
+      scope = BogusScope.new
+
+      args = Arguments.new(s(:args, :a, s(:lasgn, :b, s(:lit, 1))))
+      call1 = Call.new([s(:lit, 42)], scope)
+      call2 = Call.new([s(:lit, 77), s(:lit, 2)], scope)
+
+      call1.process
+      call2.process
+
+      assert_equal({ a: 42, b: 1 }, args.evaluate_call(call1, scope))
+      assert_equal({ a: 77, b: 2 }, args.evaluate_call(call2, scope))
+    end
+
+    def test_evaluate_call_with_kwargs
+      scope = BogusScope.new
+
+      args = Arguments.new(s(:args, :a, s(:lasgn, :b, s(:lit, 1)), s(:kwarg, :c), s(:kwarg, :d, s(:lit, 3))))
+      call1 = Call.new([s(:lit, 42), s(:hash, s(:lit, :c), s(:lit, 7))], scope)
+      call2 = Call.new([s(:lit, 77), s(:lit, 2), s(:hash, s(:lit, :c), s(:lit, 8), s(:lit, :d), s(:lit, 4))], scope)
+
+      call1.process
+      call2.process
+
+      assert_equal({ a: 42, b: 1, c: 7, d: 3 }, args.evaluate_call(call1, scope))
+      assert_equal({ a: 77, b: 2, c: 8, d: 4 }, args.evaluate_call(call2, scope))
+    end
+
+    def test_evaluate_call_with_splat
+      # TODO: needs array logic
+    end
+
+    def test_evaluate_call_with_ksplat
+      # TODO: needs hash logic
+    end
+
+    class BogusScope < Scope
+      def initialize
+      end
+
+      def process_lit_expression(value)
+        value
+      end
+    end
   end
 end

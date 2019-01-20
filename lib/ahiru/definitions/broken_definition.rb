@@ -23,7 +23,7 @@ module Ahiru
         super(name, s(:args), [], nil, nil)
       end
 
-      def call_with_args(*)
+      def make_call(*)
         BrokenDefinition.new
       end
 

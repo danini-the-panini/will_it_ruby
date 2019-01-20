@@ -5,8 +5,9 @@ module Ahiru
       @block = block
     end
 
-    def call_with_args(self_type, args)
-      self_type.instance_exec(*args, &@block)
+    def make_call(self_type, call)
+      # TODO: handle splats/kwsplats
+      self_type.instance_exec(*call.pargs, **call.kwargs, &@block)
     end
   end
 end

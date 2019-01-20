@@ -8,8 +8,9 @@ module Ahiru
       @parent_scope = parent_scope
     end
 
-    def call_with_args(self_type, args)
+    def make_call(self_type, call)
       scope = MethodScope.new(@processor, @expressions, @parent_scope, self_type)
+      @args.assign_arguments_to_scope(call, scope)
       scope.process
     end
 

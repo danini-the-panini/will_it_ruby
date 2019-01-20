@@ -8,6 +8,7 @@ module Ahiru
       @parent = parent
       @self_type = nil
       @last_evaluated_result = nil
+      @local_variables = {}
     end
 
     def process
@@ -25,6 +26,18 @@ module Ahiru
 
     def register_issue(line, message)
       @parent.register_issue(line, message)
+    end
+
+    def local_variable_defined?(name)
+      @local_variables.key?(name)
+    end
+
+    def local_variable_set(name, value)
+      @local_variables[name] = value
+    end
+
+    def local_variable_get(name)
+      @local_variables[name]
     end
 
     protected
@@ -108,8 +121,12 @@ module Ahiru
     end
 
     def process_lvar_expression(name)
-      puts "STUB: #{self.class.name}#process_lvar_expression"
-      BrokenDefinition.new
+      if local_variable_defined?(name)
+        local_variable_get(name)
+      else
+        register_issue @current_sexp.line, "Undefined local variable `#{name}' for #{process_self_expression}"
+        BrokenDefinition.new
+      end
     end
 
     def process_self_expression
@@ -122,13 +139,10 @@ module Ahiru
     end
 
     def process_call_expression(receiver, name, *args)
-      if receiver.nil?
-        # TODO: handle nil receivers
-        BrokenDefinition.new
+      if receiver.nil? && local_variable_defined?(name)
+        local_variable_get(name)
       else
-        receiver_type = process_expression(receiver)
-        binding.irb if receiver_type.nil?
-        call_method_on_receiver(receiver_type, name, args)
+        call_method_on_receiver(receiver, name, args)
       end
     end
 
@@ -234,8 +248,10 @@ module Ahiru
 
     private
 
-    def call_method_on_receiver(receiver_type, name, args)
-      # TODO: handle args
+    def call_method_on_receiver(receiver, name, args)
+      call = Call.new(args, self)
+      call.process
+      receiver_type = receiver.nil? ? process_self_expression : process_expression(receiver)
       method = receiver_type.get_method(name)
       if method
         error = method.check_call_with_args(args)
@@ -244,10 +260,11 @@ module Ahiru
           register_issue @current_sexp.line, error
           BrokenDefinition.new
         else
-          method.call_with_args(receiver_type, args)
+          method.make_call(receiver_type, call)
         end
       else
-        register_issue @current_sexp.line, "Undefined method `#{name}' for #{receiver_type}"
+        thing = receiver.nil? ? "local variable or method" : "method"
+        register_issue @current_sexp.line, "Undefined #{thing} `#{name}' for #{receiver_type}"
         BrokenDefinition.new
       end
     end

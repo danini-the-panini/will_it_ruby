@@ -5,8 +5,8 @@ module Ahiru
         @possiblities = possiblities.uniq
       end
 
-      def call_with_args(self_type, args)
-        return_values = @possiblities.map { |p| p.call_with_args(self_type, args) }
+      def make_call(self_type, call)
+        return_values = @possiblities.map { |p| p.make_call(self_type, call) }
         Maybe::Object.new(*return_values)
       end
 

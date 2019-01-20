@@ -5,9 +5,9 @@ module Ahiru
       @class_definition = class_definition
     end
 
-    def call_with_args(self_type, args)
+    def make_call(self_type, call)
       @class_definition.create_instance.tap do |new_instance|
-        initialize_method.call_with_args(new_instance, args)
+        initialize_method.make_call(new_instance, call)
       end
     end
 
