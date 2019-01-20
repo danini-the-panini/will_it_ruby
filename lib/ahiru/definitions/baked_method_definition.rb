@@ -1,7 +1,7 @@
 module Ahiru
   class BakedMethodDefinition < MethodDefinition
-    def initialize(name, self_type, args, proc)
-      super(name, self_type, args, [], nil, nil)
+    def initialize(name, args, proc)
+      super(name, args, [], nil, nil)
       @name = name
       @proc = proc
     end

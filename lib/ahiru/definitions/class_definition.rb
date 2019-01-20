@@ -9,7 +9,7 @@ module Ahiru
       @super_type = super_type
       @instance_methods = {}
       @class_methods = {
-        new: BakedMethodDefinition.new(:new, self, s(:args), -> () { ClassInstance.new(self) })
+        new: BakedMethodDefinition.new(:new, s(:args), -> () { ClassInstance.new(self) })
       }
     end
 

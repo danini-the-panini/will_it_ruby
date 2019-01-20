@@ -1,11 +1,12 @@
 module Ahiru
   class Scope
-    attr_reader :processor
+    attr_reader :processor, :self_type
 
     def initialize(processor, expressions, parent=processor.main_scope)
       @processor = processor
       @expressions = expressions
       @parent = parent
+      @self_type = nil
     end
 
     def process
@@ -97,7 +98,7 @@ module Ahiru
     end
 
     def process_self_expression
-      puts "STUB: #{self.class.name}#process_self_expression"
+      @self_type
     end
 
     def process_safe_call_expression(receiver, name, *args)
@@ -208,7 +209,7 @@ module Ahiru
         if error
           register_issue @current_sexp.line, error
         else
-          method.call_with_args(arg_types)
+          method.call_with_args(receiver_type, arg_types)
         end
       else
         register_issue @current_sexp.line, "Undefined method `#{name}' for #{receiver_type}"
