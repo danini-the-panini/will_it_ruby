@@ -1,7 +1,7 @@
 require "test_helper"
 
 module Ahiru
-  class Processor::SubclassTest < Minitest::Test
+  class Processor::ReturnValueTest < Minitest::Test
     def test_happy_case
       processor = Processor.new
       processor.process_string <<-RUBY
@@ -10,14 +10,13 @@ module Ahiru
           end
         end
 
-        class Bar < Foo
-          def bar
-            self.foo
+        class Bar
+          def make_foo
+            Foo.new
           end
         end
 
-        Bar.new.foo
-        Bar.new.bar
+        Bar.new.make_foo.foo
       RUBY
 
       assert_predicate processor.issues, :empty?
@@ -31,17 +30,17 @@ module Ahiru
           end
         end
 
-        class Bar < Foo
-          def bar
-            self.baz
+        class Bar
+          def make_foo
+            Foo.new
           end
         end
 
-        Bar.new.bar
+        Bar.new.make_foo.bar
       RUBY
 
       assert_equal 1, processor.issues.count
-      assert_equal "(unknown):8 Undefined method `baz' for #<Bar>", processor.issues.first.to_s
+      assert_equal "(unknown):12 Undefined method `bar' for #<Foo>", processor.issues.first.to_s
     end
   end
 end

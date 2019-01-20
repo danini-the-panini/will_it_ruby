@@ -19,9 +19,5 @@ module Ahiru
         # TODO: class names like A::B::C
       end
     end
-
-    def process_const_expression(name)
-      @parent.process_const_expression(name)
-    end
   end
 end

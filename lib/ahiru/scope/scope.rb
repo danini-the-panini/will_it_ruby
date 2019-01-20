@@ -7,12 +7,13 @@ module Ahiru
       @expressions = expressions
       @parent = parent
       @self_type = nil
+      @last_evaluated_result = nil
     end
 
     def process
       @expressions.each do |sexp|
         @current_sexp = sexp
-        process_expression(sexp)
+        @last_evaluated_result = process_expression(sexp)
         @current_sexp = nil
       end
     end
@@ -110,6 +111,7 @@ module Ahiru
         # TODO: handle nil receivers
       else
         receiver_type = process_expression(receiver)
+        binding.irb if receiver_type.nil?
         call_method_on_receiver(receiver_type, name, args)
       end
     end
@@ -143,7 +145,8 @@ module Ahiru
     end
 
     def process_const_expression(name)
-      puts "STUB: #{self.class.name}#process_const_expression"
+      # TODO: has to be more complicated than this 
+      @parent.process_const_expression(name)
     end
 
     def process_colon2_expression(left, right)
