@@ -1,6 +1,6 @@
 module Ahiru
   class StandardLibrary
-    def install_basic_object
+    def initialize_basic_object
       @basic_object_class.tap do |d|
         d.add_instance_method :initialize, BuiltInMethodDefinition.new(:!, s(:args)) {}
 

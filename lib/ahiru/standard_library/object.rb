@@ -1,6 +1,6 @@
 module Ahiru
   class StandardLibrary
-    def install_object
+    def initialize_object
       @object_class.tap do |d|
         d.add_instance_method :===, BuiltInMethodDefinition.new(:===, s(:args, :other)) {
           v_bool # TODO: need to do crazy stuff here for type checking

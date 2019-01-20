@@ -24,5 +24,3 @@ require "ahiru/maybe/object"
 require "ahiru/maybe/method"
 
 require "ahiru/standard_library"
-require "ahiru/standard_library/basic_object"
-require "ahiru/standard_library/object"

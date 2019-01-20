@@ -1,3 +1,6 @@
+require "ahiru/standard_library/basic_object"
+require "ahiru/standard_library/object"
+
 module Ahiru
   class StandardLibrary
     attr_reader :object_class, :basic_object_class, :v_nil, :v_true, :v_false, :v_bool
@@ -30,8 +33,8 @@ module Ahiru
       @v_false = false_class.create_instance
       @v_bool  = Maybe::Object.new(v_true, v_false)
 
-      install_basic_object
-      install_object
+      initialize_basic_object
+      initialize_object
     end
 
     def defclass(name, super_class=object_class)
