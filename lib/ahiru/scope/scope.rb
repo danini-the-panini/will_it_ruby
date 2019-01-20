@@ -32,70 +32,87 @@ module Ahiru
 
     def process_lit_expression(value)
       puts "STUB: #{self.class.name}#process_lit_expression"
+      BrokenDefinition.new
     end
 
     def process_dot2_expression(begin_exp, end_exp)
       puts "STUB: #{self.class.name}#process_dot2_expression"
+      BrokenDefinition.new
     end
 
     def process_dot3_expression(*args)
       puts "STUB: #{self.class.name}#process_dot3_expression"
+      BrokenDefinition.new
     end
 
     def process_true_expression
       puts "STUB: #{self.class.name}#process_true_expression"
+      BrokenDefinition.new
     end
 
     def process_false_expression
       puts "STUB: #{self.class.name}#process_false_expression"
+      BrokenDefinition.new
     end
 
     def process_nil_expression
       puts "STUB: #{self.class.name}#process_nil_expression"
+      BrokenDefinition.new
     end
 
     def process_str_expression(_)
       puts "STUB: #{self.class.name}#process_str_expression"
+      BrokenDefinition.new
     end
 
     def process_dstr_expression(_, *values)
       puts "STUB: #{self.class.name}#process_dstr_expression"
+      BrokenDefinition.new
     end
 
     def process_evstr_expression(expression)
       puts "STUB: #{self.class.name}#process_evstr_expression"
+      BrokenDefinition.new
     end
 
     def process_dsym_expression(_, *values)
       puts "STUB: #{self.class.name}#process_dsym_expression"
+      BrokenDefinition.new
     end
 
     def process_dregx_expression(_, *values)
       puts "STUB: #{self.class.name}#process_dregx_expression"
+      BrokenDefinition.new
     end
 
     def process_xstr_expression(value)
       puts "STUB: #{self.class.name}#process_xstr_expression"
+      BrokenDefinition.new
     end
 
     def process_dxstr_expression(_, *values)
       puts "STUB: #{self.class.name}#process_dxstr_expression"
+      BrokenDefinition.new
     end
 
     def process_array_expression(*values)
       puts "STUB: #{self.class.name}#process_array_expression"
+      BrokenDefinition.new
     end
 
     def process_hash_expression(*entries)
       puts "STUB: #{self.class.name}#process_hash_expression"
+      BrokenDefinition.new
     end
 
     def process_lasgn_expression(name, value)
       puts "STUB: #{self.class.name}#process_lasgn_expression"
+      BrokenDefinition.new
     end
 
     def process_lvar_expression(name)
       puts "STUB: #{self.class.name}#process_lvar_expression"
+      BrokenDefinition.new
     end
 
     def process_self_expression
@@ -104,11 +121,13 @@ module Ahiru
 
     def process_safe_call_expression(receiver, name, *args)
       puts "STUB: #{self.class.name}#process_safe_call_expression"
+      BrokenDefinition.new
     end
 
     def process_call_expression(receiver, name, *args)
       if receiver.nil?
         # TODO: handle nil receivers
+        BrokenDefinition.new
       else
         receiver_type = process_expression(receiver)
         binding.irb if receiver_type.nil?
@@ -118,30 +137,37 @@ module Ahiru
 
     def process_iter_expression(call, blargs, blexp = s(:nil))
       puts "STUB: #{self.class.name}#process_iter_expression"
+      BrokenDefinition.new
     end
 
     def process_defn_expression(name, args, *expressions)
       puts "STUB: #{self.class.name}#process_defn_expression"
+      BrokenDefinition.new
     end
 
     def process_defs_expression(name, receiver, args, *expressions)
       puts "STUB: #{self.class.name}#process_defs_expression"
+      BrokenDefinition.new
     end
 
     def process_class_expression(name, super_exp, *expressions)
       puts "STUB: #{self.class.name}#process_class_expression"
+      BrokenDefinition.new
     end
 
     def process_sclass_expression(receiver, *expressions)
       puts "STUB: #{self.class.name}#process_sclass_expression"
+      BrokenDefinition.new
     end
 
     def process_module_expression(name, *expressions)
       puts "STUB: #{self.class.name}#process_module_expression"
+      BrokenDefinition.new
     end
 
     def process_cdecl_expression(name, value)
       puts "STUB: #{self.class.name}#process_cdecl_expression"
+      BrokenDefinition.new
     end
 
     def process_const_expression(name)
@@ -151,50 +177,62 @@ module Ahiru
 
     def process_colon2_expression(left, right)
       puts "STUB: #{self.class.name}#process_colon2_expression"
+      BrokenDefinition.new
     end
 
     def process_colon3_expression(name)
       puts "STUB: #{self.class.name}#process_colon3_expression"
+      BrokenDefinition.new
     end
 
     def process_for_expression(iterable, variable, block)
       puts "STUB: #{self.class.name}#process_for_expression"
+      BrokenDefinition.new
     end
 
     def process_while_expression(condition, block)
       puts "STUB: #{self.class.name}#process_while_expression"
+      BrokenDefinition.new
     end
 
     def process_until_expression(condition, block)
       puts "STUB: #{self.class.name}#process_until_expression"
+      BrokenDefinition.new
     end
 
     def process_if_expression(condition, true_block, false_block)
       puts "STUB: #{self.class.name}#process_if_expression"
+      BrokenDefinition.new
     end
 
     def process_case_expression(input, *expressions)
       puts "STUB: #{self.class.name}#process_case_expression"
+      BrokenDefinition.new
     end
 
     def process_return_expression(value = nil)
       puts "STUB: #{self.class.name}#process_return_expression"
+      BrokenDefinition.new
     end
 
     def process_break_expression(value = nil)
       puts "STUB: #{self.class.name}#process_break_expression"
+      BrokenDefinition.new
     end
 
     def process_next_expression(value = nil)
       puts "STUB: #{self.class.name}#process_next_expression"
+      BrokenDefinition.new
     end
 
     def process_yield_expression(*args)
       puts "STUB: #{self.class.name}#process_yield_expression"
+      BrokenDefinition.new
     end
 
     def process_block_expression(*expressions)
       puts "STUB: #{self.class.name}#process_block_expression"
+      BrokenDefinition.new
     end
 
     private
@@ -211,11 +249,13 @@ module Ahiru
 
         if error
           register_issue @current_sexp.line, error
+          BrokenDefinition.new
         else
           method.call_with_args(receiver_type, arg_types)
         end
       else
         register_issue @current_sexp.line, "Undefined method `#{name}' for #{receiver_type}"
+        BrokenDefinition.new
       end
     end
   end

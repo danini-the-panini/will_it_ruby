@@ -14,7 +14,7 @@ module Ahiru
       case name
       when Symbol
         super_type = super_exp ? process_expression(super_exp) : nil
-        class_type = @parent.find_or_create_class(name, super_type, expressions, self)
+        @parent.find_or_create_class(name, super_type, expressions, self)
       else
         # TODO: class names like A::B::C
       end
