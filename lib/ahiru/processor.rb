@@ -26,7 +26,7 @@ module Ahiru
 
     private
 
-    def self.issue_from_parse_error(e, path)
+    def issue_from_parse_error(e, path)
       e.message =~ /\A\([^\)]+\):(\d+) :: (.+)\z/
       Issue.new(path, $1.to_i, $2)
     end
