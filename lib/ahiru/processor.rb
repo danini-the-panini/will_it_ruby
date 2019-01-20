@@ -4,7 +4,29 @@ module Ahiru
 
     def initialize
       @issues = []
+      @standard_library = StandardLibrary.new
+      @object_class = @standard_library.object_class
       @main_scope = MainScope.new(self, [])
+    end
+
+    def object_class
+      @standard_library.object_class
+    end
+
+    def v_nil
+      @standard_library.v_nil
+    end
+
+    def v_true
+      @standard_library.v_true
+    end
+
+    def v_false
+      @standard_library.v_false
+    end
+
+    def v_bool
+      @standard_library.v_bool
     end
 
     def process_file(path)

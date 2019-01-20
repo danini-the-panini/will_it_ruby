@@ -2,26 +2,36 @@ module Ahiru
   class MainScope < Scope
     def initialize(processor, expressions)
       super(processor, expressions, nil)
-
-      @classes = {} # TODO: replace with actual constants with constant-lookup logic
     end
 
     def register_issue(line, message)
       processor.register_issue Issue.new('(main)', line, message)
     end
 
+    def check_create_class(name, super_type)
+      return if super_type.nil?
+      if !super_type.is_a?(ClassDefinition)
+        return "superclass must be a Class (#{super_type.class_definition.to_s} given)"
+      else
+        klass = process_const_expression(name)
+        if klass && klass.super_type != super_type
+          return "superclass mismatch for class #{name}"
+        end
+      end
+      nil
+    end
+
     def find_or_create_class(name, super_type, expressions, scope)
-      klass = @classes[name] || create_class(name, super_type, scope)
-      # TODO: check if super_exp matches
+      klass = process_const_expression(name) || create_class(name, super_type || @processor.object_class, scope)
       klass.monkey_patch_expressions(expressions)
     end
 
     def create_class(name, super_type, scope)
-      @classes[name] = ClassDefinition.new(name, super_type, scope)
+      @processor.object_class.add_constant(name, ClassDefinition.new(name, super_type, scope))
     end
 
     def process_const_expression(name)
-      @classes[name]
+      @processor.object_class.get_constant(name)
     end
   end
 end

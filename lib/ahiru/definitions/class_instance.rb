@@ -1,5 +1,7 @@
 module Ahiru
   class ClassInstance
+    attr_reader :class_definition, :singleton_class_definition
+
     def initialize(class_definition)
       @class_definition = class_definition
     end

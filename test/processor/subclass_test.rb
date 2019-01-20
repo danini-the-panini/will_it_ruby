@@ -23,7 +23,7 @@ module Ahiru
       assert_predicate processor.issues, :empty?
     end
 
-    def test_sad_case
+    def test_sad_method_case
       processor = Processor.new
       processor.process_string <<-RUBY
         class Foo
@@ -42,6 +42,54 @@ module Ahiru
 
       assert_equal 1, processor.issues.count
       assert_equal "(unknown):8 Undefined method `baz' for #<Bar>", processor.issues.first.to_s
+    end
+
+    def test_sad_superclass_case
+      processor = Processor.new
+      processor.process_string <<-RUBY
+        class Foo < nil
+        end
+      RUBY
+
+      assert_equal 1, processor.issues.count
+      assert_equal "(unknown):1 superclass must be a Class (NilClass given)", processor.issues.first.to_s
+    end
+
+    def test_happy_moneypatch_case
+      processor = Processor.new
+      processor.process_string <<-RUBY
+        class Foo < BasicObject
+        end
+
+        class Foo
+        end
+
+        class Foo < BasicObject
+        end
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+    end
+
+    def test_sad_monkeypatch_case
+      processor = Processor.new
+      processor.process_string <<-RUBY
+        class Foo < BasicObject
+        end
+
+        class Foo < Object
+        end
+
+        class Bar
+        end
+
+        class Bar < BasicObject
+        end
+      RUBY
+
+      assert_equal 2, processor.issues.count
+      assert_equal "(unknown):4 superclass mismatch for class Foo", processor.issues[0].to_s
+      assert_equal "(unknown):10 superclass mismatch for class Bar", processor.issues[1].to_s
     end
   end
 end

@@ -46,18 +46,15 @@ module Ahiru
     end
 
     def process_true_expression
-      puts "STUB: #{self.class.name}#process_true_expression"
-      BrokenDefinition.new
+      @processor.v_true
     end
 
     def process_false_expression
-      puts "STUB: #{self.class.name}#process_false_expression"
-      BrokenDefinition.new
+      @processor.v_false
     end
 
     def process_nil_expression
-      puts "STUB: #{self.class.name}#process_nil_expression"
-      BrokenDefinition.new
+      @processor.v_nil
     end
 
     def process_str_expression(_)
