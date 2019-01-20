@@ -238,17 +238,13 @@ module Ahiru
       # TODO: handle args
       method = receiver_type.get_method(name)
       if method
-        arg_types = args.map do |arg|
-          process_expression(arg)
-        end
-
-        error = method.check_call_with_args(arg_types)
+        error = method.check_call_with_args(args)
 
         if error
           register_issue @current_sexp.line, error
           BrokenDefinition.new
         else
-          method.call_with_args(receiver_type, arg_types)
+          method.call_with_args(receiver_type, args)
         end
       else
         register_issue @current_sexp.line, "Undefined method `#{name}' for #{receiver_type}"

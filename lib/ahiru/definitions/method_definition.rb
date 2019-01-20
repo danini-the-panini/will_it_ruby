@@ -2,7 +2,7 @@ module Ahiru
   class MethodDefinition
     def initialize(name, args, expressions, processor, parent_scope)
       @name = NameError
-      @args = args
+      @args = Arguments.new(args)
       @expressions = expressions
       @processor = processor
       @parent_scope = parent_scope
@@ -14,9 +14,7 @@ module Ahiru
     end
 
     def check_call_with_args(args)
-      if args.count != arg_count
-        return "Wrong number of arguments (given #{args.count}, expected #{arg_count})"
-      end
+      @args.check_call(args)
     end
 
     def arg_count

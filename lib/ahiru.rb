@@ -19,6 +19,7 @@ require "ahiru/definitions/method_definition"
 require "ahiru/definitions/new_method_definition"
 require "ahiru/definitions/built_in_method_definition"
 require "ahiru/definitions/broken_definition"
+require "ahiru/definitions/arguments"
 
 require "ahiru/maybe/object"
 require "ahiru/maybe/method"
