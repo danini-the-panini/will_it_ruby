@@ -27,7 +27,7 @@ module Ahiru
         BrokenDefinition.new
       end
 
-      def check_call_with_args(*)
+      def check_args(*)
       end
     end
   end

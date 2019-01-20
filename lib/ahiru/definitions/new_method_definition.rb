@@ -11,8 +11,12 @@ module Ahiru
       end
     end
 
-    def check_call_with_args(args)
-      initialize_method.check_call_with_args(args)
+    def check_args(args)
+      initialize_method.check_args(args)
+    end
+
+    def check_call(call)
+      initialize_method.check_call(call)
     end
 
     def arg_count

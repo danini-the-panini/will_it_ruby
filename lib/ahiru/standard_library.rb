@@ -1,6 +1,10 @@
 require "ahiru/standard_library/basic_object"
 require "ahiru/standard_library/object"
+
 require "ahiru/standard_library/nil_class"
+
+require "ahiru/standard_library/numeric"
+require "ahiru/standard_library/integer"
 
 module Ahiru
   class StandardLibrary
@@ -19,8 +23,11 @@ module Ahiru
       defclass :String
       defclass :Symbol
 
-      defclass :Numeric
-      defclass :Integer
+      numeric = defclass :Numeric
+      integer = defclass :Integer, :Numeric
+      defclass :Complex,  :Numeric
+      defclass :Rational, :Numeric
+      defclass :Float,    :Numeric
 
       nil_class = SingletonClassDefinition.new(:NilClass, object_class, @processor, label: 'nil')
       object_class.add_constant :NilClass, nil_class
@@ -38,6 +45,8 @@ module Ahiru
       initialize_basic_object
       initialize_object
       initialize_nil_class(nil_class)
+      initialize_numeric(numeric)
+      initialize_integer(integer)
     end
 
     def defclass(name, super_class=object_class)

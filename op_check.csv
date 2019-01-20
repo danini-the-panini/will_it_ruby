@@ -1,0 +1,66 @@
++,Complex,Rational,Float,Integer
+Complex,Complex,Complex,Complex,Complex
+Rational,Complex,Rational,Float,Rational
+Float,Complex,Float,Float,Float
+Integer,Complex,Rational,Float,Integer
+
+-,Complex,Rational,Float,Integer
+Complex,Complex,Complex,Complex,Complex
+Rational,Complex,Rational,Float,Rational
+Float,Complex,Float,Float,Float
+Integer,Complex,Rational,Float,Integer
+
+*,Complex,Rational,Float,Integer
+Complex,Complex,Complex,Complex,Complex
+Rational,Complex,Rational,Float,Rational
+Float,Complex,Float,Float,Float
+Integer,Complex,Rational,Float,Integer
+
+/,Complex,Rational,Float,Integer
+Complex,Complex,Complex,Complex,Complex
+Rational,Complex,Rational,Float,Rational
+Float,Complex,Float,Float,Float
+Integer,Complex,Rational,Float,Integer
+
+%,Complex,Rational,Float,Integer
+Complex,-,-,-,-
+Rational,undefined method `floor' for ((1/10)-(1/5)*i):Complex,Rational,Float,Rational
+Float,undefined method `%' for (1.2+0i):Complex,Float,Float,Float
+Integer,undefined method `%' for (3+0i):Complex,Rational,Float,Integer
+
+**,Complex,Rational,Float,Integer
+Complex,Complex,Complex,Complex,Complex
+Rational,Complex,Float,Float,Rational
+Float,Complex,Float,Float,Float
+Integer,Complex,Float,Float,Integer
+
+&,Complex,Rational,Float,Integer
+Complex,-,-,-,-
+Rational,-,-,-,-
+Float,-,-,-,-
+Integer,Complex can't be coerced into Integer,Rational can't be coerced into Integer,1.2 can't be coerced into Integer,Integer
+
+|,Complex,Rational,Float,Integer
+Complex,-,-,-,-
+Rational,-,-,-,-
+Float,-,-,-,-
+Integer,Complex can't be coerced into Integer,Rational can't be coerced into Integer,1.2 can't be coerced into Integer,Integer
+
+^,Complex,Rational,Float,Integer
+Complex,-,-,-,-
+Rational,-,-,-,-
+Float,-,-,-,-
+Integer,Complex can't be coerced into Integer,Rational can't be coerced into Integer,1.2 can't be coerced into Integer,Integer
+
+<<,Complex,Rational,Float,Integer
+Complex,-,-,-,-
+Rational,-,-,-,-
+Float,-,-,-,-
+Integer,can't convert 1+2i into Integer,Integer,Integer,Integer
+
+>>,Complex,Rational,Float,Integer
+Complex,-,-,-,-
+Rational,-,-,-,-
+Float,-,-,-,-
+Integer,can't convert 1+2i into Integer,Integer,Integer,Integer
+

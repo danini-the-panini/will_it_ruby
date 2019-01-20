@@ -45,8 +45,16 @@ module Ahiru
     attr_accessor :current_sexp
 
     def process_lit_expression(value)
-      puts "STUB: #{self.class.name}#process_lit_expression"
-      BrokenDefinition.new
+      case value
+      when Integer then object_class.get_constant(:Integer).create_instance
+      when Float   then object_class.get_constant(:Float).create_instance
+      # when Symbol  then T_Symbol
+      # when Regexp  then T_Regexp
+      # when Range
+        # T_Range[process_lit_expression(value.begin) | process_lit_expression(value.end)]
+      else
+        BrokenDefinition.new
+      end
     end
 
     def process_dot2_expression(begin_exp, end_exp)
@@ -255,13 +263,20 @@ module Ahiru
       receiver_type = receiver.nil? ? process_self_expression : process_expression(receiver)
       method = receiver_type.get_method(name)
       if method
-        error = method.check_call_with_args(args)
+        error = method.check_args(args)
 
+        # TODO: this is ridiculous. need to consolidate check_args and check_call
         if error
           register_issue @current_sexp.line, error
           BrokenDefinition.new
         else
-          method.make_call(receiver_type, call)
+          error = method.check_call(call)
+          if error
+            register_issue @current_sexp.line, error
+            BrokenDefinition.new
+          else
+            method.make_call(receiver_type, call)
+          end
         end
       else
         thing = receiver.nil? ? "local variable or method" : "method"

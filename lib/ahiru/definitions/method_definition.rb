@@ -14,8 +14,13 @@ module Ahiru
       scope.process
     end
 
-    def check_call_with_args(args)
+    def check_args(args)
       @args.check_call(args)
+      # TODO: move this logic into check_call, we don't need two different methods for this
+    end
+
+    def check_call(call)
+      # overridden in subclasses
     end
 
     def arg_count

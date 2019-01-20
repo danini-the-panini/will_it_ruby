@@ -36,8 +36,6 @@ module Ahiru
       _, *kwarg_entries = in_kwargs
       splats, nargs = pargs.partition { |p| p.first == :splat }
 
-      count_in = nargs.count
-
       errors = []
 
       if splats.empty? && !(min_count..max_count).cover?(nargs.count)

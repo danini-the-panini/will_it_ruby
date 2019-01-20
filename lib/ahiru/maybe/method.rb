@@ -10,8 +10,17 @@ module Ahiru
         Maybe::Object.new(*return_values)
       end
 
-      def check_call_with_args(args)
-        @possiblities.map { |p| p.check_call_with_args(args) }
+      def check_args(args)
+        @possiblities.map { |p| p.check_args(args) }
+        if @possiblities.all?(&:nil?)
+          nil
+        else
+          @possiblities.compact.join(', ') # TODO: this is probably not the best thing to do
+        end
+      end
+
+      def check_call(args)
+        @possiblities.map { |p| p.check_call(args) }
         if @possiblities.all?(&:nil?)
           nil
         else
