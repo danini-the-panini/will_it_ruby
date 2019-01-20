@@ -71,7 +71,7 @@ module Ahiru
     end
 
     def max_count
-      variadic? ? nil : @pargs.count
+      variadic? ? Float::INFINITY : @pargs.count
     end
 
     def required_keywords

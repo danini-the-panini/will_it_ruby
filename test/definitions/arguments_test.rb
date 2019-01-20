@@ -66,7 +66,7 @@ module Ahiru
       args = Arguments.new(s(:args, :a, :b, :"*c"))
 
       assert_equal 2, args.min_count
-      assert_nil args.max_count
+      assert_predicate args.max_count, :infinite?
       assert_equal "2+", args.count_string
       assert_equal [], args.required_keywords
       assert_equal [], args.allowed_keywords
@@ -90,7 +90,7 @@ module Ahiru
       args = Arguments.new(s(:args, :a, :*))
 
       assert_equal 1, args.min_count
-      assert_nil args.max_count
+      assert_predicate args.max_count, :infinite?
       assert_equal "1+", args.count_string
       assert_equal [], args.required_keywords
       assert_equal [], args.allowed_keywords
@@ -114,7 +114,7 @@ module Ahiru
       args = Arguments.new(s(:args, :a, s(:lasgn, :b, s(:lit, 1)), :"*c", s(:kwarg, :d), s(:kwarg, :e, s(:lit, 2)), :"**f"))
 
       assert_equal 1, args.min_count
-      assert_nil args.max_count
+      assert_predicate args.max_count, :infinite?
       assert_equal "1+", args.count_string
       assert_equal [:d], args.required_keywords
       assert_equal [:d, :e], args.allowed_keywords

@@ -96,5 +96,20 @@ module Ahiru
       assert_equal "(unknown):6 Wrong number of arguments (missing required keywords: a)", processor.issues[0].to_s
       assert_equal "(unknown):7 Wrong number of arguments (unknown keywords: c)", processor.issues[1].to_s
     end
+
+    def test_very_sad_case
+      processor = Processor.new
+      processor.process_string <<-RUBY
+        class Foo
+          def foo(a, *b, c:, d:1)
+          end
+        end
+
+        Foo.new.foo(e:3)
+      RUBY
+
+      assert_equal 1, processor.issues.count
+      assert_equal "(unknown):6 Wrong number of arguments (given 0, expected 1+; missing required keywords: c; unknown keywords: e)", processor.issues.first.to_s
+    end
   end
 end
