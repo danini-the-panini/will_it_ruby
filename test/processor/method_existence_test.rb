@@ -1,7 +1,7 @@
 require "test_helper"
 
 module Ahiru
-  class ProcessorTest < Minitest::Test
+  class Processor::MethodExistenceTest < Minitest::Test
     def test_happy_case
       processor = Processor.new
       processor.process_string <<-RUBY
@@ -27,7 +27,7 @@ module Ahiru
         Foo.new.bar
       RUBY
 
-      refute_predicate processor.issues, :empty?
+      assert_equal 1, processor.issues.count
       assert_equal "(unknown):6 Undefined method `bar' for #<Foo>", processor.issues.first.to_s
     end
   end

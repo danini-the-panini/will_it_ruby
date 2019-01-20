@@ -193,13 +193,23 @@ module Ahiru
       puts "STUB: #{self.class.name}#process_block_expression"
     end
 
-    ###
+    private
 
     def call_method_on_receiver(receiver_type, name, args)
       # TODO: handle args
       method = receiver_type.get_method(name)
       if method
-        method.call_with_args(args)
+        arg_types = args.map do |arg|
+          process_expression(arg)
+        end
+
+        error = method.check_call_with_args(arg_types)
+
+        if error
+          register_issue @current_sexp.line, error
+        else
+          method.call_with_args(arg_types)
+        end
       else
         register_issue @current_sexp.line, "Undefined method `#{name}' for #{receiver_type}"
       end
