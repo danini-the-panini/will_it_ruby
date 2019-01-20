@@ -3,6 +3,7 @@ require "ruby_parser"
 require "ahiru/version"
 
 require "ahiru/processor"
+require "ahiru/processor_delegate_methods"
 require "ahiru/source_file"
 require "ahiru/issue"
 

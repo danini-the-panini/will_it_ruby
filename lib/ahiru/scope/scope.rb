@@ -1,6 +1,7 @@
 module Ahiru
   class Scope
     attr_reader :processor, :self_type
+    include ProcessorDelegateMethods
 
     def initialize(processor, expressions, parent=processor.main_scope)
       @processor = processor

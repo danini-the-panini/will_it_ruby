@@ -1,8 +1,9 @@
 module Ahiru
   class ClassDefinition
-    attr_reader :name, :singleton_class_definition, :super_type
+    attr_reader :name, :singleton_class_definition, :super_type, :processor
+    include ProcessorDelegateMethods
 
-    def initialize(name, super_type, parent_scope)
+    def initialize(name, super_type, parent_scope, processor=parent_scope&.processor)
       @name = name
       @scopes = []
       @parent_scope = parent_scope
@@ -12,6 +13,7 @@ module Ahiru
         new: NewMethodDefinition.new(self)
       }
       @constants = {}
+      @processor = processor
     end
 
     def add_instance_method(name, definition)
