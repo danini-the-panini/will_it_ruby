@@ -10,14 +10,13 @@ module Ahiru
       processor.register_issue Issue.new('(main)', line, message)
     end
 
-    def find_or_create_class(name, super_exp, expressions, scope)
-      klass = @classes[name] || create_class(name, super_exp, scope)
+    def find_or_create_class(name, super_type, expressions, scope)
+      klass = @classes[name] || create_class(name, super_type, scope)
       # TODO: check if super_exp matches
       klass.monkey_patch_expressions(expressions)
     end
 
-    def create_class(name, super_exp, scope)
-      super_type = nil # TODO
+    def create_class(name, super_type, scope)
       @classes[name] = ClassDefinition.new(name, super_type, scope)
     end
 

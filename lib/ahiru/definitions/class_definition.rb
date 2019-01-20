@@ -24,11 +24,11 @@ module Ahiru
     end
 
     def get_method(name)
-      @class_methods[name]
+      @class_methods[name] || @super_type&.get_method(name)
     end
 
     def get_instance_method(name)
-      @instance_methods[name]
+      @instance_methods[name] || @super_type&.get_instance_method(name)
     end
   end
 end
