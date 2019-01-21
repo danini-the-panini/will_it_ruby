@@ -1,6 +1,6 @@
 module Ahiru
   class SourceFile
-    attr_reader :path, :source, :sexp, :processor
+    attr_reader :path, :source, :sexp, :processor, :scope
 
     def initialize(path, source, sexp, processor)
       @path = path

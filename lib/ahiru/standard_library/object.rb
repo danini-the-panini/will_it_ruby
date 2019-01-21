@@ -2,22 +2,22 @@ module Ahiru
   class StandardLibrary
     def initialize_object
       @object_class.tap do |d|
-        d.add_instance_method :===, BuiltInMethodDefinition.new(:===, s(:args, :other)) {
+        d.def_instance_method(:===, s(:args, :other)) do
           v_bool # TODO: need to do crazy stuff here for type checking
-        }
-        d.add_instance_method :=~, BuiltInMethodDefinition.new(:=~, s(:args, :other)) {
+        end
+        d.def_instance_method(:=~, s(:args, :other)) do
           v_nil
-        }
-        d.add_instance_method :eql?, BuiltInMethodDefinition.new(:eql?, s(:args, :other)) { |other|
+        end
+        d.def_instance_method(:eql?, s(:args, :other)) do |other|
           other == self ? v_true : v_bool
-        }
+        end
 
-        d.add_instance_method :class, BuiltInMethodDefinition.new(:eql?, s(:args)) {
+        d.def_instance_method(:class, s(:args)) do
           class_definition
-        }
-        d.add_instance_method :class, BuiltInMethodDefinition.new(:eql?, s(:args)) {
+        end
+        d.def_instance_method(:singleton_class, s(:args)) do
           singleton_class_definition
-        }
+        end
       end
     end
   end

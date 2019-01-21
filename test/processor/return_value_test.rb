@@ -1,10 +1,9 @@
 require "test_helper"
 
 module Ahiru
-  class Processor::ReturnValueTest < Minitest::Test
+  class Processor::ReturnValueTest < ProcessorTest
     def test_happy_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
           def foo
           end
@@ -23,8 +22,7 @@ module Ahiru
     end
 
     def test_sad_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
           def foo
           end

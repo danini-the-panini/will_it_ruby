@@ -1,10 +1,9 @@
 require "test_helper"
 
 module Ahiru
-  class Processor::ArgumentCountTest < Minitest::Test
+  class Processor::ArgumentCountTest < ProcessorTest
     def test_happy_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
           def foo(a, b)
           end
@@ -17,8 +16,7 @@ module Ahiru
     end
 
     def test_sad_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
           def foo(a, b)
           end
@@ -34,8 +32,7 @@ module Ahiru
     end
 
     def test_optional_happy_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
           def foo(a, b=1)
           end
@@ -49,8 +46,7 @@ module Ahiru
     end
 
     def test_optional_sad_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
           def foo(a, b=1)
           end
@@ -66,8 +62,7 @@ module Ahiru
     end
 
     def test_kwarg_happy_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
           def foo(a:, b:1)
           end
@@ -81,8 +76,7 @@ module Ahiru
     end
 
     def test_kwarg_sad_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
           def foo(a:, b:1)
           end
@@ -98,8 +92,7 @@ module Ahiru
     end
 
     def test_very_sad_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
           def foo(a, *b, c:, d:1)
           end

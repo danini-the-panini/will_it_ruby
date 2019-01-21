@@ -1,6 +1,6 @@
 module Ahiru
   class Scope
-    attr_reader :processor, :self_type
+    attr_reader :processor, :self_type, :last_evaluated_result
     include ProcessorDelegateMethods
 
     def initialize(processor, expressions, parent=processor.main_scope)
@@ -45,16 +45,8 @@ module Ahiru
     attr_accessor :current_sexp
 
     def process_lit_expression(value)
-      case value
-      when Integer then object_class.get_constant(:Integer).create_instance
-      when Float   then object_class.get_constant(:Float).create_instance
-      # when Symbol  then T_Symbol
-      # when Regexp  then T_Regexp
-      # when Range
-        # T_Range[process_lit_expression(value.begin) | process_lit_expression(value.end)]
-      else
-        BrokenDefinition.new
-      end
+      # TODO: should we handle Range literals differently?
+      object_class.get_constant(value.class.name.to_sym).create_instance(value: value)
     end
 
     def process_dot2_expression(begin_exp, end_exp)

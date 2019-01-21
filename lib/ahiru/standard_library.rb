@@ -32,9 +32,9 @@ module Ahiru
       nil_class = SingletonClassDefinition.new(:NilClass, object_class, @processor, label: 'nil')
       object_class.add_constant :NilClass, nil_class
 
-      true_class = SingletonClassDefinition.new(:TrueClass, object_class, @processor, label: 'true')
+      true_class = SingletonClassDefinition.new(:TrueClass, object_class, @processor, label: 'true', value: true)
       object_class.add_constant :TrueClass, true_class
-      false_class  = SingletonClassDefinition.new(:FalseClass, object_class, @processor, label: 'false')
+      false_class  = SingletonClassDefinition.new(:FalseClass, object_class, @processor, label: 'false', value: false)
       object_class.add_constant :FalseClass, false_class
 
       @v_nil   = nil_class.create_instance

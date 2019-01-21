@@ -1,10 +1,9 @@
 require "test_helper"
 
 module Ahiru
-  class Processor::SyntaxErrorTest < Minitest::Test
+  class Processor::SyntaxErrorTest < ProcessorTest
     def test_happy_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
         end
       RUBY
@@ -13,8 +12,7 @@ module Ahiru
     end
 
     def test_sad_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
       RUBY
 

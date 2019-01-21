@@ -1,11 +1,12 @@
 module Ahiru
   class ClassInstance
-    attr_reader :class_definition, :singleton_class_definition
+    attr_reader :class_definition, :singleton_class_definition, :value
     include ProcessorDelegateMethods
 
-    def initialize(class_definition, label: nil)
+    def initialize(class_definition, label: nil, value: nil)
       @class_definition = class_definition
       @label = label
+      @value = value
     end
 
     def processor
@@ -17,11 +18,16 @@ module Ahiru
     end
 
     def to_s
-      if @label
-        "#{@label}:#{@class_definition.to_s}" 
+      if @value || @label
+        "#{@value&.to_s || @label}:#{@class_definition.to_s}"
       else
         "#<#{@class_definition.to_s}>"
       end
+    end
+
+    def value_known?
+      return true if @class_definition == object_class.get_constant(:NilClass)
+      !@value.nil?
     end
   end
 end

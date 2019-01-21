@@ -16,8 +16,18 @@ module Ahiru
       @processor = processor
     end
 
+    def definition_kind_of?(other_def)
+      return true if other_def == self
+      return false if @parent_scope.nil?
+      @parent_scope.definition_kind_of?(other_def)
+    end
+
     def add_instance_method(name, definition)
       @instance_methods[name] = definition
+    end
+
+    def def_instance_method(name, args, **options, &block)
+      add_instance_method(name, BuiltInMethodDefinition.new(name, args, **options, &block))
     end
     
     def monkey_patch_expressions(expressions)
@@ -34,8 +44,8 @@ module Ahiru
       @instance_methods[name] || @super_type&.get_instance_method(name)
     end
 
-    def create_instance
-      ClassInstance.new(self)
+    def create_instance(**options)
+      ClassInstance.new(self, **options)
     end
 
     def to_s

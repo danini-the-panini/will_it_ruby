@@ -36,14 +36,18 @@ module Ahiru
 
     def process_string(source, path='(unknown)')
       sexp = RubyParser.new.parse(source)
-      file = SourceFile.new(path, source, sexp_to_expressions(sexp), self)
-      file.process
+      @last_file = SourceFile.new(path, source, sexp_to_expressions(sexp), self)
+      @last_file.process
     rescue Racc::ParseError => e
       register_issue issue_from_parse_error(e, path)
     end
 
     def register_issue(issue)
       @issues << issue
+    end
+
+    def last_evaluated_result
+      @last_file.scope.last_evaluated_result
     end
 
     private

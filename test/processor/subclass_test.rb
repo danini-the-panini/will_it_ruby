@@ -1,10 +1,9 @@
 require "test_helper"
 
 module Ahiru
-  class Processor::SubclassTest < Minitest::Test
+  class Processor::SubclassTest < ProcessorTest
     def test_happy_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
           def foo
           end
@@ -24,8 +23,7 @@ module Ahiru
     end
 
     def test_sad_method_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
           def foo
           end
@@ -45,8 +43,7 @@ module Ahiru
     end
 
     def test_sad_superclass_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo < nil
         end
       RUBY
@@ -56,8 +53,7 @@ module Ahiru
     end
 
     def test_happy_moneypatch_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo < BasicObject
         end
 
@@ -72,8 +68,7 @@ module Ahiru
     end
 
     def test_sad_monkeypatch_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo < BasicObject
         end
 

@@ -1,10 +1,9 @@
 require "test_helper"
 
 module Ahiru
-  class Processor::MethodExistenceTest < Minitest::Test
+  class Processor::MethodExistenceTest < ProcessorTest
     def test_happy_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
           def foo
           end
@@ -17,8 +16,7 @@ module Ahiru
     end
 
     def test_sad_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
           def foo
           end
@@ -32,8 +30,7 @@ module Ahiru
     end
 
     def test_indirect_happy_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
           def foo
             self.bar
@@ -50,8 +47,7 @@ module Ahiru
     end
 
     def test_indirect_sad_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
           def foo
             self.baz
@@ -69,8 +65,7 @@ module Ahiru
     end
 
     def test_argument_happy_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
           def foo(a)
             a.bar
@@ -92,8 +87,7 @@ module Ahiru
     end
 
     def test_argument_sad_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
           def foo(a)
             a.baz

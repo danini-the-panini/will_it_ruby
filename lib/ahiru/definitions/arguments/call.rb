@@ -1,6 +1,6 @@
 module Ahiru
   class Call
-    attr_reader :pargs, :kwargs, :splats, :kwsplats
+    attr_reader :args, :pargs, :kwargs, :splats, :kwsplats
 
     def initialize(args, scope)
       @scope = scope

@@ -1,10 +1,9 @@
 require "test_helper"
 
 module Ahiru
-  class Processor::InitializeTest < Minitest::Test
+  class Processor::InitializeTest < ProcessorTest
     def test_happy_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
           def initialize(a, b)
           end
@@ -20,8 +19,7 @@ module Ahiru
     end
 
     def test_sad_case
-      processor = Processor.new
-      processor.process_string <<-RUBY
+      process <<-RUBY
         class Foo
           def initialize(a, b)
           end
