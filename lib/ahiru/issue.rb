@@ -1,5 +1,7 @@
 module Ahiru
   class Issue
+    attr_reader :file, :line, :message
+
     def initialize(file, line, message)
       @file = file
       @line = line
