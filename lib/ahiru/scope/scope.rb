@@ -1,6 +1,6 @@
 module Ahiru
   class Scope
-    attr_reader :processor, :self_type, :last_evaluated_result
+    attr_reader :processor, :self_type, :last_evaluated_result, :local_variables
     include ProcessorDelegateMethods
 
     def initialize(processor, expressions, parent=processor.main_scope)
@@ -39,6 +39,10 @@ module Ahiru
 
     def local_variable_get(name)
       @local_variables[name]
+    end
+
+    def defined_local_variables
+      @local_variables.keys
     end
 
     protected
@@ -214,24 +218,33 @@ module Ahiru
     end
 
     def process_if_expression(condition, true_block, false_block)
-      true_expressions = vectorize_sexp(true_block)
-      false_expressions = vectorize_sexp(false_block)
+      true_scope = MaybeScope.new(@processor, vectorize_sexp(true_block), self)
+      false_scope = MaybeScope.new(@processor, vectorize_sexp(false_block), self)
 
       # TODO: reverse-engineer condition to find out what guarantees we have in each block
       #       e.g. #nil? and #is_a? affecting local variable types in each branch
 
       # TODO: statically analyzing whether or not a branch will actually be taken
 
-      # TODO: split scope into two quantum possiblities
+      true_scope.process
+      false_scope.process
 
-      true_result = true_expressions.reduce(v_nil) do |_, sexp|
-        process_expression(sexp)
-      end
-      false_result = false_expressions.reduce(v_nil) do |_, sexp|
-        process_expression(sexp)
+      all_affected_lvars = true_scope.local_variables.keys | false_scope.local_variables.keys
+      new_lvars = all_affected_lvars - defined_local_variables
+      existing_affected_lvars = all_affected_lvars - new_lvars
+
+      new_lvars.each do |k|
+        local_variable_set(k, v_nil)
       end
 
-      Maybe::Object.new(true_result, false_result)
+      existing_affected_lvars.each do |k|
+        true_value  = true_scope.local_variable_get(k) || self.local_variable_get(k)
+        false_value = false_scope.local_variable_get(k) || self.local_variable_get(k)
+
+        local_variable_set(k, Maybe::Object.new(true_value, false_value))
+      end
+
+      Maybe::Object.new(true_scope.last_evaluated_result, false_scope.last_evaluated_result)
     end
 
     def process_case_expression(input, *expressions)

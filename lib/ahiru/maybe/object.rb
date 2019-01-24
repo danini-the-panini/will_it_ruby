@@ -4,7 +4,7 @@ module Ahiru
       attr_reader :possiblities
 
       def initialize(*possiblities)
-        @possiblities = possiblities.uniq
+        @possiblities = flatten(possiblities).uniq
       end
 
       def get_method(name)
@@ -12,6 +12,19 @@ module Ahiru
           Maybe::Method.new(p, p.get_method(name), name)
         end
         Maybe::MethodSet.new(*methods)
+      end
+
+      private
+
+      def flatten(things)
+        things.flat_map do |thing|
+          case thing
+          when Maybe::Object
+            thing.possiblities
+          else
+            thing
+          end
+        end
       end
     end
   end

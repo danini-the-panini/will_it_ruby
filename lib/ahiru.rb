@@ -12,6 +12,7 @@ require "ahiru/scope/main_scope"
 require "ahiru/scope/file_scope"
 require "ahiru/scope/method_scope"
 require "ahiru/scope/class_scope"
+require "ahiru/scope/maybe_scope"
 
 require "ahiru/definitions/class_definition"
 require "ahiru/definitions/singleton_class_definition"
