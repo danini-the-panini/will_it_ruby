@@ -24,5 +24,6 @@ require "ahiru/definitions/arguments"
 
 require "ahiru/maybe/object"
 require "ahiru/maybe/method"
+require "ahiru/maybe/method_set"
 
 require "ahiru/standard_library"

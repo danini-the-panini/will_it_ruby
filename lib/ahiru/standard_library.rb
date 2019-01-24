@@ -24,10 +24,10 @@ module Ahiru
       defclass :Symbol
 
       numeric = defclass :Numeric
-      integer = defclass :Integer, :Numeric
-      defclass :Complex,  :Numeric
-      defclass :Rational, :Numeric
-      defclass :Float,    :Numeric
+      integer = defclass :Integer, numeric
+      defclass :Complex,  numeric
+      defclass :Rational, numeric
+      defclass :Float,    numeric
 
       nil_class = SingletonClassDefinition.new(:NilClass, object_class, @processor, label: 'nil')
       object_class.add_constant :NilClass, nil_class

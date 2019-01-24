@@ -26,5 +26,9 @@ module Ahiru
     def arg_count
       @args.count - 1
     end
+
+    def inspect
+      "#<#{self.class.name} @name=#{@name.inspect}>"
+    end
   end
 end

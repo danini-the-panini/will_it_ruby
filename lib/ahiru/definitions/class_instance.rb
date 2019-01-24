@@ -1,6 +1,6 @@
 module Ahiru
   class ClassInstance
-    attr_reader :class_definition, :singleton_class_definition, :value
+    attr_reader :class_definition, :singleton_class_definition, :label, :value
     include ProcessorDelegateMethods
 
     def initialize(class_definition, label: nil, value: nil)
@@ -23,6 +23,10 @@ module Ahiru
       else
         "#<#{@class_definition.to_s}>"
       end
+    end
+
+    def inspect
+      "#<#{self.class.name} @class_definition=#{class_definition.name.inspect} @label=#{label} @value=#{value}>"
     end
 
     def value_known?

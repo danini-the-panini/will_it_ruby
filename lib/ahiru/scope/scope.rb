@@ -117,8 +117,9 @@ module Ahiru
     end
 
     def process_lasgn_expression(name, value)
-      puts "STUB: #{self.class.name}#process_lasgn_expression"
-      BrokenDefinition.new
+      result = process_expression(value)
+      local_variable_set(name, result)
+      result
     end
 
     def process_lvar_expression(name)
@@ -213,8 +214,24 @@ module Ahiru
     end
 
     def process_if_expression(condition, true_block, false_block)
-      puts "STUB: #{self.class.name}#process_if_expression"
-      BrokenDefinition.new
+      true_expressions = vectorize_sexp(true_block)
+      false_expressions = vectorize_sexp(false_block)
+
+      # TODO: reverse-engineer condition to find out what guarantees we have in each block
+      #       e.g. #nil? and #is_a? affecting local variable types in each branch
+
+      # TODO: statically analyzing whether or not a branch will actually be taken
+
+      # TODO: split scope into two quantum possiblities
+
+      true_result = true_expressions.reduce(v_nil) do |_, sexp|
+        process_expression(sexp)
+      end
+      false_result = false_expressions.reduce(v_nil) do |_, sexp|
+        process_expression(sexp)
+      end
+
+      Maybe::Object.new(true_result, false_result)
     end
 
     def process_case_expression(input, *expressions)
@@ -274,6 +291,17 @@ module Ahiru
         thing = receiver.nil? ? "local variable or method" : "method"
         register_issue @current_sexp.line, "Undefined #{thing} `#{name}' for #{receiver_type}"
         BrokenDefinition.new
+      end
+    end
+
+    def vectorize_sexp(sexp)
+      return [] if sexp.nil?
+      case sexp[0]
+      when :block
+        _, *expressions = sexp
+        expressions
+      else
+        [sexp]
       end
     end
   end

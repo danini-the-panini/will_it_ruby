@@ -1,31 +1,32 @@
 module Ahiru
   module Maybe
     class Method
-      def initialize(*possiblities)
-        @possiblities = possiblities.uniq
+      attr_reader :receiver_type, :method, :name
+
+      def initialize(receiver_type, method, name)
+        @receiver_type = receiver_type
+        @method = method
+        @name = name
       end
 
-      def make_call(self_type, call)
-        return_values = @possiblities.map { |p| p.make_call(self_type, call) }
-        Maybe::Object.new(*return_values)
+      def make_call(call)
+        method.make_call(receiver_type, call)
       end
 
       def check_args(args)
-        @possiblities.map { |p| p.check_args(args) }
-        if @possiblities.all?(&:nil?)
-          nil
-        else
-          @possiblities.compact.join(', ') # TODO: this is probably not the best thing to do
-        end
+        return no_method_error if method.nil?
+        method.check_args(args)
       end
 
-      def check_call(args)
-        @possiblities.map { |p| p.check_call(args) }
-        if @possiblities.all?(&:nil?)
-          nil
-        else
-          @possiblities.compact.join(', ') # TODO: this is probably not the best thing to do
-        end
+      def check_call(call)
+        return no_method_error if method.nil?
+        method.check_call(call)
+      end
+
+      private
+
+      def no_method_error
+        "Undefined method `#{name}' for #{receiver_type}"
       end
     end
   end

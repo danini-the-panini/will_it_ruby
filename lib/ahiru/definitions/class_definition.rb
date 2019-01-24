@@ -52,6 +52,10 @@ module Ahiru
       name
     end
 
+    def inspect
+      "#<#{self.class.name} @name=#{name.inspect} @super_type=#{super_type&.name.inspect}>"
+    end
+
     def class_definition
       @parent_scope.processor.object_class.get_constant(:Class)
     end
