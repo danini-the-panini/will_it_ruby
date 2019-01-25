@@ -308,7 +308,7 @@ module Ahiru
     end
 
     def vectorize_sexp(sexp)
-      return [] if sexp.nil?
+      return [s(:nil)] if sexp.nil?
       case sexp[0]
       when :block
         _, *expressions = sexp
