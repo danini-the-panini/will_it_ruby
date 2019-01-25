@@ -21,24 +21,38 @@
     return await response.json();
   }
 
-  async function checkCode() {
+  async function checkCode(code) {
     output.classList.add('loading');
-    output.textContent = 'Loading...';
-    const errors = await getErrors(editor.value);
-    output.textContent = errors.map(error => error.full_message).join('<br>');
+    setErrors(await getErrors(code));
     output.classList.remove('loading');
+  }
+
+  function setErrors(errors) {
+    output.innerHTML = errors.map(error => error.full_message).join('<br>');
+    [].forEach.call(editor.elWrapper.querySelectorAll('.error'), t => t.remove());
+    errors.forEach(error => {
+      const elError = document.createElement('div');
+      elError.classList.add('error');
+      elError.style.top = `${10 + 20 * (error.line-1)}px`;
+      elError.textContent = error.message;
+      editor.elWrapper.appendChild(elError);
+    });
   }
 
   const debouncedCheckCode = debounce(checkCode, 300);
 
   document.addEventListener("DOMContentLoaded", function () {
-    editor = document.querySelector('.editor');
-    output = document.querySelector('.output');
+    editor = document.querySelector('#editor');
+    output = document.querySelector('#output');
 
-    checkCode();
+    window.editor = editor = new CodeFlask('#editor', {
+      language: 'ruby',
+      lineNumbers: true
+    });
 
-    editor.addEventListener('input', debouncedCheckCode, false);
-    editor.addEventListener('change', debouncedCheckCode, false);
+    checkCode(editor.getCode());
+
+    editor.onUpdate(debouncedCheckCode);
   });
 
 })();

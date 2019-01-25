@@ -1,5 +1,3 @@
-puts "STARTING THE THING"
-
 require "bundler/setup"
 require "ahiru"
 require "json"
@@ -29,16 +27,16 @@ post '/check' do
         file: i.file,
         line: i.line,
         message: i.message,
-        full_message: i.to_s
+        full_message: ERB::Util.html_escape(i.to_s)
       }
     end.to_json
   rescue StandardError => e
     $stderr.puts e.full_message
     [{
-      file: '',
-      line: '',
-      message: '',
-      full_message: "SOMETHING BROKE :("
+      file: '(unknown)',
+      line: 1,
+      message: 'INTERNAL SERVER ERROR',
+      full_message: "INTERNAL SERVER ERROR"
     }].to_json
   end
 end

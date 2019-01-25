@@ -27,25 +27,52 @@ h1 {
   color: white;
   text-transform: uppercase;
   flex-grow: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 24px;
+  margin-top: -0.2rem;
+  line-height: 20px;
+  padding-left: 50px;
 }
 
 .main {
   display: flex;
+  flex-direction: column;
   flex-grow: 1;
+  align-items: stretch;
+  justify-content: stretch;
+  flex: 0 1 100%;
 }
 
 .editor, .output {
-  width: 50%;
-  padding: 1rem;
-  border: none;
-  font-family: monospace;
+  width: 100%;
+  position: relative;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
 }
 
 .editor {
-  resize: none;
-  border-right: 1px solid #222222;
+  border-bottom: 1px solid #aaaaaa;
+  height: 100%;
 }
 
 .output {
   background: #EEEEEE;
+  padding: 10px;
+  padding-left: 50px;
+  height: auto;
+}
+
+.error {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  display: inline-block;
+  background: #ffe4e8;
+  font-size: 12px;
+  line-height: 20px;
+  font-family: 'Cousine', monospace;
+  text-align: right;
+  padding-right: 0.5rem;
+  font-style: italic;
+  color: #a00;
 }

@@ -10,10 +10,10 @@
 <body>
   <h1>Ahiru Playground</h1>
   <div class="main">
-    <textarea class="editor"><%= initial_code %></textarea>
-    <div class="output">
-    </div>
+    <div class="editor" id="editor"><%= initial_code %></div>
+    <div class="output" id="output"></div>
   </div>
+  <script src="https://unpkg.com/codeflask/build/codeflask.min.js"></script>
   <script src="/script.js"></script>
 </body>
 
