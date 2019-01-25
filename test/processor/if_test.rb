@@ -45,6 +45,23 @@ module Ahiru
       assert_equal "(unknown):11 Undefined method `/' for nil:NilClass", processor.issues.first.to_s
     end
 
+    def test_implicit_else_case
+      process <<-RUBY
+        class Foo
+          def foo(a, b)
+            if a == b
+              5
+            end
+          end
+        end
+
+        Foo.new.foo(Object.new, Object.new) / 2
+      RUBY
+
+      assert_equal 1, processor.issues.count
+      assert_equal "(unknown):9 Undefined method `/' for nil:NilClass", processor.issues.first.to_s
+    end
+
     def test_lasgn_case
       process <<-RUBY
         class Foo
