@@ -26,5 +26,13 @@ module Ahiru
         # TODO: class names like A::B::C
       end
     end
+
+    def process_defn_expression(*args)
+      @parent.process_defn_expression(*args)
+    end
+
+    def process_self_expression
+      @parent.process_self_expression
+    end
   end
 end

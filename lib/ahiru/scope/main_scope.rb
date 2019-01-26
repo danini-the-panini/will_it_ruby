@@ -2,6 +2,7 @@ module Ahiru
   class MainScope < Scope
     def initialize(processor, expressions)
       super(processor, expressions, nil)
+      @main_object = MainObjectInstance.new(processor)
     end
 
     def register_issue(line, message)
@@ -32,6 +33,14 @@ module Ahiru
 
     def process_const_expression(name)
       @processor.object_class.get_constant(name)
+    end
+
+    def process_defn_expression(name, args, *expressions)
+      object_class.add_instance_method(name, MethodDefinition.new(name, args, expressions, @processor, self))
+    end
+
+    def process_self_expression
+      @main_object
     end
   end
 end
