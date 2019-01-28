@@ -253,6 +253,22 @@ module Ahiru
       Maybe::Object.from_possibilities(*possible_scopes.map(&:last_evaluated_result))
     end
 
+    def process_or_expression(a, b)
+      a_result = process_expression(a)
+      return a_result if a_result.definitely_truthy?
+      b_result = process_expression(b)
+      return b_result if a_result.definitely_falsey?
+      Maybe::Object.from_possibilities(a_result, b_result)
+    end
+
+    def process_and_expression(a, b)
+      a_result = process_expression(a)
+      return a_result if a_result.definitely_falsey?
+      b_result = process_expression(b)
+      return b_result if a_result.definitely_truthy?
+      Maybe::Object.from_possibilities(a_result, b_result)
+    end
+
     def process_case_expression(input, *expressions)
       puts "STUB: #{self.class.name}#process_case_expression"
       BrokenDefinition.new

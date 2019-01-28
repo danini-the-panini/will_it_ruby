@@ -160,13 +160,12 @@ module Ahiru
         type = object_class.get_constant(type_name)
         %i(< > <= >= <=>).each do |operator|
           type.def_instance_method(operator, s(:args, :other), precheck: -> (other) {
-            other_type_name = REAL_NUMERIC_TYPES.map{ |n| object_class.get_constant(n) }.include?(other.class_definition)
-            if mapping[other_type_name].nil?
-              "comparison of #{other_type_name} with #{type_name} failed"
+            if !REAL_NUMERIC_TYPES.map{ |n| object_class.get_constant(n) }.include?(other.class_definition)
+              "comparison of #{other.class_definition.to_s} with #{type_name} failed"
             end
           }) do |other|
             if self.value_known? && other.value_known?
-              self.value.send(operator, other_value) ? v_true : v_false
+              self.value.send(operator, other.value) ? v_true : v_false
             else
               v_bool
             end

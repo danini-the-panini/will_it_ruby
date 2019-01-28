@@ -2,6 +2,8 @@ require "ahiru/standard_library/basic_object"
 require "ahiru/standard_library/object"
 
 require "ahiru/standard_library/nil_class"
+require "ahiru/standard_library/true_class"
+require "ahiru/standard_library/false_class"
 
 require "ahiru/standard_library/numeric"
 require "ahiru/standard_library/integer"
@@ -45,6 +47,8 @@ module Ahiru
       initialize_basic_object
       initialize_object
       initialize_nil_class(nil_class)
+      initialize_true_class(true_class)
+      initialize_false_class(false_class)
       initialize_numeric(numeric)
       initialize_integer(integer)
     end

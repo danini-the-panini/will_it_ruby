@@ -1,6 +1,8 @@
 module Ahiru
   class StandardLibrary
     def initialize_nil_class(d)
+      d.def_instance_method(:!, s(:args)) { v_true }
+
       d.def_instance_method(:nil?, s(:args)) do
         v_true
       end

@@ -255,5 +255,79 @@ module Ahiru
       assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
       assert_equal 0, processor.last_evaluated_result.value
     end
+
+    def test_or
+      process <<-RUBY
+        def foo(a)
+          if a.is_a?(Integer) || a.is_a?(Float)
+            a + 2
+          else
+            0
+          end
+        end
+
+        foo(1)
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_kind_of ClassInstance, processor.last_evaluated_result
+      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
+      assert_equal 3, processor.last_evaluated_result.value
+
+      process <<-RUBY
+        foo(1.2)
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_kind_of ClassInstance, processor.last_evaluated_result
+      assert_equal processor.object_class.get_constant(:Float), processor.last_evaluated_result.class_definition
+      assert_equal 3.2, processor.last_evaluated_result.value
+
+      process <<-RUBY
+        foo(nil)
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_kind_of ClassInstance, processor.last_evaluated_result
+      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
+      assert_equal 0, processor.last_evaluated_result.value
+    end
+
+    def test_and
+      process <<-RUBY
+        def foo(a)
+          if !a.nil? && a > 7
+            a - 5
+          else
+            0
+          end
+        end
+
+        foo(8)
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_kind_of ClassInstance, processor.last_evaluated_result
+      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
+      assert_equal 3, processor.last_evaluated_result.value
+
+      process <<-RUBY
+        foo(1.2)
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_kind_of ClassInstance, processor.last_evaluated_result
+      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
+      assert_equal 0, processor.last_evaluated_result.value
+
+      process <<-RUBY
+        foo(nil)
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_kind_of ClassInstance, processor.last_evaluated_result
+      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
+      assert_equal 0, processor.last_evaluated_result.value
+    end
   end
 end
