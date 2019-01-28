@@ -19,7 +19,7 @@ module Ahiru
 
       assert_predicate processor.issues, :empty?
       assert_kind_of Maybe::Object, processor.last_evaluated_result
-      maybe_int, maybe_float = processor.last_evaluated_result.possiblities
+      maybe_int, maybe_float = processor.last_evaluated_result.possibilities
       assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
       assert_equal 2, maybe_int.value
       assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
@@ -81,7 +81,7 @@ module Ahiru
 
       assert_predicate processor.issues, :empty?
       assert_kind_of Maybe::Object, processor.last_evaluated_result
-      maybe_int, maybe_float = processor.last_evaluated_result.possiblities
+      maybe_int, maybe_float = processor.last_evaluated_result.possibilities
       assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
       assert_equal 2, maybe_int.value
       assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
@@ -109,7 +109,7 @@ module Ahiru
 
       assert_predicate processor.issues, :empty?
       assert_kind_of Maybe::Object, processor.last_evaluated_result
-      maybe_int, maybe_float = processor.last_evaluated_result.possiblities
+      maybe_int, maybe_float = processor.last_evaluated_result.possibilities
       assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
       assert_equal 2, maybe_int.value
       assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
@@ -135,7 +135,7 @@ module Ahiru
 
       assert_predicate processor.issues, :empty?
       assert_kind_of Maybe::Object, processor.last_evaluated_result
-      maybe_int, maybe_float = processor.last_evaluated_result.possiblities
+      maybe_int, maybe_float = processor.last_evaluated_result.possibilities
       assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
       assert_equal 2, maybe_int.value
       assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
@@ -161,7 +161,7 @@ module Ahiru
 
       assert_predicate processor.issues, :empty?
       assert_kind_of Maybe::Object, processor.last_evaluated_result
-      maybe_int, maybe_float, maybe_zero = processor.last_evaluated_result.possiblities
+      maybe_int, maybe_float, maybe_zero = processor.last_evaluated_result.possibilities
       assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
       assert_equal 2, maybe_int.value
       assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
@@ -191,13 +191,41 @@ module Ahiru
 
       assert_predicate processor.issues, :empty?
       assert_kind_of Maybe::Object, processor.last_evaluated_result
-      maybe_int, maybe_float, maybe_zero = processor.last_evaluated_result.possiblities
+      maybe_int, maybe_float, maybe_zero = processor.last_evaluated_result.possibilities
       assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
       assert_equal 2, maybe_int.value
       assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
       assert_equal 2.5, maybe_float.value
       assert_equal processor.object_class.get_constant(:Integer), maybe_zero.class_definition
       assert_equal 0, maybe_zero.value
+    end
+
+    def test_nil_check
+      process <<-RUBY
+        def foo(a)
+          if a.nil?
+            0
+          else
+            a + 2
+          end
+        end
+
+        foo(1)
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_kind_of ClassInstance, processor.last_evaluated_result
+      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
+      assert_equal 3, processor.last_evaluated_result.value
+
+      process <<-RUBY
+        foo(nil)
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_kind_of ClassInstance, processor.last_evaluated_result
+      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
+      assert_equal 0, processor.last_evaluated_result.value
     end
   end
 end

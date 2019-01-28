@@ -12,6 +12,25 @@ module Ahiru
           other == self ? v_true : v_bool
         end
 
+        d.def_instance_method(:is_a?, s(:args, :other), precheck: -> (other) {
+          if !other.is_a?(ClassDefinition) # TODO: also module definition
+            "class or module required"
+          end
+        }) do |other|
+          case self.check_is_a(other)
+          when true
+            v_true
+          when false
+            v_false
+          else
+            v_bool
+          end
+        end
+
+        d.def_instance_method(:nil?, s(:args)) do
+          v_false
+        end
+
         d.def_instance_method(:class, s(:args)) do
           class_definition
         end

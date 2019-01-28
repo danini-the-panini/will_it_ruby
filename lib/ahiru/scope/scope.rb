@@ -45,6 +45,10 @@ module Ahiru
       @local_variables.keys
     end
 
+    def inspect
+      "#<#{self.class.name} @self_type=#{@self_type.inspect}>"
+    end
+
     protected
     attr_accessor :current_sexp
 
@@ -218,18 +222,21 @@ module Ahiru
     end
 
     def process_if_expression(condition, true_block, false_block)
-      true_scope = MaybeScope.new(@processor, vectorize_sexp(true_block), self)
-      false_scope = MaybeScope.new(@processor, vectorize_sexp(false_block), self)
+      condition_result = process_expression(condition)
 
-      # TODO: reverse-engineer condition to find out what guarantees we have in each block
-      #       e.g. #nil? and #is_a? affecting local variable types in each branch
+      possible_scopes = []
 
-      # TODO: statically analyzing whether or not a branch will actually be taken
+      if condition_result.maybe_truthy?
+        possible_scopes << MaybeScope.new(@processor, vectorize_sexp(true_block), self)
+      end
 
-      true_scope.process
-      false_scope.process
+      if condition_result.maybe_falsey?
+        possible_scopes << MaybeScope.new(@processor, vectorize_sexp(false_block), self)
+      end
 
-      all_affected_lvars = true_scope.local_variables.keys | false_scope.local_variables.keys
+      possible_scopes.each(&:process)
+
+      all_affected_lvars = possible_scopes.map { |s| s.local_variables.keys }.reduce([]) { |a, b| a | b }
       new_lvars = all_affected_lvars - defined_local_variables
       existing_affected_lvars = all_affected_lvars - new_lvars
 
@@ -238,13 +245,12 @@ module Ahiru
       end
 
       existing_affected_lvars.each do |k|
-        true_value  = true_scope.local_variable_get(k) || self.local_variable_get(k)
-        false_value = false_scope.local_variable_get(k) || self.local_variable_get(k)
+        values = possible_scopes.map { |s| s.local_variable_get(k) || self.local_variable_get(k) }
 
-        local_variable_set(k, Maybe::Object.new(true_value, false_value))
+        local_variable_set(k, Maybe::Object.from_possibilities(*values))
       end
 
-      Maybe::Object.new(true_scope.last_evaluated_result, false_scope.last_evaluated_result)
+      Maybe::Object.from_possibilities(*possible_scopes.map(&:last_evaluated_result))
     end
 
     def process_case_expression(input, *expressions)
@@ -289,12 +295,12 @@ module Ahiru
 
         # TODO: this is ridiculous. need to consolidate check_args and check_call
         if error
-          register_issue @current_sexp.line, error
+          register_issue @current_sexp&.line, error
           BrokenDefinition.new
         else
           error = method.check_call(call)
           if error
-            register_issue @current_sexp.line, error
+            register_issue @current_sexp&.line, error
             BrokenDefinition.new
           else
             method.make_call(receiver_type, call)
@@ -302,7 +308,7 @@ module Ahiru
         end
       else
         thing = receiver.nil? ? "local variable or method" : "method"
-        register_issue @current_sexp.line, "Undefined #{thing} `#{name}' for #{receiver_type}"
+        register_issue @current_sexp&.line, "Undefined #{thing} `#{name}' for #{receiver_type}"
         BrokenDefinition.new
       end
     end

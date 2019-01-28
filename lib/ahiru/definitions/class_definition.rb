@@ -16,10 +16,10 @@ module Ahiru
       @processor = processor
     end
 
-    def definition_kind_of?(other_def)
+    def is_or_sublass_of?(other_def)
       return true if other_def == self
       return false if @parent_scope.nil?
-      @parent_scope.definition_kind_of?(other_def)
+      @parent_scope.is_or_sublass_of?(other_def)
     end
 
     def add_instance_method(name, definition)
@@ -66,6 +66,27 @@ module Ahiru
 
     def get_constant(name)
       @constants[name]
+    end
+
+    def check_is_a(other)
+      class_class = object_class.get_constant(:Class)
+      class_class.is_or_sublass_of?(other)
+    end
+
+    def maybe_truthy?
+      true
+    end
+
+    def maybe_falsey?
+      false
+    end
+
+    def definitely_truthy?
+      true
+    end
+
+    def definitely_falsey?
+      false
     end
   end
 end

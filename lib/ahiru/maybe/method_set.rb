@@ -1,19 +1,19 @@
 module Ahiru
   module Maybe
     class MethodSet
-      attr_reader :possiblities
+      attr_reader :possibilities
 
-      def initialize(*possiblities)
-        @possiblities = possiblities.uniq
+      def initialize(*possibilities)
+        @possibilities = possibilities.uniq
       end
 
       def make_call(self_type, call)
-        return_values = @possiblities.map { |p| p.make_call(call) }
-        Maybe::Object.new(*return_values)
+        return_values = @possibilities.map { |p| p.make_call(call) }
+        Maybe::Object.from_possibilities(*return_values)
       end
 
       def check_args(args)
-        errors = @possiblities.map { |p| p.check_args(args) }
+        errors = @possibilities.map { |p| p.check_args(args) }
         if errors.all?(&:nil?)
           nil
         else
@@ -22,7 +22,7 @@ module Ahiru
       end
 
       def check_call(call)
-        errors = @possiblities.map { |p| p.check_call(call) }
+        errors = @possibilities.map { |p| p.check_call(call) }
         if errors.all?(&:nil?)
           nil
         else

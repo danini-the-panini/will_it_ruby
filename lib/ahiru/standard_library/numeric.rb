@@ -140,7 +140,7 @@ module Ahiru
       PRIMITIVE_NUMERIC_TYPES.each do |type_name|
         type = object_class.get_constant(type_name)
         type.def_instance_method(:equal?, s(:args, :other)) do |other|
-          return v_false unless other.class_definition.definition_kind_of?(self.class_definition)
+          return v_false unless other.class_definition.is_or_sublass_of?(self.class_definition)
           if self.value_known? && other.value_known?
             self.value.equal?(other_value) ? v_true : v_false
           else
@@ -175,7 +175,7 @@ module Ahiru
       end
 
       numeric_class.def_instance_method(:==, s(:args, :other)) do |other|
-        return v_false unless other.class_definition.definition_kind_of?(numeric_class)
+        return v_false unless other.class_definition.is_or_sublass_of?(numeric_class)
         if self.value_known? && other.value_known?
           self.value == other_value ? v_true : v_false
         else
@@ -184,7 +184,7 @@ module Ahiru
       end
 
       numeric_class.def_instance_method(:!=, s(:args, :other)) do |other|
-        return v_true unless other.class_definition.definition_kind_of?(numeric_class)
+        return v_true unless other.class_definition.is_or_sublass_of?(numeric_class)
         if self.value_known? && other.value_known?
           self.value != other_value ? v_true : v_false
         else
@@ -193,7 +193,7 @@ module Ahiru
       end
 
       numeric_class.def_instance_method(:eql?, s(:args, :other)) do |other|
-        return v_false unless other.class_definition.definition_kind_of?(self.class_definition)
+        return v_false unless other.class_definition.is_or_sublass_of?(self.class_definition)
         if self.value_known? && other.value_known?
           self.value.eql?(other_value) ? v_true : v_false
         else
@@ -224,7 +224,7 @@ module Ahiru
             result_type = result.class.name.to_sym
             object_class.get_constant(result_type).create_instance(value: result)
           else
-            Maybe::Object.new(
+            Maybe::Object.from_possibilities(
               object_class.get_constant(:Integer).create_instance(value: 0),
               object_class.get_constant(:Float).create_instance(value: Float::PI)
             )
@@ -247,7 +247,7 @@ module Ahiru
               result_type = result.class.name.to_sym
               object_class.get_constant(result_type).create_instance(value: result)
             else
-              Maybe::Object.new(
+              Maybe::Object.from_possibilities(
                 object_class.get_constant(:Integer).create_instance,
                 object_class.get_constant(:Float).create_instance
               )

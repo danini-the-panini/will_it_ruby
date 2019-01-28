@@ -40,7 +40,7 @@ module Ahiru
       @v_nil   = nil_class.create_instance
       @v_true  = true_class.create_instance
       @v_false = false_class.create_instance
-      @v_bool  = Maybe::Object.new(v_true, v_false)
+      @v_bool  = Maybe::Object.from_possibilities(v_true, v_false)
 
       initialize_basic_object
       initialize_object
