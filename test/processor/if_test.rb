@@ -329,5 +329,34 @@ module Ahiru
       assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
       assert_equal 0, processor.last_evaluated_result.value
     end
+
+    def test_quantum_type_checking
+      skip 'not working yet'
+      process <<-RUBY
+        def foo(a, b)
+          if a == b
+            1
+          else
+            nil
+          end
+        end
+
+        maybe = foo(Object.new, Object.new)
+
+        x = if !maybe.nil?
+          maybe + 1
+        else
+          2.5
+        end
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_kind_of Maybe::Object, processor.last_evaluated_result
+      maybe_int, maybe_float = processor.last_evaluated_result.possibilities
+      assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
+      assert_equal 2, maybe_int.value
+      assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
+      assert_equal 2.5, maybe_float.value
+    end
   end
 end
