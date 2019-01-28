@@ -18,8 +18,8 @@ module Ahiru
 
     def is_or_sublass_of?(other_def)
       return true if other_def == self
-      return false if @parent_scope.nil?
-      @parent_scope.is_or_sublass_of?(other_def)
+      return false if @super_type.nil?
+      @super_type.is_or_sublass_of?(other_def)
     end
 
     def add_instance_method(name, definition)

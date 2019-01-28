@@ -227,5 +227,33 @@ module Ahiru
       assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
       assert_equal 0, processor.last_evaluated_result.value
     end
+
+    def test_is_a_check
+      process <<-RUBY
+        def foo(a)
+          if a.is_a?(Numeric)
+            a + 2
+          else
+            0
+          end
+        end
+
+        foo(1)
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_kind_of ClassInstance, processor.last_evaluated_result
+      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
+      assert_equal 3, processor.last_evaluated_result.value
+
+      process <<-RUBY
+        foo(nil)
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_kind_of ClassInstance, processor.last_evaluated_result
+      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
+      assert_equal 0, processor.last_evaluated_result.value
+    end
   end
 end

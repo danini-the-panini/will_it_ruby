@@ -1,7 +1,7 @@
 module Ahiru
   class MethodDefinition
     def initialize(name, args, expressions, processor, parent_scope)
-      @name = NameError
+      @name = name
       @args = Arguments.new(args)
       @expressions = expressions
       @processor = processor
