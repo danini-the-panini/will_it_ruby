@@ -140,11 +140,14 @@ module Ahiru
       PRIMITIVE_NUMERIC_TYPES.each do |type_name|
         type = object_class.get_constant(type_name)
         type.def_instance_method(:equal?, s(:args, :other)) do |other|
-          return v_false unless other.class_definition.is_or_sublass_of?(self.class_definition)
-          if self.value_known? && other.value_known?
-            self.value.equal?(other_value) ? v_true : v_false
+          if other.class_definition.is_or_sublass_of?(self.class_definition)
+            if self.value_known? && other.value_known?
+              self.value.equal?(other_value) ? v_true : v_false
+            else
+              v_bool
+            end
           else
-            v_bool
+            v_false
           end
         end
       end
@@ -174,29 +177,38 @@ module Ahiru
       end
 
       numeric_class.def_instance_method(:==, s(:args, :other)) do |other|
-        return v_false unless other.class_definition.is_or_sublass_of?(numeric_class)
-        if self.value_known? && other.value_known?
-          self.value == other_value ? v_true : v_false
+        if other.class_definition.is_or_sublass_of?(numeric_class)
+          if self.value_known? && other.value_known?
+            self.value == other_value ? v_true : v_false
+          else
+            v_bool
+          end
         else
-          v_bool
+          v_false
         end
       end
 
       numeric_class.def_instance_method(:!=, s(:args, :other)) do |other|
-        return v_true unless other.class_definition.is_or_sublass_of?(numeric_class)
-        if self.value_known? && other.value_known?
-          self.value != other_value ? v_true : v_false
+        if other.class_definition.is_or_sublass_of?(numeric_class)
+          if self.value_known? && other.value_known?
+            self.value != other_value ? v_true : v_false
+          else
+            v_bool
+          end
         else
-          v_bool
+          v_true
         end
       end
 
       numeric_class.def_instance_method(:eql?, s(:args, :other)) do |other|
-        return v_false unless other.class_definition.is_or_sublass_of?(self.class_definition)
-        if self.value_known? && other.value_known?
-          self.value.eql?(other_value) ? v_true : v_false
+        if other.class_definition.is_or_sublass_of?(self.class_definition)
+          if self.value_known? && other.value_known?
+            self.value.eql?(other_value) ? v_true : v_false
+          else
+            v_bool
+          end
         else
-          v_bool
+          v_false
         end
       end
 
