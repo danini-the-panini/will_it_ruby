@@ -88,5 +88,17 @@ module Ahiru
     def definitely_falsey?
       false
     end
+
+    def resolve_truthy(scope)
+      nil
+    end
+
+    def resolve_falsey(scope)
+      register_quantum_state(scope, ImpossibleDefinition.new)
+    end
+
+    def for_scope(scope)
+      self
+    end
   end
 end

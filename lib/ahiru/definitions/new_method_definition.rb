@@ -22,6 +22,9 @@ module Ahiru
     def arg_count
       initialize_method.arg_count
     end
+    
+    def resolve_for_scope(scope, self_type, truthy, receiver_sexp, call)
+    end
 
     private
 

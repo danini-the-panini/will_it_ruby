@@ -4,12 +4,19 @@ module Ahiru
       attr_reader :possibilities
 
       def self.from_possibilities(*possibilities)
-        uniq_possibilities = flatten(possibilities).uniq
-        if uniq_possibilities.count == 1
+        uniq_possibilities = normalize(possibilities)
+        case uniq_possibilities.count 
+        when 0
+          ImpossibleDefinition.new
+        when 1
           uniq_possibilities.first
         else
           new(*uniq_possibilities)
         end
+      end
+
+      def processor
+        possibilities.first.processor
       end
 
       def initialize(*possibilities)
@@ -46,9 +53,33 @@ module Ahiru
         @possibilities.all?(&:definitely_falsey?)
       end
 
+      def resolve_truthy
+        truthy_possibilities = @possibilities.select(&:maybe_truthy?)
+        return nil if truthy_possibilities.count == @possibilities.count
+        Maybe::Object.from_possibilities(*truthy_possibilities)
+      end
+
+      def resolve_falsey
+        falsey_possibilities = @possibilities.select(&:maybe_falsey?)
+        return nil if falsey_possibilities.count == @possibilities.count
+        Maybe::Object.from_possibilities(*falsey_possibilities)
+      end
+
+      def for_scope(scope)
+        Maybe::Object.from_possibilities(*@possibilities.map { |k| scope.q(k) })
+      end
+
+      def to_s
+        "(#{@possibilities.map(&:to_s).join(' | ')})"
+      end
+
+      def inspect
+        "#<#{self.class.name} @possibilities=#{@possibilities.inspect}>"
+      end
+
       private
 
-      def self.flatten(things)
+      def self.normalize(things)
         things.flat_map do |thing|
           case thing
           when Maybe::Object
@@ -56,7 +87,7 @@ module Ahiru
           else
             thing
           end
-        end
+        end.uniq.reject { |p| p.is_a?(ImpossibleDefinition) }
       end
     end
   end

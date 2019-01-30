@@ -40,19 +40,31 @@ module Ahiru
     end
 
     def maybe_truthy?
-      !value_known? || value
+      definitely_truthy?
     end
 
     def maybe_falsey?
-      !value_known? || !value
+      definitely_falsey?
     end
 
     def definitely_truthy?
-      value_known? && value
+      !value_known? || value
     end
 
     def definitely_falsey?
       value_known? && !value
+    end
+
+    def resolve_truthy
+      maybe_truthy? ? nil : ImpossibleDefinition.new
+    end
+
+    def resolve_falsey
+      maybe_falsey? ? nil : ImpossibleDefinition.new
+    end
+
+    def for_scope(scope)
+      self
     end
   end
 end

@@ -7,7 +7,7 @@ module Ahiru
     end
 
     def local_variable_get(name)
-      @local_variables[name] || @parent.local_variable_get(name)
+      q( @local_variables[name] || @parent.local_variable_get(name) )
     end
 
     def local_variable_defined?(name)

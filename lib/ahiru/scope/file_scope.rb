@@ -32,7 +32,7 @@ module Ahiru
     end
 
     def process_self_expression
-      @parent.process_self_expression
+      q @parent.process_self_expression
     end
   end
 end

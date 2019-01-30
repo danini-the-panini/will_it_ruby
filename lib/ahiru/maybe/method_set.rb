@@ -29,6 +29,10 @@ module Ahiru
           errors.compact.join(', ') # TODO: this is probably not the best thing to do
         end
       end
+    
+      def resolve_for_scope(scope, self_type, truthy, receiver_sexp, call)
+        @possibilities.map { |p| p.resolve_for_scope(scope, truthy, receiver_sexp, call) }
+      end
     end
   end
 end

@@ -26,6 +26,10 @@ module Ahiru
         nil
       end
     end
+    
+    def resolve_for_scope(scope, self_type, truthy, receiver_sexp, call)
+      # TODO
+    end
 
     private
 

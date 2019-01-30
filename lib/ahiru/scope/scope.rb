@@ -1,6 +1,6 @@
 module Ahiru
   class Scope
-    attr_reader :processor, :self_type, :last_evaluated_result, :local_variables
+    attr_reader :processor, :self_type, :last_evaluated_result, :local_variables, :overrides
     include ProcessorDelegateMethods
 
     def initialize(processor, expressions, parent=processor.main_scope)
@@ -10,6 +10,7 @@ module Ahiru
       @self_type = nil
       @last_evaluated_result = nil
       @local_variables = {}
+      @overrides = {}
     end
 
     def process
@@ -34,11 +35,11 @@ module Ahiru
     end
 
     def local_variable_set(name, value)
-      @local_variables[name] = value
+      @local_variables[name] = q value
     end
 
     def local_variable_get(name)
-      @local_variables[name]
+      q @local_variables[name]
     end
 
     def defined_local_variables
@@ -49,12 +50,21 @@ module Ahiru
       "#<#{self.class.name} @self_type=#{@self_type.inspect}>"
     end
 
+    def q(value)
+      new_value = (@overrides[value] || @parent&.q(value) || value)
+      new_value.for_scope(self)
+    end
+
+    def add_override(value, new_value)
+      @overrides[value] = new_value
+    end
+
     protected
     attr_accessor :current_sexp
 
     def process_lit_expression(value)
       # TODO: should we handle Range literals differently?
-      object_class.get_constant(value.class.name.to_sym).create_instance(value: value)
+      q object_class.get_constant(value.class.name.to_sym).create_instance(value: value)
     end
 
     def process_dot2_expression(begin_exp, end_exp)
@@ -68,15 +78,15 @@ module Ahiru
     end
 
     def process_true_expression
-      @processor.v_true
+      q @processor.v_true
     end
 
     def process_false_expression
-      @processor.v_false
+      q @processor.v_false
     end
 
     def process_nil_expression
-      @processor.v_nil
+      q @processor.v_nil
     end
 
     def process_str_expression(_)
@@ -125,14 +135,14 @@ module Ahiru
     end
 
     def process_lasgn_expression(name, value)
-      result = process_expression(value)
+      result = q process_expression(value)
       local_variable_set(name, result)
       result
     end
 
     def process_lvar_expression(name)
       if local_variable_defined?(name)
-        local_variable_get(name)
+        q local_variable_get(name)
       else
         register_issue @current_sexp.line, "Undefined local variable `#{name}' for #{process_self_expression}"
         BrokenDefinition.new
@@ -140,7 +150,7 @@ module Ahiru
     end
 
     def process_self_expression
-      @self_type
+      q @self_type
     end
 
     def process_safe_call_expression(receiver, name, *args)
@@ -150,9 +160,9 @@ module Ahiru
 
     def process_call_expression(receiver, name, *args)
       if receiver.nil? && local_variable_defined?(name)
-        local_variable_get(name)
+        q local_variable_get(name)
       else
-        call_method_on_receiver(receiver, name, args)
+        q call_method_on_receiver(receiver, name, args)
       end
     end
 
@@ -227,11 +237,15 @@ module Ahiru
       possible_scopes = []
 
       if condition_result.maybe_truthy?
-        possible_scopes << MaybeScope.new(@processor, vectorize_sexp(true_block), self)
+        truthy_scope = MaybeScope.new(@processor, vectorize_sexp(true_block), self)
+        Quantum::Resolver.new(truthy_scope, condition, true).process
+        possible_scopes << truthy_scope
       end
 
       if condition_result.maybe_falsey?
-        possible_scopes << MaybeScope.new(@processor, vectorize_sexp(false_block), self)
+        falsey_scope = MaybeScope.new(@processor, vectorize_sexp(false_block), self)
+        Quantum::Resolver.new(falsey_scope, condition, false).process
+        possible_scopes << falsey_scope
       end
 
       possible_scopes.each(&:process)
@@ -247,24 +261,24 @@ module Ahiru
       existing_affected_lvars.each do |k|
         values = possible_scopes.map { |s| s.local_variable_get(k) || self.local_variable_get(k) }
 
-        local_variable_set(k, Maybe::Object.from_possibilities(*values))
+        local_variable_set(k, Maybe::Object.from_possibilities(*values.map { |v| q v }))
       end
 
-      Maybe::Object.from_possibilities(*possible_scopes.map(&:last_evaluated_result))
+      Maybe::Object.from_possibilities(*possible_scopes.map(&:last_evaluated_result).map { |v| q v })
     end
 
     def process_or_expression(a, b)
-      a_result = process_expression(a)
+      a_result = q process_expression(a)
       return a_result if a_result.definitely_truthy?
-      b_result = process_expression(b)
+      b_result = q process_expression(b)
       return b_result if a_result.definitely_falsey?
       Maybe::Object.from_possibilities(a_result, b_result)
     end
 
     def process_and_expression(a, b)
-      a_result = process_expression(a)
+      a_result = q process_expression(a)
       return a_result if a_result.definitely_falsey?
-      b_result = process_expression(b)
+      b_result = q process_expression(b)
       return b_result if a_result.definitely_truthy?
       Maybe::Object.from_possibilities(a_result, b_result)
     end

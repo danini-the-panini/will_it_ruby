@@ -22,6 +22,10 @@ module Ahiru
         return no_method_error if method.nil?
         method.check_call(call)
       end
+    
+      def resolve_for_scope(scope, truthy, receiver_sexp, call)
+        @method.resolve_for_scope(scope, @receiver_type, truthy, receiver_sexp, call)
+      end
 
       private
 
