@@ -330,8 +330,35 @@ module Ahiru
       assert_equal 0, processor.last_evaluated_result.value
     end
 
-    def test_quantum_type_checking
-      skip 'not working yet'
+    def test_quantum_type_checking_nil
+      process <<-RUBY
+        def foo(a, b)
+          if a == b
+            1
+          else
+            nil
+          end
+        end
+
+        maybe = foo(Object.new, Object.new)
+
+        x = if maybe.nil?
+          2.5
+        else
+          maybe + 1
+        end
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_kind_of Maybe::Object, processor.last_evaluated_result
+      maybe_float, maybe_int = processor.last_evaluated_result.possibilities
+      assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
+      assert_equal 2.5, maybe_float.value
+      assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
+      assert_equal 2, maybe_int.value
+    end
+
+    def test_quantum_type_checking_not
       process <<-RUBY
         def foo(a, b)
           if a == b
@@ -344,6 +371,93 @@ module Ahiru
         maybe = foo(Object.new, Object.new)
 
         x = if !maybe.nil?
+          maybe + 1
+        else
+          2.5
+        end
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_kind_of Maybe::Object, processor.last_evaluated_result
+      maybe_int, maybe_float = processor.last_evaluated_result.possibilities
+      assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
+      assert_equal 2, maybe_int.value
+      assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
+      assert_equal 2.5, maybe_float.value
+    end
+
+    def test_quantum_type_checking_is_a
+      process <<-RUBY
+        def foo(a, b)
+          if a == b
+            1
+          else
+            :a
+          end
+        end
+
+        maybe = foo(Object.new, Object.new)
+
+        x = if maybe.is_a?(Symbol)
+          2.5
+        else
+          maybe + 1
+        end
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_kind_of Maybe::Object, processor.last_evaluated_result
+      maybe_float, maybe_int = processor.last_evaluated_result.possibilities
+      assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
+      assert_equal 2.5, maybe_float.value
+      assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
+      assert_equal 2, maybe_int.value
+    end
+
+    def test_quantum_type_checking_or
+      process <<-RUBY
+        def foo(a, b, c)
+          if a == b
+            1
+          elsif a == c
+            1.5
+          else
+            nil
+          end
+        end
+
+        maybe = foo(Object.new, Object.new, Object.new)
+
+        x = if maybe.is_a?(Integer) || maybe.is_a?(Float)
+          maybe + 1
+        else
+          2.5
+        end
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_kind_of Maybe::Object, processor.last_evaluated_result
+      maybe_int, maybe_float = processor.last_evaluated_result.possibilities
+      assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
+      assert_equal 2, maybe_int.value
+      assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
+      assert_equal 2.5, maybe_float.value
+    end
+
+    def test_quantum_type_checking_and
+      skip "doesn't work yet"
+      process <<-RUBY
+        def foo(a, b, c)
+          if a == b
+            7
+          else
+            nil
+          end
+        end
+
+        maybe = foo(Object.new, Object.new)
+
+        x = if !maybe.nil? && maybe > 5
           maybe + 1
         else
           2.5

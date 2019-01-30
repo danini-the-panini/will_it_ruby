@@ -22,6 +22,7 @@ require "ahiru/definitions/method_definition"
 require "ahiru/definitions/new_method_definition"
 require "ahiru/definitions/built_in_method_definition"
 require "ahiru/definitions/broken_definition"
+require "ahiru/definitions/impossible_definition"
 require "ahiru/definitions/arguments"
 
 require "ahiru/maybe/object"
@@ -29,3 +30,5 @@ require "ahiru/maybe/method"
 require "ahiru/maybe/method_set"
 
 require "ahiru/standard_library"
+
+require "ahiru/quantum/resolver"

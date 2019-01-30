@@ -23,6 +23,10 @@ module Ahiru
       # overridden in subclasses
     end
 
+    def resolve_for_scope(scope, self_type, truthy, receiver_sexp, call)
+      # TODO
+    end
+
     def arg_count
       @args.count - 1
     end

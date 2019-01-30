@@ -16,6 +16,9 @@ module Ahiru
           if !other.is_a?(ClassDefinition) # TODO: also module definition
             "class or module required"
           end
+        }, resolve_for_scope: -> (scope, truthy, receiver_sexp, other, *) {
+          new_value = truthy == self.check_is_a(other) ? nil : ImpossibleDefinition.new
+          scope.add_override(self, new_value)
         }) do |other|
           case self.check_is_a(other)
           when true
@@ -27,7 +30,10 @@ module Ahiru
           end
         end
 
-        d.def_instance_method(:nil?, s(:args)) do
+        d.def_instance_method(:nil?, s(:args), resolve_for_scope: -> (scope, truthy, *) {
+          new_value = truthy ? ImpossibleDefinition.new : nil
+          scope.add_override(self, new_value)
+        }) do
           v_false
         end
 

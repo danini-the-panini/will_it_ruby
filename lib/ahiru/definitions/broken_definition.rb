@@ -1,7 +1,7 @@
 module Ahiru
   class BrokenDefinition
     def self.new
-      @_broken_definition_instance ||= super
+      @_instance ||= super
     end
 
     def add_instance_method(*)
@@ -18,6 +18,22 @@ module Ahiru
       BrokenMethodDefinition.new(name)
     end
 
+    def resolve_truthy(scope)
+      nil
+    end
+
+    def resolve_falsey(scope)
+      nil
+    end
+
+    def for_scope(scope)
+      self
+    end
+
+    def to_s
+      "!Broken!"
+    end
+
     class BrokenMethodDefinition < MethodDefinition
       def initialize(name)
         super(name, s(:args), [], nil, nil)
@@ -28,6 +44,12 @@ module Ahiru
       end
 
       def check_args(*)
+      end
+
+      def check_call(*)
+      end
+      
+      def resolve_for_scope(*)
       end
     end
   end
