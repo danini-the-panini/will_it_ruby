@@ -268,19 +268,11 @@ module Ahiru
     end
 
     def process_or_expression(a, b)
-      a_result = q process_expression(a)
-      return a_result if a_result.definitely_truthy?
-      b_result = q process_expression(b)
-      return b_result if a_result.definitely_falsey?
-      Maybe::Object.from_possibilities(a_result, b_result)
+      process_if_expression(a, a, b)
     end
 
     def process_and_expression(a, b)
-      a_result = q process_expression(a)
-      return a_result if a_result.definitely_falsey?
-      b_result = q process_expression(b)
-      return b_result if a_result.definitely_truthy?
-      Maybe::Object.from_possibilities(a_result, b_result)
+      process_if_expression(a, b, a)
     end
 
     def process_case_expression(input, *expressions)

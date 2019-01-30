@@ -123,7 +123,10 @@ module Ahiru
           receiver_type = receiver.nil? ? @scope.process_self_expression : @scope.process_expression(receiver)
           method = receiver_type.get_method(name)
           if method
-            method.resolve_for_scope(@scope, receiver_type, truthy?, receiver, call)
+            error = method.check_args(args)
+            if !error
+              method.resolve_for_scope(@scope, receiver_type, truthy?, receiver, call)
+            end
           end
         end
       end

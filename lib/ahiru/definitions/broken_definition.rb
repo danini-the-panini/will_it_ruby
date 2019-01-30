@@ -18,6 +18,22 @@ module Ahiru
       BrokenMethodDefinition.new(name)
     end
 
+    def maybe_truthy?
+      true
+    end
+
+    def maybe_falsey?
+      true
+    end
+
+    def definitely_truthy?
+      false
+    end
+
+    def definitely_falsey?
+      false
+    end
+
     def resolve_truthy(scope)
       nil
     end

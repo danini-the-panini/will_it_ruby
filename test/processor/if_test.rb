@@ -444,12 +444,11 @@ module Ahiru
       assert_equal 2.5, maybe_float.value
     end
 
-    def test_quantum_type_checking_and
-      skip "doesn't work yet"
+    def test_quantum_type_checking_or2
       process <<-RUBY
-        def foo(a, b, c)
+        def foo(a, b)
           if a == b
-            7
+            1
           else
             nil
           end
@@ -457,7 +456,35 @@ module Ahiru
 
         maybe = foo(Object.new, Object.new)
 
-        x = if !maybe.nil? && maybe > 5
+        if maybe.nil? || maybe <= 0
+          2.5
+        else
+          maybe + 1
+        end
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_kind_of Maybe::Object, processor.last_evaluated_result
+      maybe_float, maybe_int = processor.last_evaluated_result.possibilities
+      assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
+      assert_equal 2.5, maybe_float.value
+      assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
+      assert_equal 2, maybe_int.value
+    end
+
+    def test_quantum_type_checking_and
+      process <<-RUBY
+        def foo(a, b)
+          if a == b
+            1
+          else
+            nil
+          end
+        end
+
+        maybe = foo(Object.new, Object.new)
+
+        if !maybe.nil? && maybe > 0
           maybe + 1
         else
           2.5
