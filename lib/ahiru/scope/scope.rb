@@ -275,9 +275,14 @@ module Ahiru
       process_if_expression(a, b, a)
     end
 
-    def process_case_expression(input, *expressions)
-      puts "STUB: #{self.class.name}#process_case_expression"
-      BrokenDefinition.new
+    def process_case_expression(input, *when_expressions, else_expression)
+      case_to_if = when_expressions.reverse.reduce(else_expression) do |e, w|
+                     s(:if, w[1][1..-1].map{ |x| casecmp(x, input) }.reduce { |a, b| s(:or, a, b) },
+                       s(:block, *w[2..-1]),
+                       e)
+                   end
+      
+      process_expression(case_to_if)
     end
 
     def process_return_expression(value = nil)
@@ -330,7 +335,7 @@ module Ahiru
         end
       else
         thing = receiver.nil? ? "local variable or method" : "method"
-        register_issue @current_sexp&.line, "Undefined #{thing} `#{name}' for #{receiver_type}"
+        register_issue @current_sexp&.line, "Undefined #{thing} `#{name}' for #{receiver_type.to_s}"
         BrokenDefinition.new
       end
     end
@@ -344,6 +349,10 @@ module Ahiru
       else
         [sexp]
       end
+    end
+
+    def casecmp(a, b)
+      s(:call, a, :===, b)
     end
   end
 end

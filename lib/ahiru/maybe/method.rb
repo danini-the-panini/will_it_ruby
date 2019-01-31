@@ -30,7 +30,7 @@ module Ahiru
       private
 
       def no_method_error
-        "Undefined method `#{name}' for #{receiver_type}"
+        "Undefined method `#{name}' for #{receiver_type.to_s}"
       end
     end
   end

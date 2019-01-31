@@ -1,5 +1,6 @@
 require "ahiru/standard_library/basic_object"
 require "ahiru/standard_library/object"
+require "ahiru/standard_library/class"
 
 require "ahiru/standard_library/nil_class"
 require "ahiru/standard_library/true_class"
@@ -20,7 +21,7 @@ module Ahiru
       object_class.add_constant :Object,      object_class
 
       module_class = defclass :Module
-      defclass :Class, module_class
+      class_class  = defclass :Class, module_class
 
       defclass :String
       defclass :Symbol
@@ -46,6 +47,7 @@ module Ahiru
 
       initialize_basic_object
       initialize_object
+      initialize_class(class_class)
       initialize_nil_class(nil_class)
       initialize_true_class(true_class)
       initialize_false_class(false_class)
@@ -53,8 +55,10 @@ module Ahiru
       initialize_integer(integer)
     end
 
+    private
+
     def defclass(name, super_class=object_class)
-      ClassDefinition.new(name, super_class, nil, @processor).tap do |c|
+      ClassDefinition.new(name, super_class, @processor.main_scope, @processor).tap do |c|
         object_class.add_constant(name, c)
       end
     end

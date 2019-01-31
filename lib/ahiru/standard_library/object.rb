@@ -2,12 +2,12 @@ module Ahiru
   class StandardLibrary
     def initialize_object
       @object_class.tap do |d|
-        d.def_instance_method(:===, s(:args, :other)) do
-          v_bool # TODO: need to do crazy stuff here for type checking
-        end
+        d.def_alias_instance_method(:===, :==)
+
         d.def_instance_method(:=~, s(:args, :other)) do
           v_nil
         end
+
         d.def_instance_method(:eql?, s(:args, :other)) do |other|
           other == self ? v_true : v_bool
         end
@@ -29,6 +29,7 @@ module Ahiru
             v_bool
           end
         end
+        d.def_alias_instance_method(:kind_of?, :is_a?)
 
         d.def_instance_method(:nil?, s(:args), resolve_for_scope: -> (scope, truthy, *) {
           new_value = truthy ? ImpossibleDefinition.new : nil

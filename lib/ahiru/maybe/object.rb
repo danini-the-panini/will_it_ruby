@@ -31,10 +31,14 @@ module Ahiru
       end
 
       def check_is_a(other)
-        results = @possibilities.map(&:check_is_a)
+        results = @possibilities.map { |p| p.check_is_a(other) }
         return true if results.all? { |x| x == true }
         return false if results.all? { |x| x == false }
         nil
+      end
+
+      def value_known?
+        false
       end
 
       def maybe_truthy?

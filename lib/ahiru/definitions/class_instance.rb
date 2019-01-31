@@ -39,6 +39,23 @@ module Ahiru
       @class_definition.is_or_sublass_of?(other)
     end
 
+    def check_equality(other)
+      if other == self
+        v_true
+      elsif self.value_known? && other.value_known?
+        self.value == other.value ? v_true : v_false
+      elsif other.is_a?(Maybe::Object)
+        e = other.possibilities.map { |p| self.check_equality(p) }
+        return v_false if e.all? { |x| x == v_false }
+        return v_true if e.all? { |x| x == v_true }
+        v_bool
+      elsif self.class_definition != other.class_definition
+        v_false
+      else
+        v_bool
+      end
+    end
+
     def maybe_truthy?
       definitely_truthy?
     end

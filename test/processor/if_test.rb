@@ -499,5 +499,74 @@ module Ahiru
       assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
       assert_equal 2.5, maybe_float.value
     end
+
+    def test_case_when
+      process <<-RUBY
+        def foo(a)
+          case a
+          when Integer, Float
+            a + 1
+          when Symbol
+            :a
+          when true
+            1
+          when false
+            0
+          else
+            7
+          end
+        end
+
+        foo(1)
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
+      assert_equal 2, processor.last_evaluated_result.value
+
+      process <<-RUBY
+        foo(1.7)
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_equal processor.object_class.get_constant(:Float), processor.last_evaluated_result.class_definition
+      assert_equal 2.7, processor.last_evaluated_result.value
+
+      process <<-RUBY
+        foo(:foo)
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_equal processor.object_class.get_constant(:Symbol), processor.last_evaluated_result.class_definition
+      assert_equal :a, processor.last_evaluated_result.value
+
+      process <<-RUBY
+        foo(true)
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
+      assert_equal 1, processor.last_evaluated_result.value
+
+      process <<-RUBY
+        foo(Object.new == Object.new)
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_kind_of Maybe::Object, processor.last_evaluated_result
+      r1, r2 = processor.last_evaluated_result.possibilities
+      assert_equal processor.object_class.get_constant(:Integer), r1.class_definition
+      assert_equal 1, r1.value
+      assert_equal processor.object_class.get_constant(:Integer), r2.class_definition
+      assert_equal 0, r2.value
+
+      process <<-RUBY
+        foo(Object.new)
+      RUBY
+
+      assert_predicate processor.issues, :empty?
+      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
+      assert_equal 7, processor.last_evaluated_result.value
+    end
   end
 end

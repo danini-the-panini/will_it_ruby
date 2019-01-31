@@ -3,7 +3,7 @@ module Ahiru
     attr_reader :name, :singleton_class_definition, :super_type, :processor
     include ProcessorDelegateMethods
 
-    def initialize(name, super_type, parent_scope, processor=parent_scope&.processor)
+    def initialize(name, super_type, parent_scope, processor=parent_scope.processor)
       @name = name
       @scopes = []
       @parent_scope = parent_scope
@@ -29,6 +29,10 @@ module Ahiru
     def def_instance_method(name, args, **options, &block)
       add_instance_method(name, BuiltInMethodDefinition.new(name, args, **options, &block))
     end
+
+    def def_alias_instance_method(name, other_name)
+      add_instance_method(name, get_instance_method(other_name))
+    end
     
     def monkey_patch_expressions(expressions)
       scope = ClassScope.new(@parent_scope.processor, expressions, @parent_scope, self)
@@ -37,7 +41,7 @@ module Ahiru
     end
 
     def get_method(name)
-      @class_methods[name] || @super_type&.get_method(name)
+      @class_methods[name] || @super_type&.get_method(name) || object_class.get_constant(:Class).get_instance_method(name)
     end
 
     def get_instance_method(name)
@@ -57,7 +61,7 @@ module Ahiru
     end
 
     def class_definition
-      @parent_scope.processor.object_class.get_constant(:Class)
+      object_class.get_constant(:Class)
     end
 
     def add_constant(name, value)

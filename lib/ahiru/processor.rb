@@ -5,7 +5,6 @@ module Ahiru
     def initialize
       @issues = []
       @standard_library = StandardLibrary.new(self)
-      @object_class = @standard_library.object_class
       @main_scope = MainScope.new(self, [])
     end
 
