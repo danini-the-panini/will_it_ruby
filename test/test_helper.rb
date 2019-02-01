@@ -26,7 +26,7 @@ module WillItRuby
           e.to_s == a.to_s
         end
       end
-      assert result, "Expected Issues:\n#{print_issues(issues)}Got Issues:\n#{print_issues(processor.issues)}"
+      assert result, "Expected Issues:\n#{print_issues(issues)}\nGot Issues:\n#{print_issues(processor.issues)}"
     end
 
     def assert_result(expected_type_name, expected_value=nil)
