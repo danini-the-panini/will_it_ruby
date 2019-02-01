@@ -1,6 +1,6 @@
 require "test_helper"
 
-module Ahiru
+module WillItRuby
   class StandardLibrary::NumericTest < ProcessorTest
     def test_plus
       process <<-RUBY

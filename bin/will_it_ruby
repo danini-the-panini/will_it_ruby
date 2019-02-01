@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "will_it_ruby"
+
+processor = WillItRuby::Processor.new
+
+ARGV.each do |path|
+  processor.process_file(path)
+end
+
+processor.issues.each do |i|
+  puts i.to_s
+end

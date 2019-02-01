@@ -1,6 +1,6 @@
 require "test_helper"
 
-module Ahiru
+module WillItRuby
   class ArgumentsTest < Minitest::Test
     def test_no_arguments
       args = Arguments.new(s(:args))

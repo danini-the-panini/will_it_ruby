@@ -1,5 +1,5 @@
 require "bundler/setup"
-require "ahiru"
+require "will_it_ruby"
 require "json"
 
 set :root, File.dirname(__FILE__)
@@ -20,7 +20,7 @@ end
 
 post '/check' do
   begin
-    processor = Ahiru::Processor.new
+    processor = WillItRuby::Processor.new
     processor.process_string(request.body.read, '(editor)')
     processor.issues.map do |i|
       {

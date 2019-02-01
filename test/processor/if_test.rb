@@ -1,6 +1,6 @@
 require "test_helper"
 
-module Ahiru
+module WillItRuby
   class Processor::IfTest < ProcessorTest
     def test_happy_case
       process <<-RUBY

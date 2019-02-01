@@ -1,28 +1,18 @@
-# Ahiru
+# Will it Ruby?
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/ahiru`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Run your Ruby code before actually running it, to find errors that might happen if you really run it.
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'ahiru'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install ahiru
+    $ gem install will_it_ruby
 
 ## Usage
 
-TODO: Write usage instructions here
+### Command Line
+
+```bash
+$ will_it_ruby path/to/your/ruby/program.rb
+```
 
 ## Development
 
@@ -32,7 +22,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/ahiru.
+Bug reports and pull requests are welcome on GitHub at https://github.com/jellymann/will_it_ruby.
 
 ## License
 

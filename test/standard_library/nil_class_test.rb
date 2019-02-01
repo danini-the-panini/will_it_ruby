@@ -1,6 +1,6 @@
 require "test_helper"
 
-module Ahiru
+module WillItRuby
   class StandardLibrary::NilClassTest < ProcessorTest
     def test_nil?
       process <<-RUBY

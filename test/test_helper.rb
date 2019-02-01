@@ -1,9 +1,9 @@
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
-require "ahiru"
+require "will_it_ruby"
 
 require "minitest/autorun"
 
-module Ahiru
+module WillItRuby
   class ProcessorTest < Minitest::Test
     attr_reader :processor
     include ProcessorDelegateMethods

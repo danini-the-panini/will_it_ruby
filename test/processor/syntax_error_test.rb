@@ -1,6 +1,6 @@
 require "test_helper"
 
-module Ahiru
+module WillItRuby
   class Processor::SyntaxErrorTest < ProcessorTest
     def test_happy_case
       process <<-RUBY
