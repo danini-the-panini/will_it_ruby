@@ -81,6 +81,10 @@ module WillItRuby
         "#<#{self.class.name} @possibilities=#{@possibilities.inspect}>"
       end
 
+      def |(other)
+        Maybe::Object.from_possibilities(self, other)
+      end
+
       private
 
       def self.normalize(things)

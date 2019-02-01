@@ -1,9 +1,17 @@
 module WillItRuby
   class MaybeScope < Scope
+    include Returnable
+
     def initialize(processor, expressions, parent)
       super
       # TODO: make some kind of quantum clone of self_type, for ivar possibilities
       @self_type = parent.self_type
+    end
+
+    def process
+      super do
+        did_return?
+      end
     end
 
     def local_variable_get(name)

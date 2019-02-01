@@ -17,7 +17,9 @@ module WillItRuby
       @expressions.each do |sexp|
         @current_sexp = sexp
         @last_evaluated_result = process_expression(sexp)
+        should_stop = block_given? ? yield : false
         @current_sexp = nil
+        break if should_stop
       end
     end
 
@@ -264,7 +266,13 @@ module WillItRuby
         local_variable_set(k, Maybe::Object.from_possibilities(*values.map { |v| q v }))
       end
 
-      Maybe::Object.from_possibilities(*possible_scopes.map(&:last_evaluated_result).map { |v| q v })
+      if possible_scopes.all?(&:did_return?)
+        return handle_return Maybe::Object.from_possibilities(*possible_scopes.map(&:return_value).map { |v| q v })
+      elsif possible_scopes.any?(&:did_return?)
+        handle_partial_return Maybe::Object.from_possibilities(*possible_scopes.select(&:did_return?).map(&:return_value).map { |v| q v })
+      end
+
+      Maybe::Object.from_possibilities(*possible_scopes.reject(&:did_return?).map(&:last_evaluated_result).map { |v| q v })
     end
 
     def process_or_expression(a, b)
@@ -286,8 +294,7 @@ module WillItRuby
     end
 
     def process_return_expression(value = nil)
-      puts "STUB: #{self.class.name}#process_return_expression"
-      BrokenDefinition.new
+      handle_return(value.nil? ? v_nil : process_expression(value))
     end
 
     def process_break_expression(value = nil)
@@ -311,6 +318,17 @@ module WillItRuby
     end
 
     private
+
+    def handle_return(processed_value)
+      s(:block, @current_sexp).each_of_type(:return) do |sexp|
+        register_issue sexp.line, "unexpected return"
+      end
+      BrokenDefinition.new
+    end
+
+    def handle_partial_return(processed_value)
+      handle_return(processed_value)
+    end
 
     def call_method_on_receiver(receiver, name, args)
       call = Call.new(args, self)

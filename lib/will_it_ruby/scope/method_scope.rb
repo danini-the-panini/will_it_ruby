@@ -1,17 +1,17 @@
 module WillItRuby
   class MethodScope < Scope
+    include Returnable
+
     def initialize(processor, expressions, parent, self_type)
       super(processor, expressions, parent)
       @self_type = self_type
     end
 
     def process
-      super
+      super do
+        did_return?
+      end
       return_value
-    end
-
-    def return_value
-      @last_evaluated_result
     end
   end
 end

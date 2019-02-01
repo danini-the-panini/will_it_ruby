@@ -18,6 +18,10 @@ module WillItRuby
       BrokenMethodDefinition.new(name)
     end
 
+    def class_definition
+      self
+    end
+
     def maybe_truthy?
       true
     end
