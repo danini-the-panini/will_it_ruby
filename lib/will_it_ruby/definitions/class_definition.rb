@@ -104,5 +104,9 @@ module WillItRuby
     def for_scope(scope)
       self
     end
+
+    def |(other)
+      Maybe::Object.from_possibilities(self, other)
+    end
   end
 end

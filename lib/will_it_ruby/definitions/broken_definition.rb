@@ -50,6 +50,10 @@ module WillItRuby
       self
     end
 
+    def |(other)
+      self
+    end
+
     def to_s
       "!Broken!"
     end

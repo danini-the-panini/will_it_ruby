@@ -268,11 +268,21 @@ module WillItRuby
 
       if possible_scopes.all?(&:did_return?)
         return handle_return Maybe::Object.from_possibilities(*possible_scopes.map(&:return_value).map { |v| q v })
-      elsif possible_scopes.any?(&:did_return?)
-        handle_partial_return Maybe::Object.from_possibilities(*possible_scopes.select(&:did_return?).map(&:return_value).map { |v| q v })
+      elsif possible_scopes.any? { |x| x.did_return? || x.did_partially_return? }
+        handle_partial_return Maybe::Object.from_possibilities(
+          *possible_scopes.select(&:did_return?).map(&:return_value).map { |v| q v },
+          *possible_scopes.select(&:did_partially_return?).map(&:partial_return).map { |v| q v }
+        )
+
+        non_returning_overrides = possible_scopes.reject(&:did_return?).reduce({}) do |a, b|
+          a.merge(b.overrides) do |k, left, right|
+            Maybe::Object.from_possibilities(left, right)
+          end
+        end
+        @overrides.merge!(non_returning_overrides)
       end
 
-      Maybe::Object.from_possibilities(*possible_scopes.reject(&:did_return?).map(&:last_evaluated_result).map { |v| q v })
+      Maybe::Object.from_possibilities(*possible_scopes.select(&:did_not_return?).map(&:last_evaluated_result).map { |v| q v })
     end
 
     def process_or_expression(a, b)

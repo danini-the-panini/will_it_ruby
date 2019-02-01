@@ -79,13 +79,12 @@ module WillItRuby
       assert_no_issues
       assert_result :Integer, 0
       
-      # TODO: doesn't work yet
-      # process <<-RUBY
-      #   foo(Object.new == Object.new ? 1 : nil)
-      # RUBY
+      process <<-RUBY
+        foo(Object.new == Object.new ? 1 : nil)
+      RUBY
 
-      # assert_no_issues
-      # assert_maybe_result [:Integer, 0], [:Integer, 2]
+      assert_no_issues
+      assert_maybe_result [:Integer, 0], [:Integer, 2]
     end
 
     def test_partial_case

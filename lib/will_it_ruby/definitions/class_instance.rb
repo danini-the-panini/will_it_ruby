@@ -26,7 +26,7 @@ module WillItRuby
     end
 
     def inspect
-      "#<#{self.class.name} @class_definition=#{class_definition.name.inspect} @label=#{label} @value=#{value}>"
+      "#<#{self.class.name} @class_definition=#{class_definition.name.inspect} @label=#{label.inspect} @value=#{value.inspect}>"
     end
 
     def value_known?
@@ -82,6 +82,10 @@ module WillItRuby
 
     def for_scope(scope)
       self
+    end
+
+    def |(other)
+      Maybe::Object.from_possibilities(self, other)
     end
   end
 end
