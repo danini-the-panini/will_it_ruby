@@ -9,9 +9,8 @@ module WillItRuby
         x
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
-      assert_equal 7, processor.last_evaluated_result.value
+      assert_no_issues
+      assert_result :Integer, 7
     end
 
     def test_method_happy_case
@@ -23,9 +22,8 @@ module WillItRuby
         x
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
-      assert_equal 42, processor.last_evaluated_result.value
+      assert_no_issues
+      assert_result :Integer, 42
     end
 
     def test_sad_case
@@ -33,8 +31,7 @@ module WillItRuby
         x + 1
       RUBY
 
-      assert_equal 1, processor.issues.count
-      assert_equal "(unknown):1 Undefined local variable or method `x' for main:Object", processor.issues.first.to_s
+      assert_issues "(unknown):1 Undefined local variable or method `x' for main:Object"
     end
   end
 end

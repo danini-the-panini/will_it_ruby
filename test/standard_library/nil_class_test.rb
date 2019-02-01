@@ -7,7 +7,7 @@ module WillItRuby
         nil.nil?
       RUBY
 
-      assert_predicate processor.issues, :empty?
+      assert_no_issues
       assert_equal v_true, processor.last_evaluated_result
     end
 
@@ -16,9 +16,8 @@ module WillItRuby
         nil.to_s
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_equal processor.object_class.get_constant(:String), processor.last_evaluated_result.class_definition
-      assert_equal '', processor.last_evaluated_result.value
+      assert_no_issues
+      assert_result :String, ''
     end
 
     def test_sad_case
@@ -26,8 +25,7 @@ module WillItRuby
         nil.upcase
       RUBY
 
-      assert_equal 1, processor.issues.count
-      assert_equal "(unknown):1 Undefined method `upcase' for nil:NilClass", processor.issues.first.to_s
+      assert_issues "(unknown):1 Undefined method `upcase' for nil:NilClass"
     end
   end
 end

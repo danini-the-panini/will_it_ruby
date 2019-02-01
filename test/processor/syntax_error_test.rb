@@ -8,7 +8,7 @@ module WillItRuby
         end
       RUBY
 
-      assert_predicate processor.issues, :empty?
+      assert_no_issues
     end
 
     def test_sad_case
@@ -16,8 +16,7 @@ module WillItRuby
         class Foo
       RUBY
 
-      assert_equal 1, processor.issues.count
-      assert_equal "(unknown):2 parse error on value \"$end\" ($end)", processor.issues.first.to_s
+      assert_issues "(unknown):2 parse error on value \"$end\" ($end)"
     end
   end
 end

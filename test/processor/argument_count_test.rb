@@ -12,7 +12,7 @@ module WillItRuby
         Foo.new.foo(1, 2)
       RUBY
 
-      assert_predicate processor.issues, :empty?
+      assert_no_issues
     end
 
     def test_sad_case
@@ -26,9 +26,8 @@ module WillItRuby
         Foo.new.foo(1, 2, 3)
       RUBY
 
-      assert_equal 2, processor.issues.count
-      assert_equal "(unknown):6 Wrong number of arguments (given 1, expected 2)", processor.issues[0].to_s
-      assert_equal "(unknown):7 Wrong number of arguments (given 3, expected 2)", processor.issues[1].to_s
+      assert_issues "(unknown):6 Wrong number of arguments (given 1, expected 2)",
+                    "(unknown):7 Wrong number of arguments (given 3, expected 2)"
     end
 
     def test_optional_happy_case
@@ -42,7 +41,7 @@ module WillItRuby
         Foo.new.foo(1)
       RUBY
 
-      assert_predicate processor.issues, :empty?
+      assert_no_issues
     end
 
     def test_optional_sad_case
@@ -56,9 +55,8 @@ module WillItRuby
         Foo.new.foo(1, 2, 3)
       RUBY
 
-      assert_equal 2, processor.issues.count
-      assert_equal "(unknown):6 Wrong number of arguments (given 0, expected 1..2)", processor.issues[0].to_s
-      assert_equal "(unknown):7 Wrong number of arguments (given 3, expected 1..2)", processor.issues[1].to_s
+      assert_issues "(unknown):6 Wrong number of arguments (given 0, expected 1..2)",
+                    "(unknown):7 Wrong number of arguments (given 3, expected 1..2)"
     end
 
     def test_kwarg_happy_case
@@ -72,7 +70,7 @@ module WillItRuby
         Foo.new.foo(a:1, b:2)
       RUBY
 
-      assert_predicate processor.issues, :empty?
+      assert_no_issues
     end
 
     def test_kwarg_sad_case
@@ -86,9 +84,8 @@ module WillItRuby
         Foo.new.foo(a:1, b:2, c:3)
       RUBY
 
-      assert_equal 2, processor.issues.count
-      assert_equal "(unknown):6 Wrong number of arguments (missing required keywords: a)", processor.issues[0].to_s
-      assert_equal "(unknown):7 Wrong number of arguments (unknown keywords: c)", processor.issues[1].to_s
+      assert_issues "(unknown):6 Wrong number of arguments (missing required keywords: a)"
+                    "(unknown):7 Wrong number of arguments (unknown keywords: c)"
     end
 
     def test_very_sad_case
@@ -101,8 +98,7 @@ module WillItRuby
         Foo.new.foo(e:3)
       RUBY
 
-      assert_equal 1, processor.issues.count
-      assert_equal "(unknown):6 Wrong number of arguments (given 0, expected 1+; missing required keywords: c; unknown keywords: e)", processor.issues.first.to_s
+      assert_issues "(unknown):6 Wrong number of arguments (given 0, expected 1+; missing required keywords: c; unknown keywords: e)"
     end
   end
 end

@@ -19,7 +19,7 @@ module WillItRuby
         Bar.new.bar
       RUBY
 
-      assert_predicate processor.issues, :empty?
+      assert_no_issues
     end
 
     def test_sad_method_case
@@ -38,8 +38,7 @@ module WillItRuby
         Bar.new.bar
       RUBY
 
-      assert_equal 1, processor.issues.count
-      assert_equal "(unknown):8 Undefined method `baz' for #<Bar>", processor.issues.first.to_s
+      assert_issues "(unknown):8 Undefined method `baz' for #<Bar>"
     end
 
     def test_sad_superclass_case
@@ -48,8 +47,7 @@ module WillItRuby
         end
       RUBY
 
-      assert_equal 1, processor.issues.count
-      assert_equal "(unknown):1 superclass must be a Class (NilClass given)", processor.issues.first.to_s
+      assert_issues "(unknown):1 superclass must be a Class (NilClass given)"
     end
 
     def test_happy_moneypatch_case
@@ -64,7 +62,7 @@ module WillItRuby
         end
       RUBY
 
-      assert_predicate processor.issues, :empty?
+      assert_no_issues
     end
 
     def test_sad_monkeypatch_case
@@ -82,9 +80,8 @@ module WillItRuby
         end
       RUBY
 
-      assert_equal 2, processor.issues.count
-      assert_equal "(unknown):4 superclass mismatch for class Foo", processor.issues[0].to_s
-      assert_equal "(unknown):10 superclass mismatch for class Bar", processor.issues[1].to_s
+      assert_issues "(unknown):4 superclass mismatch for class Foo",
+                    "(unknown):10 superclass mismatch for class Bar"
     end
   end
 end

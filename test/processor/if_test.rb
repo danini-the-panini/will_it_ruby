@@ -17,13 +17,8 @@ module WillItRuby
         Foo.new.foo(Object.new, Object.new) / 2
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of Maybe::Object, processor.last_evaluated_result
-      maybe_int, maybe_float = processor.last_evaluated_result.possibilities
-      assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
-      assert_equal 2, maybe_int.value
-      assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
-      assert_equal 2.5, maybe_float.value
+      assert_no_issues
+      assert_maybe_result [:Integer, 2], [:Float, 2.5]
     end
 
     def test_sad_case
@@ -41,8 +36,7 @@ module WillItRuby
         Foo.new.foo(Object.new, Object.new) / 2
       RUBY
 
-      assert_equal 1, processor.issues.count
-      assert_equal "(unknown):11 Undefined method `/' for nil:NilClass", processor.issues.first.to_s
+      assert_issues "(unknown):11 Undefined method `/' for nil:NilClass"
     end
 
     def test_implicit_else_case
@@ -58,8 +52,7 @@ module WillItRuby
         Foo.new.foo(Object.new, Object.new) / 2
       RUBY
 
-      assert_equal 1, processor.issues.count
-      assert_equal "(unknown):9 Undefined method `/' for nil:NilClass", processor.issues.first.to_s
+      assert_issues "(unknown):9 Undefined method `/' for nil:NilClass"
     end
 
     def test_lasgn_case
@@ -79,13 +72,8 @@ module WillItRuby
         Foo.new.foo(Object.new, Object.new) / 2
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of Maybe::Object, processor.last_evaluated_result
-      maybe_int, maybe_float = processor.last_evaluated_result.possibilities
-      assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
-      assert_equal 2, maybe_int.value
-      assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
-      assert_equal 2.5, maybe_float.value
+      assert_no_issues
+      assert_maybe_result [:Integer, 2], [:Float, 2.5]
     end
 
     def test_lasgn_inside_case
@@ -107,13 +95,8 @@ module WillItRuby
         Foo.new.foo(Object.new, Object.new) / 2
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of Maybe::Object, processor.last_evaluated_result
-      maybe_int, maybe_float = processor.last_evaluated_result.possibilities
-      assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
-      assert_equal 2, maybe_int.value
-      assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
-      assert_equal 2.5, maybe_float.value
+      assert_no_issues
+      assert_maybe_result [:Integer, 2], [:Float, 2.5]
     end
 
     def test_lasgn_sometimes_case
@@ -133,13 +116,8 @@ module WillItRuby
         Foo.new.foo(Object.new, Object.new) / 2
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of Maybe::Object, processor.last_evaluated_result
-      maybe_int, maybe_float = processor.last_evaluated_result.possibilities
-      assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
-      assert_equal 2, maybe_int.value
-      assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
-      assert_equal 2.5, maybe_float.value
+      assert_no_issues
+      assert_maybe_result [:Integer, 2], [:Float, 2.5]
     end
 
     def test_nested_case
@@ -159,15 +137,8 @@ module WillItRuby
         Foo.new.foo(Object.new, Object.new) / 2
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of Maybe::Object, processor.last_evaluated_result
-      maybe_int, maybe_float, maybe_zero = processor.last_evaluated_result.possibilities
-      assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
-      assert_equal 2, maybe_int.value
-      assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
-      assert_equal 2.5, maybe_float.value
-      assert_equal processor.object_class.get_constant(:Integer), maybe_zero.class_definition
-      assert_equal 0, maybe_zero.value
+      assert_no_issues
+      assert_maybe_result [:Integer, 2], [:Float, 2.5], [:Integer, 0]
     end
 
     def test_nested_lasgn_case
@@ -189,15 +160,8 @@ module WillItRuby
         Foo.new.foo(Object.new, Object.new) / 2
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of Maybe::Object, processor.last_evaluated_result
-      maybe_int, maybe_float, maybe_zero = processor.last_evaluated_result.possibilities
-      assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
-      assert_equal 2, maybe_int.value
-      assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
-      assert_equal 2.5, maybe_float.value
-      assert_equal processor.object_class.get_constant(:Integer), maybe_zero.class_definition
-      assert_equal 0, maybe_zero.value
+      assert_no_issues
+      assert_maybe_result [:Integer, 2], [:Float, 2.5], [:Integer, 0]
     end
 
     def test_nil_check
@@ -213,19 +177,15 @@ module WillItRuby
         foo(1)
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of ClassInstance, processor.last_evaluated_result
-      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
-      assert_equal 3, processor.last_evaluated_result.value
+      assert_no_issues
+      assert_result :Integer, 3
 
       process <<-RUBY
         foo(nil)
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of ClassInstance, processor.last_evaluated_result
-      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
-      assert_equal 0, processor.last_evaluated_result.value
+      assert_no_issues
+      assert_result :Integer, 0
     end
 
     def test_is_a_check
@@ -241,19 +201,15 @@ module WillItRuby
         foo(1)
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of ClassInstance, processor.last_evaluated_result
-      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
-      assert_equal 3, processor.last_evaluated_result.value
+      assert_no_issues
+      assert_result :Integer, 3
 
       process <<-RUBY
         foo(nil)
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of ClassInstance, processor.last_evaluated_result
-      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
-      assert_equal 0, processor.last_evaluated_result.value
+      assert_no_issues
+      assert_result :Integer, 0
     end
 
     def test_or
@@ -269,28 +225,22 @@ module WillItRuby
         foo(1)
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of ClassInstance, processor.last_evaluated_result
-      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
-      assert_equal 3, processor.last_evaluated_result.value
+      assert_no_issues
+      assert_result :Integer, 3
 
       process <<-RUBY
         foo(1.2)
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of ClassInstance, processor.last_evaluated_result
-      assert_equal processor.object_class.get_constant(:Float), processor.last_evaluated_result.class_definition
-      assert_equal 3.2, processor.last_evaluated_result.value
+      assert_no_issues
+      assert_result :Float, 3.2
 
       process <<-RUBY
         foo(nil)
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of ClassInstance, processor.last_evaluated_result
-      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
-      assert_equal 0, processor.last_evaluated_result.value
+      assert_no_issues
+      assert_result :Integer, 0
     end
 
     def test_and
@@ -306,28 +256,22 @@ module WillItRuby
         foo(8)
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of ClassInstance, processor.last_evaluated_result
-      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
-      assert_equal 3, processor.last_evaluated_result.value
+      assert_no_issues
+      assert_result :Integer, 3
 
       process <<-RUBY
         foo(1.2)
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of ClassInstance, processor.last_evaluated_result
-      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
-      assert_equal 0, processor.last_evaluated_result.value
+      assert_no_issues
+      assert_result :Integer, 0
 
       process <<-RUBY
         foo(nil)
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of ClassInstance, processor.last_evaluated_result
-      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
-      assert_equal 0, processor.last_evaluated_result.value
+      assert_no_issues
+      assert_result :Integer, 0
     end
 
     def test_quantum_type_checking_nil
@@ -349,13 +293,8 @@ module WillItRuby
         end
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of Maybe::Object, processor.last_evaluated_result
-      maybe_float, maybe_int = processor.last_evaluated_result.possibilities
-      assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
-      assert_equal 2.5, maybe_float.value
-      assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
-      assert_equal 2, maybe_int.value
+      assert_no_issues
+      assert_maybe_result [:Float, 2.5], [:Integer, 2]
     end
 
     def test_quantum_type_checking_not
@@ -377,13 +316,8 @@ module WillItRuby
         end
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of Maybe::Object, processor.last_evaluated_result
-      maybe_int, maybe_float = processor.last_evaluated_result.possibilities
-      assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
-      assert_equal 2, maybe_int.value
-      assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
-      assert_equal 2.5, maybe_float.value
+      assert_no_issues
+      assert_maybe_result [:Float, 2.5], [:Integer, 2]
     end
 
     def test_quantum_type_checking_is_a
@@ -405,13 +339,8 @@ module WillItRuby
         end
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of Maybe::Object, processor.last_evaluated_result
-      maybe_float, maybe_int = processor.last_evaluated_result.possibilities
-      assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
-      assert_equal 2.5, maybe_float.value
-      assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
-      assert_equal 2, maybe_int.value
+      assert_no_issues
+      assert_maybe_result [:Float, 2.5], [:Integer, 2]
     end
 
     def test_quantum_type_checking_or
@@ -435,13 +364,8 @@ module WillItRuby
         end
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of Maybe::Object, processor.last_evaluated_result
-      maybe_int, maybe_float = processor.last_evaluated_result.possibilities
-      assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
-      assert_equal 2, maybe_int.value
-      assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
-      assert_equal 2.5, maybe_float.value
+      assert_no_issues
+      assert_maybe_result [:Float, 2.5], [:Integer, 2]
     end
 
     def test_quantum_type_checking_or2
@@ -463,13 +387,8 @@ module WillItRuby
         end
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of Maybe::Object, processor.last_evaluated_result
-      maybe_float, maybe_int = processor.last_evaluated_result.possibilities
-      assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
-      assert_equal 2.5, maybe_float.value
-      assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
-      assert_equal 2, maybe_int.value
+      assert_no_issues
+      assert_maybe_result [:Float, 2.5], [:Integer, 2]
     end
 
     def test_quantum_type_checking_and
@@ -491,13 +410,8 @@ module WillItRuby
         end
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of Maybe::Object, processor.last_evaluated_result
-      maybe_int, maybe_float = processor.last_evaluated_result.possibilities
-      assert_equal processor.object_class.get_constant(:Integer), maybe_int.class_definition
-      assert_equal 2, maybe_int.value
-      assert_equal processor.object_class.get_constant(:Float), maybe_float.class_definition
-      assert_equal 2.5, maybe_float.value
+      assert_no_issues
+      assert_maybe_result [:Float, 2.5], [:Integer, 2]
     end
 
     def test_case_when
@@ -520,53 +434,43 @@ module WillItRuby
         foo(1)
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
-      assert_equal 2, processor.last_evaluated_result.value
+      assert_no_issues
+      assert_result :Integer, 2
 
       process <<-RUBY
         foo(1.7)
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_equal processor.object_class.get_constant(:Float), processor.last_evaluated_result.class_definition
-      assert_equal 2.7, processor.last_evaluated_result.value
+      assert_no_issues
+      assert_result :Float, 2.7
 
       process <<-RUBY
         foo(:foo)
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_equal processor.object_class.get_constant(:Symbol), processor.last_evaluated_result.class_definition
-      assert_equal :a, processor.last_evaluated_result.value
+      assert_no_issues
+      assert_result :Symbol, :a
 
       process <<-RUBY
         foo(true)
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
-      assert_equal 1, processor.last_evaluated_result.value
+      assert_no_issues
+      assert_result :Integer, 1
 
       process <<-RUBY
         foo(Object.new == Object.new)
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_kind_of Maybe::Object, processor.last_evaluated_result
-      r1, r2 = processor.last_evaluated_result.possibilities
-      assert_equal processor.object_class.get_constant(:Integer), r1.class_definition
-      assert_equal 1, r1.value
-      assert_equal processor.object_class.get_constant(:Integer), r2.class_definition
-      assert_equal 0, r2.value
+      assert_no_issues
+      assert_maybe_result [:Integer, 1], [:Integer, 0]
 
       process <<-RUBY
         foo(Object.new)
       RUBY
 
-      assert_predicate processor.issues, :empty?
-      assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
-      assert_equal 7, processor.last_evaluated_result.value
+      assert_no_issues
+      assert_result :Integer, 7
     end
   end
 end

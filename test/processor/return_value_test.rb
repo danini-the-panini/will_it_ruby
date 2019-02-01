@@ -18,7 +18,7 @@ module WillItRuby
         Bar.new.make_foo.foo
       RUBY
 
-      assert_predicate processor.issues, :empty?
+      assert_no_issues
     end
 
     def test_sad_case
@@ -37,8 +37,7 @@ module WillItRuby
         Bar.new.make_foo.bar
       RUBY
 
-      assert_equal 1, processor.issues.count
-      assert_equal "(unknown):12 Undefined method `bar' for #<Foo>", processor.issues.first.to_s
+      assert_issues "(unknown):12 Undefined method `bar' for #<Foo>"
     end
   end
 end

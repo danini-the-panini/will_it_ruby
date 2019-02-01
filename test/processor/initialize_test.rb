@@ -15,7 +15,7 @@ module WillItRuby
         Foo.new(1, 2).foo
       RUBY
 
-      assert_predicate processor.issues, :empty?
+      assert_no_issues
     end
 
     def test_sad_case
@@ -31,8 +31,7 @@ module WillItRuby
         Foo.new(1, 2, 3).foo
       RUBY
 
-      assert_equal 1, processor.issues.count
-      assert_equal "(unknown):9 Wrong number of arguments (given 3, expected 2)", processor.issues.first.to_s
+      assert_issues "(unknown):9 Wrong number of arguments (given 3, expected 2)"
     end
   end
 end

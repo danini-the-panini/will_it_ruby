@@ -12,7 +12,7 @@ module WillItRuby
         Foo.new.foo
       RUBY
 
-      assert_predicate processor.issues, :empty?
+      assert_no_issues
     end
 
     def test_sad_case
@@ -25,8 +25,7 @@ module WillItRuby
         Foo.new.bar
       RUBY
 
-      assert_equal 1, processor.issues.count
-      assert_equal "(unknown):6 Undefined method `bar' for #<Foo>", processor.issues.first.to_s
+      assert_issues "(unknown):6 Undefined method `bar' for #<Foo>"
     end
 
     def test_indirect_happy_case
@@ -43,7 +42,7 @@ module WillItRuby
         Foo.new.foo
       RUBY
 
-      assert_predicate processor.issues, :empty?
+      assert_no_issues
     end
 
     def test_indirect_sad_case
@@ -60,8 +59,7 @@ module WillItRuby
         Foo.new.foo
       RUBY
 
-      assert_equal 1, processor.issues.count
-      assert_equal "(unknown):3 Undefined method `baz' for #<Foo>", processor.issues.first.to_s
+      assert_issues "(unknown):3 Undefined method `baz' for #<Foo>"
     end
 
     def test_argument_happy_case
@@ -83,7 +81,7 @@ module WillItRuby
         Foo.new.foo(Bar.new)
       RUBY
 
-      assert_predicate processor.issues, :empty?
+      assert_no_issues
     end
 
     def test_argument_sad_case
@@ -105,8 +103,7 @@ module WillItRuby
         Foo.new.foo(Bar.new)
       RUBY
 
-      assert_equal 1, processor.issues.count
-      assert_equal "(unknown):3 Undefined method `baz' for #<Bar>", processor.issues.first.to_s
+      assert_issues "(unknown):3 Undefined method `baz' for #<Bar>"
     end
   end
 end

@@ -7,7 +7,7 @@ module WillItRuby
         1 + 2
       RUBY
 
-      assert_predicate processor.issues, :empty?
+      assert_no_issues
       assert_equal processor.object_class.get_constant(:Integer), processor.last_evaluated_result.class_definition
       assert_equal 3, processor.last_evaluated_result.value
     end
