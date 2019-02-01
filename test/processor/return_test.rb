@@ -112,6 +112,48 @@ module WillItRuby
 
       assert_no_issues
       assert_result :NilClass
+      
+      process <<-RUBY
+        foo(Object.new == Object.new ? 1 : nil)
+      RUBY
+
+      assert_no_issues
+      assert_maybe_result [:NilClass], [:Integer, 2]
+    end
+
+    def test_partial_case2
+      process <<-RUBY
+        def foo(a)
+          b = 1
+
+          if a.nil?
+            return b
+          else
+            b = a + 7
+          end
+
+          b
+        end
+
+        foo(7)
+      RUBY
+
+      assert_no_issues
+      assert_result :Integer, 14
+      
+      process <<-RUBY
+        foo(nil)
+      RUBY
+
+      assert_no_issues
+      assert_result :Integer, 1
+      
+      process <<-RUBY
+        foo(Object.new == Object.new ? 42 : nil)
+      RUBY
+
+      assert_no_issues
+      assert_maybe_result [:Integer, 1], [:Integer, 49]
     end
   end
 end
