@@ -4,5 +4,17 @@ module WillItRuby
       super(processor, expressions, parent, self_type, block)
       @yielding = yielding
     end
+
+    def local_variable_get(name)
+      q( @local_variables[name] || @parent.local_variable_get(name) )
+    end
+
+    def local_variable_defined?(name)
+      @local_variables.key?(name) || @parent.local_variable_defined?(name)
+    end
+
+    def defined_local_variables
+      @parent.defined_local_variables | @local_variables.keys
+    end
   end
 end

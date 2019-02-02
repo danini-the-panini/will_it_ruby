@@ -9,6 +9,10 @@ module WillItRuby
       processor.register_issue Issue.new(@source_file.path, line, message)
     end
 
+    def self_type
+      @parent.self_type
+    end
+
     protected
 
     # TODO: move this, as classes are not only defined on the file-level scope
@@ -35,10 +39,6 @@ module WillItRuby
 
     def process_defn_expression(name, args, *expressions)
       object_class.add_instance_method(name, MethodDefinition.new(name, args, expressions, @processor, self))
-    end
-
-    def process_self_expression
-      q @parent.process_self_expression
     end
 
     private

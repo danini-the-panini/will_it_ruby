@@ -76,5 +76,53 @@ module WillItRuby
       assert_no_issues
       assert_result :NilClass
     end
+
+    def test_block_scope
+      process <<-RUBY
+        class Foo
+          def foo
+            a = 1
+            yield(7)
+            a
+          end
+
+          def bar
+            1
+          end
+        end
+
+        class Bar
+          def baz
+            a = 2
+            Foo.new.foo do |x|
+              a = a + x
+            end
+            a
+          end
+        end
+
+        Foo.new.foo do |x|
+          x + 1
+        end
+      RUBY
+
+      assert_no_issues
+      assert_result :Integer, 1
+
+      process <<-RUBY
+        Bar.new.baz
+      RUBY
+
+      assert_no_issues
+      assert_result :Integer, 9
+
+      process <<-RUBY
+        Foo.new.foo do
+          bar
+        end
+      RUBY
+
+      assert_issues "(unknown):2 Undefined local variable or method `bar' for main:Object"
+    end
   end
 end

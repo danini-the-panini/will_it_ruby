@@ -28,7 +28,7 @@ module WillItRuby
         register_issue @current_sexp&.line, error
         BrokenDefinition.new
       else
-        @block.make_call(self_type, self, call)
+        @block.make_call(self, call)
       end
     end
   end

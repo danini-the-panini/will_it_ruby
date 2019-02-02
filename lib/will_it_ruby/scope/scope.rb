@@ -155,7 +155,7 @@ module WillItRuby
     end
 
     def process_self_expression
-      q @self_type
+      q self_type
     end
 
     def process_safe_call_expression(receiver, name, *args)
@@ -173,7 +173,24 @@ module WillItRuby
 
     def process_iter_expression(call, blargs, blexp = s(:nil))
       _, receiver, name, *args = call
-      q call_method_on_receiver(receiver, name, args, blargs, blexp)
+      
+      block = if blargs && blexp
+              Block.new(blargs, vectorize_sexp(blexp), processor, self)
+            end
+
+      result = q call_method_on_receiver(receiver, name, args, block)
+      
+      if !block.scope.nil?
+        # TODO: make sure blargs aren't included here
+        all_affected_lvars = block.scope.local_variables.keys
+        existing_affected_lvars = defined_local_variables & all_affected_lvars
+
+        existing_affected_lvars.each do |k|
+          local_variable_set(k, block.scope.local_variable_get(k))
+        end
+      end
+
+      result
     end
 
     def process_defn_expression(name, args, *expressions)
@@ -343,15 +360,11 @@ module WillItRuby
       handle_return(processed_value)
     end
 
-    def call_method_on_receiver(receiver, name, args, blargs=nil, blexp=nil)
+    def call_method_on_receiver(receiver, name, args, block=nil)
       receiver_type = receiver.nil? ? process_self_expression : process_expression(receiver)
 
       call = Call.new(args, self)
       call.process
-
-      block = if blargs && blexp
-                Block.new(blargs, vectorize_sexp(blexp), processor, self)
-              end
 
       method = receiver_type.get_method(name)
       if method
