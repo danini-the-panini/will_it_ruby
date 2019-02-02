@@ -14,6 +14,7 @@ require "will_it_ruby/scope/file_scope"
 require "will_it_ruby/scope/method_scope"
 require "will_it_ruby/scope/class_scope"
 require "will_it_ruby/scope/maybe_scope"
+require "will_it_ruby/scope/block_scope"
 
 require "will_it_ruby/definitions/class_definition"
 require "will_it_ruby/definitions/singleton_class_definition"

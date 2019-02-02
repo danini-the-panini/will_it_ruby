@@ -8,8 +8,8 @@ module WillItRuby
       @parent_scope = parent_scope
     end
 
-    def make_call(self_type, call)
-      scope = MethodScope.new(@processor, @expressions, @parent_scope, self_type)
+    def make_call(self_type, call, block=nil)
+      scope = MethodScope.new(@processor, @expressions, @parent_scope, self_type, block)
       @args.assign_arguments_to_scope(call, scope)
       scope.process
     end

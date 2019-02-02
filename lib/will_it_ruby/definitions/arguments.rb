@@ -1,5 +1,6 @@
 require "will_it_ruby/definitions/arguments/argument"
 require "will_it_ruby/definitions/arguments/call"
+require "will_it_ruby/definitions/arguments/block"
 
 module WillItRuby
   class Arguments

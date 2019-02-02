@@ -7,8 +7,9 @@ module WillItRuby
       @resolve_for_scope = resolve_for_scope
     end
 
-    def make_call(self_type, call)
+    def make_call(self_type, call, block=nil)
       # TODO: handle splats/kwsplats
+      # TODO: handle block
       self_type.instance_exec(*call.pargs, **call.kwargs, &@block)
     end
 

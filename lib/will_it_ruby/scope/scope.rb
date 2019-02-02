@@ -172,8 +172,8 @@ module WillItRuby
     end
 
     def process_iter_expression(call, blargs, blexp = s(:nil))
-      puts "STUB: #{self.class.name}#process_iter_expression"
-      BrokenDefinition.new
+      _, receiver, name, *args = call
+      q call_method_on_receiver(receiver, name, args, blargs, blexp)
     end
 
     def process_defn_expression(name, args, *expressions)
@@ -208,7 +208,7 @@ module WillItRuby
 
     def process_const_expression(name)
       # TODO: has to be more complicated than this 
-      @parent.process_const_expression(name)
+      object_class.get_constant(name)
     end
 
     def process_colon2_expression(left, right)
@@ -321,7 +321,7 @@ module WillItRuby
     end
 
     def process_yield_expression(*args)
-      puts "STUB: #{self.class.name}#process_yield_expression"
+      register_issue @current_sexp.line, "no block given (yield)"
       BrokenDefinition.new
     end
 
@@ -343,10 +343,16 @@ module WillItRuby
       handle_return(processed_value)
     end
 
-    def call_method_on_receiver(receiver, name, args)
+    def call_method_on_receiver(receiver, name, args, blargs=nil, blexp=nil)
+      receiver_type = receiver.nil? ? process_self_expression : process_expression(receiver)
+
       call = Call.new(args, self)
       call.process
-      receiver_type = receiver.nil? ? process_self_expression : process_expression(receiver)
+
+      block = if blargs && blexp
+                Block.new(blargs, vectorize_sexp(blexp), processor, self)
+              end
+
       method = receiver_type.get_method(name)
       if method
         error = method.check_args(args)
@@ -361,7 +367,7 @@ module WillItRuby
             register_issue @current_sexp&.line, error
             BrokenDefinition.new
           else
-            method.make_call(receiver_type, call)
+            method.make_call(receiver_type, call, block)
           end
         end
       else

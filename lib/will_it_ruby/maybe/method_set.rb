@@ -7,8 +7,8 @@ module WillItRuby
         @possibilities = possibilities.uniq
       end
 
-      def make_call(self_type, call)
-        return_values = @possibilities.map { |p| p.make_call(call) }
+      def make_call(self_type, call, block=nil)
+        return_values = @possibilities.map { |p| p.make_call(call, block) }
         Maybe::Object.from_possibilities(*return_values)
       end
 

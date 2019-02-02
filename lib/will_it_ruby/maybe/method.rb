@@ -9,8 +9,8 @@ module WillItRuby
         @name = name
       end
 
-      def make_call(call)
-        method.make_call(receiver_type, call)
+      def make_call(call, block=nil)
+        method.make_call(receiver_type, call, block)
       end
 
       def check_args(args)

@@ -5,9 +5,9 @@ module WillItRuby
       @class_definition = class_definition
     end
 
-    def make_call(self_type, call)
+    def make_call(self_type, call, block=nil)
       @class_definition.create_instance.tap do |new_instance|
-        initialize_method.make_call(new_instance, call)
+        initialize_method.make_call(new_instance, call, block)
       end
     end
 
