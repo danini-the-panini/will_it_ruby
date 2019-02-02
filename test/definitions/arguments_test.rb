@@ -160,6 +160,7 @@ module WillItRuby
 
     class BogusScope < Scope
       def initialize
+        super(nil, nil, nil)
       end
 
       def process_lit_expression(value)

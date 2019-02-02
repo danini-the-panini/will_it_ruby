@@ -11,6 +11,7 @@ module WillItRuby
       @last_evaluated_result = nil
       @local_variables = {}
       @overrides = {}
+      @cache = {}
     end
 
     def process
@@ -24,8 +25,10 @@ module WillItRuby
     end
 
     def process_expression(sexp)
-      name, *args = sexp
-      send(:"process_#{name}_expression", *args)
+      @cache[sexp.__id__] ||= begin
+        name, *args = sexp
+        send(:"process_#{name}_expression", *args)
+      end
     end
 
     def register_issue(line, message)
