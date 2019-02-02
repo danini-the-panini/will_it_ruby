@@ -188,6 +188,10 @@ module WillItRuby
         existing_affected_lvars.each do |k|
           local_variable_set(k, block.scope.local_variable_get(k))
         end
+
+        if block.scope.did_return?
+          return handle_return block.scope.return_value
+        end
       end
 
       result

@@ -28,7 +28,13 @@ module WillItRuby
         register_issue @current_sexp&.line, error
         BrokenDefinition.new
       else
-        @block.make_call(self, call)
+        result = @block.make_call(self, call)
+
+        if @block.scope.did_return?
+          @return_value = v_nil
+        end
+
+        result
       end
     end
   end

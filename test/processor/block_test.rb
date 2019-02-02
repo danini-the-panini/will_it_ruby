@@ -124,5 +124,26 @@ module WillItRuby
 
       assert_issues "(unknown):2 Undefined local variable or method `bar' for main:Object"
     end
+
+    def test_block_return
+      process <<-RUBY
+        def foo
+          a = 1
+          yield
+          a
+        end
+
+        def bar
+          foo do
+            return 2
+          end
+        end
+
+        bar
+      RUBY
+
+      assert_no_issues
+      assert_result :Integer, 2
+    end
   end
 end
