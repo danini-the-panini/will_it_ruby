@@ -7,7 +7,6 @@ module WillItRuby
     end
 
     def make_call(yielding_scope, call)
-      binding.irb if @parent_scope.self_type.nil?
       @scope = BlockScope.new(@processor, @expressions, @parent_scope, yielding_scope, @parent_scope.self_type)
       @args.assign_arguments_to_scope(call, scope)
       scope.process
