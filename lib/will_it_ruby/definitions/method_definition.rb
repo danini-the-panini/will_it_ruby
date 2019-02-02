@@ -2,7 +2,7 @@ module WillItRuby
   class MethodDefinition
     def initialize(name, args, expressions, processor, parent_scope)
       @name = name
-      @args = Arguments.new(args)
+      @args = Arguments.new(args, processor)
       @expressions = expressions
       @processor = processor
       @parent_scope = parent_scope

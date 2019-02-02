@@ -23,19 +23,12 @@ module WillItRuby
       call = Call.new(args, self)
       call.process
 
-      error = @block.check_args(args)
-      # TODO: this is ridiculous. need to consolidate check_args and check_call
+      error = @block.check_call(call)
       if error
         register_issue @current_sexp&.line, error
         BrokenDefinition.new
       else
-        error = @block.check_call(call)
-        if error
-          register_issue @current_sexp&.line, error
-          BrokenDefinition.new
-        else
-          @block.make_call(self_type, self, call)
-        end
+        @block.make_call(self_type, self, call)
       end
     end
   end

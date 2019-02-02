@@ -4,7 +4,8 @@ require "will_it_ruby/definitions/arguments/block"
 
 module WillItRuby
   class Arguments
-    def initialize(args_sexp)
+    def initialize(args_sexp, processor)
+      @processor = processor
       @pargs = []
       @kwargs = {}
       @vparg = nil
@@ -71,11 +72,11 @@ module WillItRuby
       # TODO: handle splats, both incoming and outgoing
 
       @pargs.zip(call.pargs).each do |(l,r)|
-        result[l.name] = r || method_scope.process_expression(l.default)
+        result[l.name] = r || (l.default ? method_scope.process_expression(l.default) : @processor.v_nil)
       end
 
       @kwargs.each do |k,v|
-        result[k] = call.kwargs[k] || method_scope.process_expression(v.default)
+        result[k] = call.kwargs[k] || (v.default ? method_scope.process_expression(v.default) : @processor.v_nil)
       end
 
       result

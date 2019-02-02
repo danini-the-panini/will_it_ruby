@@ -2,8 +2,12 @@ require "test_helper"
 
 module WillItRuby
   class ArgumentsTest < Minitest::Test
+    def setup
+      @processor = Processor.new
+    end
+
     def test_no_arguments
-      args = Arguments.new(s(:args))
+      args = Arguments.new(s(:args), @processor)
 
       assert_equal 0, args.min_count
       assert_equal 0, args.max_count
@@ -15,7 +19,7 @@ module WillItRuby
     end
 
     def test_some_arguments
-      args = Arguments.new(s(:args, :a, :b))
+      args = Arguments.new(s(:args, :a, :b), @processor)
 
       assert_equal 2, args.min_count
       assert_equal 2, args.max_count
@@ -27,7 +31,7 @@ module WillItRuby
     end
 
     def test_optional_arguments
-      args = Arguments.new(s(:args, :a, :b, s(:lasgn, :c, s(:lit, 1))))
+      args = Arguments.new(s(:args, :a, :b, s(:lasgn, :c, s(:lit, 1))), @processor)
 
       assert_equal 2, args.min_count
       assert_equal 3, args.max_count
@@ -39,7 +43,7 @@ module WillItRuby
     end
 
     def test_kwargs
-      args = Arguments.new(s(:args,  s(:kwarg, :a),  s(:kwarg, :b)))
+      args = Arguments.new(s(:args,  s(:kwarg, :a),  s(:kwarg, :b)), @processor)
 
       assert_equal 0, args.min_count
       assert_equal 0, args.max_count
@@ -51,7 +55,7 @@ module WillItRuby
     end
 
     def test_optional_kwargs
-      args = Arguments.new(s(:args, s(:kwarg, :a), s(:kwarg, :b), s(:kwarg, :c, s(:lit, 2))))
+      args = Arguments.new(s(:args, s(:kwarg, :a), s(:kwarg, :b), s(:kwarg, :c, s(:lit, 2))), @processor)
 
       assert_equal 0, args.min_count
       assert_equal 0, args.max_count
@@ -63,7 +67,7 @@ module WillItRuby
     end
 
     def test_splat
-      args = Arguments.new(s(:args, :a, :b, :"*c"))
+      args = Arguments.new(s(:args, :a, :b, :"*c"), @processor)
 
       assert_equal 2, args.min_count
       assert_predicate args.max_count, :infinite?
@@ -75,7 +79,7 @@ module WillItRuby
     end
 
     def test_kwsplat
-      args = Arguments.new(s(:args, s(:kwarg, :a), s(:kwarg, :b), :"**c"))
+      args = Arguments.new(s(:args, s(:kwarg, :a), s(:kwarg, :b), :"**c"), @processor)
 
       assert_equal 0, args.min_count
       assert_equal 0, args.max_count
@@ -87,7 +91,7 @@ module WillItRuby
     end
 
     def test_anon_splat
-      args = Arguments.new(s(:args, :a, :*))
+      args = Arguments.new(s(:args, :a, :*), @processor)
 
       assert_equal 1, args.min_count
       assert_predicate args.max_count, :infinite?
@@ -99,7 +103,7 @@ module WillItRuby
     end
 
     def test_anon_kwsplat
-      args = Arguments.new(s(:args, s(:kwarg, :a), s(:kwarg, :b), :**))
+      args = Arguments.new(s(:args, s(:kwarg, :a), s(:kwarg, :b), :**), @processor)
 
       assert_equal 0, args.min_count
       assert_equal 0, args.max_count
@@ -111,7 +115,7 @@ module WillItRuby
     end
 
     def test_all_the_arguments
-      args = Arguments.new(s(:args, :a, s(:lasgn, :b, s(:lit, 1)), :"*c", s(:kwarg, :d), s(:kwarg, :e, s(:lit, 2)), :"**f"))
+      args = Arguments.new(s(:args, :a, s(:lasgn, :b, s(:lit, 1)), :"*c", s(:kwarg, :d), s(:kwarg, :e, s(:lit, 2)), :"**f"), @processor)
 
       assert_equal 1, args.min_count
       assert_predicate args.max_count, :infinite?
@@ -125,7 +129,7 @@ module WillItRuby
     def test_evaluate_call
       scope = BogusScope.new
 
-      args = Arguments.new(s(:args, :a, s(:lasgn, :b, s(:lit, 1))))
+      args = Arguments.new(s(:args, :a, s(:lasgn, :b, s(:lit, 1))), @processor)
       call1 = Call.new([s(:lit, 42)], scope)
       call2 = Call.new([s(:lit, 77), s(:lit, 2)], scope)
 
@@ -139,7 +143,7 @@ module WillItRuby
     def test_evaluate_call_with_kwargs
       scope = BogusScope.new
 
-      args = Arguments.new(s(:args, :a, s(:lasgn, :b, s(:lit, 1)), s(:kwarg, :c), s(:kwarg, :d, s(:lit, 3))))
+      args = Arguments.new(s(:args, :a, s(:lasgn, :b, s(:lit, 1)), s(:kwarg, :c), s(:kwarg, :d, s(:lit, 3))), @processor)
       call1 = Call.new([s(:lit, 42), s(:hash, s(:lit, :c), s(:lit, 7))], scope)
       call2 = Call.new([s(:lit, 77), s(:lit, 2), s(:hash, s(:lit, :c), s(:lit, 8), s(:lit, :d), s(:lit, 4))], scope)
 
