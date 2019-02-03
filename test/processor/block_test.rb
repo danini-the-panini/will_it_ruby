@@ -145,5 +145,25 @@ module WillItRuby
       assert_no_issues
       assert_result :Integer, 2
     end
+
+    def test_yield_in_if
+      process <<-RUBY
+        def foo(a, b)
+          if a == b
+            yield
+          end
+        end
+
+        a = 1
+        foo(Object.new, Object.new) do
+          a = 2
+        end
+
+        a
+      RUBY
+
+      assert_no_issues
+      assert_maybe_result [:Integer, 1], [:Integer, 2]
+    end
   end
 end

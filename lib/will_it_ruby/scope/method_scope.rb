@@ -1,6 +1,8 @@
 module WillItRuby
   class MethodScope < Scope
+    attr_reader :block
     include Returnable
+    include Yieldable
 
     def initialize(processor, expressions, parent, self_type, block=nil)
       super(processor, expressions, parent)
@@ -13,29 +15,6 @@ module WillItRuby
         did_return?
       end
       return_value
-    end
-
-    protected
-
-    def process_yield_expression(*args)
-      return super if !@block
-
-      call = Call.new(args, self)
-      call.process
-
-      error = @block.check_call(call)
-      if error
-        register_issue @current_sexp&.line, error
-        BrokenDefinition.new
-      else
-        result = @block.make_call(self, call)
-
-        if @block.scope.did_return?
-          @return_value = v_nil
-        end
-
-        result
-      end
     end
   end
 end

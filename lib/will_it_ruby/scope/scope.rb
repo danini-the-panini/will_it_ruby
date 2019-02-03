@@ -1,6 +1,7 @@
 module WillItRuby
   class Scope
     attr_reader :processor, :self_type, :last_evaluated_result, :local_variables, :overrides
+    attr_accessor :maybe
     include ProcessorDelegateMethods
 
     def initialize(processor, expressions, parent=processor.main_scope)
@@ -51,6 +52,10 @@ module WillItRuby
       @local_variables.keys
     end
 
+    def maybe?
+      maybe
+    end
+
     def inspect
       "#<#{self.class.name} @self_type=#{@self_type.inspect}>"
     end
@@ -63,9 +68,6 @@ module WillItRuby
     def add_override(value, new_value)
       @overrides[value] = new_value
     end
-
-    protected
-    attr_accessor :current_sexp
 
     def process_lit_expression(value)
       # TODO: should we handle Range literals differently?
@@ -180,17 +182,30 @@ module WillItRuby
 
       result = q call_method_on_receiver(receiver, name, args, block)
       
-      if !block.scope.nil?
+      if !block.scopes.empty?
         # TODO: make sure blargs aren't included here
-        all_affected_lvars = block.scope.local_variables.keys
+        all_affected_lvars = block.scopes.map { |s| s.local_variables.keys }.reduce([]) { |a, b| a | b }
         existing_affected_lvars = defined_local_variables & all_affected_lvars
 
         existing_affected_lvars.each do |k|
-          local_variable_set(k, block.scope.local_variable_get(k))
+          value = block.scopes.reduce(local_variable_get(k)) do |a, b|
+            if b.local_variables[k].nil?
+              a
+            else
+              if b.maybe?
+                Maybe::Object.from_possibilities(a, b.local_variables[k])
+              else
+                b.local_variables[k]
+              end
+            end
+          end
+          local_variable_set(k, value)
         end
 
-        if block.scope.did_return?
-          return handle_return block.scope.return_value
+        # There shouldn't really be more than one of these
+        # ... unless theres some iffiness going on
+        if block.scopes.any?(&:did_return?)
+          return handle_return block.scopes.find(&:did_return?).return_value
         end
       end
 
@@ -274,6 +289,10 @@ module WillItRuby
         possible_scopes << falsey_scope
       end
 
+      if possible_scopes.length > 1
+        possible_scopes.each { |s| s.maybe = true }
+      end
+
       possible_scopes.each(&:process)
 
       all_affected_lvars = possible_scopes.map { |s| s.local_variables.keys }.reduce([]) { |a, b| a | b }
@@ -352,6 +371,7 @@ module WillItRuby
     end
 
     private
+    attr_accessor :current_sexp
 
     def handle_return(processed_value)
       s(:block, @current_sexp).each_of_type(:return) do |sexp|

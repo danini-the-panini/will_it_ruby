@@ -13,8 +13,6 @@ module WillItRuby
       @parent.self_type
     end
 
-    protected
-
     # TODO: move this, as classes are not only defined on the file-level scope
     def process_class_expression(name, super_exp, *expressions)
       case name

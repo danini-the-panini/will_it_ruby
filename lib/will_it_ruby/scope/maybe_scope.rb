@@ -1,6 +1,7 @@
 module WillItRuby
   class MaybeScope < Scope
     include Returnable
+    include Yieldable
 
     def initialize(processor, expressions, parent)
       super
@@ -12,6 +13,10 @@ module WillItRuby
       super do
         did_return?
       end
+    end
+
+    def block
+      @parent.block
     end
 
     def local_variable_get(name)
