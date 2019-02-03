@@ -42,6 +42,8 @@ module WillItRuby
       false_class  = SingletonClassDefinition.new(:FalseClass, object_class, @processor, label: 'false', value: false)
       object_class.add_constant :FalseClass, false_class
 
+      defclass :Array, definition_class: ArrayClassDefinition
+
       @v_nil   = nil_class.create_instance
       @v_true  = true_class.create_instance
       @v_false = false_class.create_instance
@@ -60,8 +62,8 @@ module WillItRuby
 
     private
 
-    def defclass(name, super_class=object_class)
-      ClassDefinition.new(name, super_class, @processor.main_scope, @processor).tap do |c|
+    def defclass(name, super_class=object_class, definition_class: ClassDefinition)
+      definition_class.new(name, super_class, @processor.main_scope, @processor).tap do |c|
         object_class.add_constant(name, c)
       end
     end

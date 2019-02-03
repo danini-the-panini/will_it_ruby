@@ -30,6 +30,9 @@ require "will_it_ruby/definitions/broken_definition"
 require "will_it_ruby/definitions/impossible_definition"
 require "will_it_ruby/definitions/arguments"
 
+require "will_it_ruby/definitions/special/array_class_definition"
+require "will_it_ruby/definitions/special/array_instance"
+
 require "will_it_ruby/maybe/object"
 require "will_it_ruby/maybe/method"
 require "will_it_ruby/maybe/method_set"

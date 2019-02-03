@@ -30,22 +30,37 @@ module WillItRuby
     end
 
     def assert_result(expected_type_name, expected_value=nil)
-      actual_result = processor.last_evaluated_result
-      expected_type = get_type(expected_type_name)
-      assert_kind_of ClassInstance, actual_result
-      assert same_type(expected_type_name, actual_result), "Expected #{actual_result.inspect} to be of type #{expected_type.inspect}"
-      assert same_value(expected_value, actual_result), "Expected #{actual_result.inspect} to have value #{expected_value.inspect}"
+      assert_type([expected_type_name, expected_value], last_evaluated_result)
     end
 
     def assert_maybe_result(*expected_results)
-      actual_result = processor.last_evaluated_result
-      assert_kind_of Maybe::Object, actual_result, "Expected #{actual_result.inspect} to be a Maybe"
+      assert_maybe(*expected_results, last_evaluated_result)
+    end
+
+    def assert_type(expected_type_name, actual_type)
+      if expected_type_name.is_a?(Array)
+        expected_type_name, expected_value = *expected_type_name
+      else
+        expected_value = nil
+      end
+      expected_type = get_type(expected_type_name)
+      assert_kind_of ClassInstance, actual_type
+      assert same_type(expected_type_name, actual_type), "Expected #{actual_type.inspect} to be of type #{expected_type.inspect}"
+      assert same_value(expected_value, actual_type), "Expected #{actual_type.inspect} to have value #{expected_value.inspect}"
+    end
+
+    def assert_maybe(*expected_results, actual_type)
+      assert_kind_of Maybe::Object, actual_type, "Expected #{actual_type.inspect} to be a Maybe"
       result = expected_results.all? do |expected_type_name, expected_value=nil|
-        actual_result.possibilities.find do |possibility|
+        actual_type.possibilities.find do |possibility|
           same_type(expected_type_name, possibility) && same_value(expected_value, possibility)
         end
       end
-      assert result, "Expected #{actual_result.inspect} to have possibilities #{print_expected_possibilities(expected_results)}"
+      assert result, "Expected #{actual_type.inspect} to have possibilities #{print_expected_possibilities(expected_results)}"
+    end
+
+    def last_evaluated_result
+      processor.last_evaluated_result
     end
 
     private

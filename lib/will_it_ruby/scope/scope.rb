@@ -161,8 +161,13 @@ module WillItRuby
     end
 
     def process_array_expression(*values)
-      puts "STUB: #{self.class.name}#process_array_expression"
-      BrokenDefinition.new
+      value = values.map do |v|
+        process_expression(v)
+      end
+
+      element_type = value.empty? ? v_nil : Maybe::Object.from_possibilities(*value)
+
+      object_class.get_constant(:Array).create_instance(value: value, element_type: element_type)
     end
 
     def process_hash_expression(*entries)
