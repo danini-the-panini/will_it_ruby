@@ -129,14 +129,15 @@ module WillItRuby
       Maybe::Object.from_possibilities(possibilities.map { |p| create_string(p) })
     end
 
-    def process_evstr_expression(expression)
-      puts "STUB: #{self.class.name}#process_evstr_expression"
-      BrokenDefinition.new
-    end
+    def process_dsym_expression(start_value, *expressions)
+      result = process_dstr_expression(start_value, *expressions)
+      all_results = Maybe::Object.normalize([result])
 
-    def process_dsym_expression(_, *values)
-      puts "STUB: #{self.class.name}#process_dsym_expression"
-      BrokenDefinition.new
+      if !all_results.all?(&:value_known?)
+        return create_symbol
+      end
+
+      Maybe::Object.from_possibilities(all_results.map { |p| create_symbol(p.value) })
     end
 
     def process_dregx_expression(_, *values)
@@ -479,8 +480,15 @@ module WillItRuby
     end
 
     def create_string(value = nil)
-      binding.irb if value.nil?
       string_class.create_instance(value: value)
+    end
+
+    def symbol_class
+      object_class.get_constant(:Symbol)
+    end
+
+    def create_symbol(value = nil)
+      symbol_class.create_instance(value: value&.to_sym)
     end
   end
 end
