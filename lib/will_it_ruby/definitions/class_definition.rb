@@ -2,6 +2,7 @@ module WillItRuby
   class ClassDefinition
     attr_reader :name, :singleton_class_definition, :super_type, :processor
     include ProcessorDelegateMethods
+    include InstanceVariables
 
     def initialize(name, super_type, parent_scope, processor=parent_scope.processor)
       @name = name

@@ -7,6 +7,8 @@ require "will_it_ruby/processor_delegate_methods"
 require "will_it_ruby/source_file"
 require "will_it_ruby/issue"
 
+require "will_it_ruby/definitions/instance_variables"
+
 require "will_it_ruby/scope/returnable"
 require "will_it_ruby/scope/yieldable"
 require "will_it_ruby/scope/scope"

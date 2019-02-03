@@ -24,5 +24,9 @@ module WillItRuby
         @return_value = processed_value
       end
     end
+
+    def ivar_hash
+      @instance_variables ||= {}
+    end
   end
 end

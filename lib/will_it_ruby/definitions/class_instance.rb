@@ -2,6 +2,7 @@ module WillItRuby
   class ClassInstance
     attr_reader :class_definition, :singleton_class_definition, :label, :value
     include ProcessorDelegateMethods
+    include InstanceVariables
 
     def initialize(class_definition, label: nil, value: nil)
       @class_definition = class_definition

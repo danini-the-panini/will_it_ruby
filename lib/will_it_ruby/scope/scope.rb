@@ -3,6 +3,7 @@ module WillItRuby
     attr_reader :processor, :self_type, :last_evaluated_result, :local_variables, :overrides
     attr_accessor :maybe
     include ProcessorDelegateMethods
+    include InstanceVariables
 
     def initialize(processor, expressions, parent=processor.main_scope)
       @processor = processor
@@ -54,6 +55,10 @@ module WillItRuby
 
     def maybe?
       maybe
+    end
+
+    def get_ivar(name)
+      q( ivar_hash[name] || self_type.get_ivar(name) )
     end
 
     def inspect
@@ -207,6 +212,7 @@ module WillItRuby
       result = q call_method_on_receiver(receiver, name, args, block)
       
       if !block.scopes.empty?
+        # lvars
         # TODO: make sure blargs aren't included here
         all_affected_lvars = block.scopes.map { |s| s.local_variables.keys }.reduce([]) { |a, b| a | b }
         existing_affected_lvars = defined_local_variables & all_affected_lvars
@@ -226,6 +232,25 @@ module WillItRuby
           local_variable_set(k, value)
         end
 
+        #ivars
+        affected_ivars = block.scopes.map { |s| s.ivar_hash.keys }.reduce([]) { |a, b| a | b }
+
+        affected_ivars.each do |k|
+          value = block.scopes.reduce(get_ivar(k)) do |a, b|
+            if b.ivar_hash[k].nil?
+              a
+            else
+              if b.maybe?
+                Maybe::Object.from_possibilities(a, b.ivar_hash[k])
+              else
+                b.ivar_hash[k]
+              end
+            end
+          end
+          set_ivar(k, value)
+        end
+
+        # return value
         if block.scopes.any?(&:did_return?)
           return handle_return block.scopes.find(&:did_return?).return_value
         elsif block.scopes.any?(&:did_partially_return?)
@@ -321,6 +346,7 @@ module WillItRuby
 
       possible_scopes.each(&:process)
 
+      # lvars
       all_affected_lvars = possible_scopes.map { |s| s.local_variables.keys }.reduce([]) { |a, b| a | b }
       new_lvars = all_affected_lvars - defined_local_variables
       existing_affected_lvars = all_affected_lvars - new_lvars
@@ -329,12 +355,22 @@ module WillItRuby
         local_variable_set(k, v_nil)
       end
 
-      existing_affected_lvars.each do |k|
+      all_affected_lvars.each do |k|
         values = possible_scopes.map { |s| s.local_variable_get(k) || self.local_variable_get(k) }
 
         local_variable_set(k, Maybe::Object.from_possibilities(*values.map { |v| q v }))
       end
 
+      #ivars
+      affected_ivars = possible_scopes.map { |s| s.ivar_hash.keys }.reduce([]) { |a, b| a | b }
+
+      affected_ivars.each do |k|
+        values = possible_scopes.map { |s| s.get_ivar(k) || self.get_ivar(k) }
+
+        set_ivar(k, Maybe::Object.from_possibilities(get_ivar(k), *values.map { |v| q v }))
+      end
+
+      # return value
       if possible_scopes.all?(&:did_return?)
         return handle_return Maybe::Object.from_possibilities(*possible_scopes.map(&:return_value).map { |v| q v })
       elsif possible_scopes.any? { |x| x.did_return? || x.did_partially_return? }
@@ -394,6 +430,14 @@ module WillItRuby
     def process_block_expression(*expressions)
       puts "STUB: #{self.class.name}#process_block_expression"
       BrokenDefinition.new
+    end
+
+    def process_ivar_expression(name)
+      q get_ivar(name)
+    end
+
+    def process_iasgn_expression(name, value)
+      set_ivar(name, q( process_expression(value) ))
     end
 
     private

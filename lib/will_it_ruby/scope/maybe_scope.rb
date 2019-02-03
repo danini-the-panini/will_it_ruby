@@ -30,5 +30,13 @@ module WillItRuby
     def defined_local_variables
       @parent.defined_local_variables | @local_variables.keys
     end
+
+    def process_ivar_expression(name)
+      q get_ivar(name)
+    end
+
+    def process_iasgn_expression(name, value)
+      set_ivar(name, q( process_expression(value) ))
+    end
   end
 end

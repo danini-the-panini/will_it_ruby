@@ -16,5 +16,9 @@ module WillItRuby
       end
       return_value
     end
+
+    def ivar_hash
+      self_type.ivar_hash
+    end
   end
 end

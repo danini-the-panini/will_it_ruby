@@ -39,6 +39,10 @@ module WillItRuby
       object_class.add_instance_method(name, MethodDefinition.new(name, args, expressions, @processor, self))
     end
 
+    def ivar_hash
+      self_type.ivar_hash
+    end
+
     private
 
     def check_create_class(name, super_type)
