@@ -10,6 +10,7 @@ require "will_it_ruby/standard_library/numeric"
 require "will_it_ruby/standard_library/integer"
 
 require "will_it_ruby/standard_library/string"
+require "will_it_ruby/standard_library/array"
 
 module WillItRuby
   class StandardLibrary
@@ -42,7 +43,7 @@ module WillItRuby
       false_class  = SingletonClassDefinition.new(:FalseClass, object_class, @processor, label: 'false', value: false)
       object_class.add_constant :FalseClass, false_class
 
-      defclass :Array, definition_class: ArrayClassDefinition
+      array = defclass :Array, definition_class: ArrayClassDefinition
 
       @v_nil   = nil_class.create_instance
       @v_true  = true_class.create_instance
@@ -58,6 +59,7 @@ module WillItRuby
       initialize_numeric(numeric)
       initialize_integer(integer)
       initialize_string(string)
+      initialize_array(array)
     end
 
     private
