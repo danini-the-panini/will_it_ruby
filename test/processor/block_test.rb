@@ -209,5 +209,31 @@ module WillItRuby
       assert_no_issues
       assert_maybe_result [:Integer, 1], [:Integer, 7]
     end
+
+    def handle_blocks_in_blocks
+      process <<-RUBY
+        def foo
+          yield
+        end
+
+        def bar
+          a = 7
+          foo do
+            foo do
+              if Object.new == Objet.new
+                return a
+              end
+              a += 2
+            end
+          end
+          a
+        end
+
+        bar
+      RUBY
+
+      assert_no_issues
+      assert_maybe_result [:Integer, 7], [:Integer, 9]
+    end
   end
 end
