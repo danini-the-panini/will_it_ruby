@@ -30,6 +30,10 @@ module WillItRuby
         Maybe::MethodSet.new(*methods)
       end
 
+      def has_method?(name)
+        @possibilities.all? { |p| p.has_method?(name) }
+      end
+
       def check_is_a(other)
         results = @possibilities.map { |p| p.check_is_a(other) }
         return true if results.all? { |x| x == true }

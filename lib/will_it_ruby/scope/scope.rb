@@ -161,11 +161,45 @@ module WillItRuby
     end
 
     def process_array_expression(*values)
-      value = values.map do |v|
-        process_expression(v)
+      value_known = true
+      element_type_known = true
+      value = values.flat_map do |v|
+        case v[0]
+        when :splat
+          splat_thing = q process_expression(v[1])
+          if splat_thing.has_method?(:to_a)
+            splat_thing = splat_thing.get_method(:to_a).make_call(splat_thing, empty_call)
+          end
+
+          if splat_thing.is_a?(ArrayInstance)
+            if splat_thing.value_known?
+              splat_thing.value
+            else
+              value_known = false
+              if splat_thing.element_type_known?
+                [splat_thing.element_type]
+              else
+                element_type_known = false
+                []
+              end
+            end
+          else
+            [splat_thing]
+          end
+        else
+          q process_expression(v)
+        end
+      end
+
+      if !element_type_known
+        return object_class.get_constant(:Array).create_instance
       end
 
       element_type = value.empty? ? v_nil : Maybe::Object.from_possibilities(*value)
+
+      if !value_known
+        return object_class.get_constant(:Array).create_instance(element_type: element_type)
+      end
 
       object_class.get_constant(:Array).create_instance(value: value, element_type: element_type)
     end
@@ -507,7 +541,7 @@ module WillItRuby
     def call_to_s(thing)
       to_s_method = thing.get_method(:to_s)
       if to_s_method
-        s = to_s_method.make_call(thing, Call.new([], self))
+        s = to_s_method.make_call(thing, empty_call)
         if s.is_a?(ClassInstance) && s.class_definition == object_class.get_constant(:String)
           return s
         elsif s.is_a?(Maybe::Object)
@@ -538,6 +572,10 @@ module WillItRuby
 
     def create_symbol(value = nil)
       symbol_class.create_instance(value: value&.to_sym)
+    end
+
+    def empty_call
+      Call.new([], self).tap(&:process)
     end
   end
 end

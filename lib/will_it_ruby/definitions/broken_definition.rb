@@ -14,6 +14,10 @@ module WillItRuby
       BrokenMethodDefinition.new(name)
     end
 
+    def has_method?(name)
+      false
+    end
+
     def get_instance_method(name, *)
       BrokenMethodDefinition.new(name)
     end

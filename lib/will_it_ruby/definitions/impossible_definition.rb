@@ -4,6 +4,10 @@ module WillItRuby
       nil
     end
 
+    def has_method?(name)
+      false
+    end
+
     def to_s
       "!Impossible!"
     end

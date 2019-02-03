@@ -45,8 +45,16 @@ module WillItRuby
       @class_methods[name] || @super_type&.get_method(name) || object_class.get_constant(:Class).get_instance_method(name)
     end
 
+    def has_method?(name)
+      @class_methods.key?(name) || @super_type&.has_method?(name) || object_class.get_constant(:Class).has_instance_method?(name)
+    end
+
     def get_instance_method(name)
       @instance_methods[name] || @super_type&.get_instance_method(name)
+    end
+
+    def has_instance_method?(name)
+      @instance_methods.key?(name) || @super_type&.has_instance_method?(name)
     end
 
     def create_instance(**options)

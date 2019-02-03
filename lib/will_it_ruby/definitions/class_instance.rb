@@ -18,6 +18,10 @@ module WillItRuby
       @class_definition.get_instance_method(name)
     end
 
+    def has_method?(name)
+      @class_definition.has_instance_method?(name)
+    end
+
     def to_s
       if @value || @label
         "#{@value&.to_s || @label}:#{@class_definition}"
