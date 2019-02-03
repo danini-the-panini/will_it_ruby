@@ -202,10 +202,12 @@ module WillItRuby
           local_variable_set(k, value)
         end
 
-        # There shouldn't really be more than one of these
-        # ... unless theres some iffiness going on
         if block.scopes.any?(&:did_return?)
           return handle_return block.scopes.find(&:did_return?).return_value
+        elsif block.scopes.any?(&:did_partially_return?)
+          result = block.scopes.select(&:did_partially_return?)
+                               .map(&:partial_return)
+                               .reduce(result) { |a, b| a | b }
         end
       end
 

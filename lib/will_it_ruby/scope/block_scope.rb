@@ -16,5 +16,13 @@ module WillItRuby
     def defined_local_variables
       @parent.defined_local_variables | @local_variables.keys
     end
+
+    def handle_return(processed_value)
+      if maybe?
+        handle_partial_return(processed_value)
+      else
+        @return_value = processed_value
+      end
+    end
   end
 end

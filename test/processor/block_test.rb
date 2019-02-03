@@ -165,5 +165,49 @@ module WillItRuby
       assert_no_issues
       assert_maybe_result [:Integer, 1], [:Integer, 2]
     end
+
+    def test_yield_return_if
+      process <<-RUBY
+        def foo(a, b)
+          if a == b
+            yield
+          end
+          1
+        end
+
+        def bar
+          foo(Object.new, Object.new) do
+            return 7
+          end
+        end
+
+        bar
+      RUBY
+
+      assert_no_issues
+      assert_maybe_result [:Integer, 1], [:Integer, 7]
+    end
+
+    def test_block_return_if
+      process <<-RUBY
+        def foo
+          yield
+        end
+
+        def bar
+          foo do
+            if Object.new == Object.new
+              return 7
+            end
+            1
+          end
+        end
+
+        bar
+      RUBY
+
+      assert_no_issues
+      assert_maybe_result [:Integer, 1], [:Integer, 7]
+    end
   end
 end
