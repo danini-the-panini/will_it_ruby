@@ -85,25 +85,48 @@ module WillItRuby
     end
 
     def process_true_expression
-      q @processor.v_true
+      q v_true
     end
 
     def process_false_expression
-      q @processor.v_false
+      q v_false
     end
 
     def process_nil_expression
-      q @processor.v_nil
+      q v_nil
     end
 
-    def process_str_expression(_)
-      puts "STUB: #{self.class.name}#process_str_expression"
-      BrokenDefinition.new
+    def process_str_expression(value)
+      create_string(value)
     end
 
-    def process_dstr_expression(_, *values)
-      puts "STUB: #{self.class.name}#process_dstr_expression"
-      BrokenDefinition.new
+    def process_dstr_expression(start_value, *expressions)
+      possibilities = [start_value]
+      expressions.each do |exp|
+        case exp[0]
+        when :evstr
+          result = process_expression(exp[1])
+          case result
+          when Maybe::Object
+            string_results = Maybe::Object.normalize(result.possibilities.map { |p| call_to_s(p) })
+          else
+            string_results = [call_to_s(result)]
+          end
+
+          # If any evstr returns a completely unknown value, the whole string must be unknown
+          if !string_results.all?(&:value_known?)
+            return create_string
+          end
+
+          possibilities = possibilities.flat_map do |p|
+            string_results.map { |s| p + s.value }
+          end
+        when :str
+          possibilities.map! { |s| s + exp[1] }
+        end
+      end
+
+      Maybe::Object.from_possibilities(possibilities.map { |p| create_string(p) })
     end
 
     def process_evstr_expression(expression)
@@ -411,7 +434,7 @@ module WillItRuby
         end
       else
         thing = receiver.nil? ? "local variable or method" : "method"
-        register_issue @current_sexp&.line, "Undefined #{thing} `#{name}' for #{receiver_type.to_s}"
+        register_issue @current_sexp&.line, "Undefined #{thing} `#{name}' for #{receiver_type}"
         BrokenDefinition.new
       end
     end
@@ -429,6 +452,35 @@ module WillItRuby
 
     def casecmp(a, b)
       s(:call, a, :===, b)
+    end
+
+    def call_to_s(thing)
+      to_s_method = thing.get_method(:to_s)
+      if to_s_method
+        s = to_s_method.make_call(thing, Call.new([], self))
+        if s.is_a?(ClassInstance) && s.class_definition == object_class.get_constant(:String)
+          return s
+        elsif s.is_a?(Maybe::Object)
+          if s.possibilities.any? { |p| p.class_definition != object.class.get_constant(:String) }
+            create_string
+          else
+            return s
+          end
+        else
+          create_string
+        end
+      else
+        register_issue @curent_sexp&.line, "undefined method `to_s' for #{thing}"
+      end
+    end
+
+    def string_class
+      object_class.get_constant(:String)
+    end
+
+    def create_string(value = nil)
+      binding.irb if value.nil?
+      string_class.create_instance(value: value)
     end
   end
 end

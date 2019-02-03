@@ -10,7 +10,7 @@ module WillItRuby
     def make_call(self_type, call, block=nil)
       # TODO: handle splats/kwsplats
       # TODO: handle block
-      self_type.instance_exec(*call.pargs, **call.kwargs, &@block)
+      self_type.instance_exec(*(call.pargs || []), **(call.kwargs || {}), &@block)
     end
 
     def check_call(call)

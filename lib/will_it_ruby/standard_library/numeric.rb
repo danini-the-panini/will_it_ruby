@@ -164,7 +164,7 @@ module WillItRuby
         %i(< > <= >= <=>).each do |operator|
           type.def_instance_method(operator, s(:args, :other), precheck: -> (other) {
             if !REAL_NUMERIC_TYPES.map{ |n| object_class.get_constant(n) }.include?(other.class_definition)
-              "comparison of #{other.class_definition.to_s} with #{type_name} failed"
+              "comparison of #{other.class_definition} with #{type_name} failed"
             end
           }) do |other|
             if self.value_known? && other.value_known?
@@ -250,7 +250,7 @@ module WillItRuby
           type.def_instance_method(:ceil, s(:args, s(:lasgn, :ndigits, s(:lit, 0))), precheck: -> (ndigits) {
             # TODO: allow other types that implements #to_int that returns an integer
             if !REAL_NUMERIC_TYPES.map { |t| object_class.get_constant(t) }.include?(ndigits.class_definition)
-              "can't convert #{ndigits.to_s} to Integer"
+              "can't convert #{ndigits} to Integer"
             end
           }) do |ndigits|
             if self.value_known? && ndigits.value_known?

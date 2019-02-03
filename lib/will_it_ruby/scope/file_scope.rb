@@ -44,7 +44,7 @@ module WillItRuby
     def check_create_class(name, super_type)
       return if super_type.nil?
       if !super_type.is_a?(ClassDefinition)
-        return "superclass must be a Class (#{super_type.class_definition.to_s} given)"
+        return "superclass must be a Class (#{super_type.class_definition} given)"
       else
         klass = process_const_expression(name)
         if klass && klass.super_type != super_type

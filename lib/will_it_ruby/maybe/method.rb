@@ -30,7 +30,7 @@ module WillItRuby
       private
 
       def no_method_error
-        "Undefined method `#{name}' for #{receiver_type.to_s}"
+        "Undefined method `#{name}' for #{receiver_type}"
       end
     end
   end

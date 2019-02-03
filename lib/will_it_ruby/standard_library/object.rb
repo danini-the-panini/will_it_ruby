@@ -38,6 +38,10 @@ module WillItRuby
           v_false
         end
 
+        d.def_instance_method(:to_s, s(:args)) do
+          object_class.get_constant(:String).create_instance
+        end
+
         d.def_instance_method(:class, s(:args)) do
           class_definition
         end

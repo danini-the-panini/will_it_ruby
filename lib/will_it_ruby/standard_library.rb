@@ -9,6 +9,8 @@ require "will_it_ruby/standard_library/false_class"
 require "will_it_ruby/standard_library/numeric"
 require "will_it_ruby/standard_library/integer"
 
+require "will_it_ruby/standard_library/string"
+
 module WillItRuby
   class StandardLibrary
     attr_reader :object_class, :basic_object_class, :v_nil, :v_true, :v_false, :v_bool
@@ -23,7 +25,7 @@ module WillItRuby
       module_class = defclass :Module
       class_class  = defclass :Class, module_class
 
-      defclass :String
+      string = defclass :String
       defclass :Symbol
 
       numeric = defclass :Numeric
@@ -53,6 +55,7 @@ module WillItRuby
       initialize_false_class(false_class)
       initialize_numeric(numeric)
       initialize_integer(integer)
+      initialize_string(string)
     end
 
     private

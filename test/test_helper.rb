@@ -73,7 +73,7 @@ module WillItRuby
     end
 
     def print_issues(issues)
-      issues.map { |i| "\t#{i.to_s}"}.join("\n")
+      issues.map { |i| "\t#{i}"}.join("\n")
     end
   end
 end

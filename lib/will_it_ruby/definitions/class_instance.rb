@@ -19,9 +19,9 @@ module WillItRuby
 
     def to_s
       if @value || @label
-        "#{@value&.to_s || @label}:#{@class_definition.to_s}"
+        "#{@value&.to_s || @label}:#{@class_definition}"
       else
-        "#<#{@class_definition.to_s}>"
+        "#<#{@class_definition}>"
       end
     end
 
