@@ -69,5 +69,29 @@ module WillItRuby
         object_class.add_constant(name, c)
       end
     end
+
+    def check_convert_to_str(thing)
+      check_convert(thing, object_class.get_constant(:String), :to_str)
+    end
+
+    def check_convert_to_int(thing)
+      check_convert(thing, object_class.get_constant(:Integer), :to_int)
+    end
+
+    def check_convert_to_ary(thing)
+      check_convert(thing, object_class.get_constant(:Array), :to_ary)
+    end
+
+    def check_convert(thing, expected_type, method_name)
+      return if thing.class_definition == expected_type
+      if !thing.has_method?(method_name)
+        "no implicit conversion of #{thing.class_definition} into #{expected_type}"
+      else
+        thing_conv = thing.get_method(method_name).make_call(thing, Call.new([], nil).tap(&:process))
+        if thing_conv.class_definition != expected_type
+          "can't convert #{thing.class_definition} to #{expected_type} (#{thing.class_definition}##{method_name} gives #{thing_conv.class_definition})"
+        end
+      end
+    end
   end
 end
