@@ -83,7 +83,16 @@ module WillItRuby
         end
       end
 
-      # TODO: <<
+      d.def_instance_method(:<<, s(:args, :value)) do |v|
+        if value_known?
+          value << v
+          update_element_type
+        else
+          self.element_type |= v
+        end
+        self
+      end
+
       # TODO: <=>
       # TODO: ==
 
@@ -105,9 +114,9 @@ module WillItRuby
       }) do |index, v|
         if value_known? && index.value_known?
           value[index.value] = v
-          self.element_type = Maybe::Object.from_possibilities(*value)
+          update_element_type
         else
-          self.element_type = element_type | v
+          add_element_type(v)
         end
       end
 
