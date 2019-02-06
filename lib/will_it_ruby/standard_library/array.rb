@@ -83,6 +83,123 @@ module WillItRuby
         end
       end
 
+      # TODO: <<
+      # TODO: <=>
+      # TODO: ==
+
+      # TODO: overload for (start, end) and (range)
+      d.def_instance_method(:[], s(:args, :index), precheck: -> (index) {
+        check_convert_to_int(index)
+      }) do |index|
+        if value_known? && index.value_known?
+          value[index.value] || v_nil
+        else
+          Maybe::Object.from_possibilities(element_type, v_nil)
+        end
+      end
+
+      # TODO: overload for (start, end) and (range)
+      # TODO: when index is out of bounds, extend the array size and add nils where necessary
+      d.def_instance_method(:[]=, s(:args, :index, :value), precheck: -> (index, v) {
+        check_convert_to_int(index)
+      }) do |index, v|
+        if value_known? && index.value_known?
+          value[index.value] = v
+          self.element_type = Maybe::Object.from_possibilities(*value)
+        else
+          self.element_type = element_type | v
+        end
+      end
+
+      # TODO: any?
+      # TODO: append
+      # TODO: assoc
+      # TODO: at
+      # TODO: bsearch
+      # TODO: bsearch_index
+      # TODO: clear
+      # TODO: collect
+      # TODO: collect!
+      # TODO: combination
+      # TODO: compact
+      # TODO: compact!
+      # TODO: concat
+      # TODO: count
+      # TODO: cycle
+      # TODO: delete
+      # TODO: delete_at
+      # TODO: delete_if
+      # TODO: dig
+      # TODO: drop
+      # TODO: drop_while
+      # TODO: each
+      # TODO: each_index
+      # TODO: empty?
+      # TODO: eql?
+      # TODO: fetch
+      # TODO: fill
+      # TODO: find_index
+      # TODO: first
+      # TODO: flatten
+      # TODO: flatten!
+      # TODO: frozen?
+      # TODO: hash
+      # TODO: include?
+      # TODO: index
+      # TODO: insert
+      # TODO: inspect
+      # TODO: join
+      # TODO: keep_if
+      # TODO: last
+      # TODO: length
+      # TODO: map
+      # TODO: map!
+      # TODO: max
+      # TODO: min
+      # TODO: pack
+      # TODO: permutation
+      # TODO: pop
+      # TODO: prepend
+      # TODO: product
+      # TODO: push
+      # TODO: rassoc
+      # TODO: reject
+      # TODO: reject!
+      # TODO: repeated_combination
+      # TODO: repeated_permutation
+      # TODO: replace
+      # TODO: reverse
+      # TODO: reverse!
+      # TODO: reverse_each
+      # TODO: rindex
+      # TODO: rotate
+      # TODO: rotate!
+      # TODO: sample
+      # TODO: select
+      # TODO: select!
+      # TODO: shift
+      # TODO: shuffle
+      # TODO: shuffle!
+      # TODO: size
+      # TODO: slice
+      # TODO: slice!
+      # TODO: sort
+      # TODO: sort!
+      # TODO: sort_by!
+      # TODO: sum
+      # TODO: take
+      # TODO: take_while
+      # TODO: to_a
+      # TODO: to_ary
+      # TODO: to_h
+      # TODO: to_s
+      # TODO: transpose
+      # TODO: uniq
+      # TODO: uniq!
+      # TODO: unshift
+      # TODO: values_at
+      # TODO: zip
+
       d.def_instance_method(:to_a, s(:args)) do
         self
       end

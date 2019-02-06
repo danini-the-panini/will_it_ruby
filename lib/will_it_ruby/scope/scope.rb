@@ -241,6 +241,11 @@ module WillItRuby
       end
     end
 
+    def process_attrasgn_expression(receiver, name, *args)
+      process_call_expression(receiver, name, *args)
+      process_expression(args.last)
+    end
+
     def process_iter_expression(call, blargs, blexp = s(:nil))
       _, receiver, name, *args = call
       
