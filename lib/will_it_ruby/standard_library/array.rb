@@ -198,7 +198,11 @@ module WillItRuby
       # TODO: sum
       # TODO: take
       # TODO: take_while
-      # TODO: to_a
+
+      d.def_instance_method(:to_a, s(:args)) do
+        self
+      end
+
       # TODO: to_ary
       # TODO: to_h
       # TODO: to_s
@@ -208,10 +212,6 @@ module WillItRuby
       # TODO: unshift
       # TODO: values_at
       # TODO: zip
-
-      d.def_instance_method(:to_a, s(:args)) do
-        self
-      end
     end
   end
 end
