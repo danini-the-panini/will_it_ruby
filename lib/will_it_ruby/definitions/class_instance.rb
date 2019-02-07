@@ -69,12 +69,20 @@ module WillItRuby
       definitely_falsey?
     end
 
+    def maybe_nil?
+      definitely_nil?
+    end
+
     def definitely_truthy?
       !value_known? || value
     end
 
     def definitely_falsey?
       value_known? && !value
+    end
+
+    def definitely_nil?
+      @class_definition == object_class.get_constant(:NilClass)
     end
 
     def resolve_truthy
@@ -91,6 +99,10 @@ module WillItRuby
 
     def |(other)
       Maybe::Object.from_possibilities(self, other)
+    end
+
+    def without_nils
+      definitely_nil? ? ImpossibleDefinition.new : self
     end
 
     def create_scope(expressions=[], block=nil)

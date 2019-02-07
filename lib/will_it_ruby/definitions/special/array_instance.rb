@@ -17,7 +17,12 @@ module WillItRuby
 
     def update_element_type
       if value_known?
-        @element_type = Maybe::Object.from_possibilities(*value)
+        @element_type =
+          if value.size > 0
+            Maybe::Object.from_possibilities(*value)
+          else
+            v_nil
+          end
       end
     end
 

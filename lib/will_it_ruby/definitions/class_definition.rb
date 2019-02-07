@@ -95,11 +95,19 @@ module WillItRuby
       false
     end
 
+    def maybe_nil?
+      false
+    end
+
     def definitely_truthy?
       true
     end
 
     def definitely_falsey?
+      false
+    end
+
+    def definitely_nil?
       false
     end
 
@@ -117,6 +125,10 @@ module WillItRuby
 
     def |(other)
       Maybe::Object.from_possibilities(self, other)
+    end
+
+    def without_nils
+      self
     end
 
     def create_scope(expressions=[])

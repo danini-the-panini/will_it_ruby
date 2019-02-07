@@ -130,7 +130,32 @@ module WillItRuby
       # TODO: collect
       # TODO: collect!
       # TODO: combination
-      # TODO: compact
+      
+      d.def_instance_method(:compact, s(:args)) do |block|
+        if value_known?
+          if value.all?(&:definitely_nil?)
+            object_class.get_constant(:Array).create_instance(value: [])
+          else
+            possibilities = [[]]
+            value.each do |v|
+              next if v.definitely_nil?
+              if !v.maybe_nil?
+                possibilities.each { |p| p << v }
+              else
+                possibilities += possibilities.map { |p| [*p, v.without_nils] }
+              end
+            end
+
+            Maybe::Object.from_possibilities(*possibilities.map { |v|
+              object_class.get_constant(:Array).create_instance(value: v)
+            })
+          end
+        else
+          new_element_type = element_type.without_nils
+          object_class.get_constant(:Array).create_instance(element_type: new_element_type | v_nil)
+        end
+      end
+
       # TODO: compact!
       # TODO: concat
       # TODO: count

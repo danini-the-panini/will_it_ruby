@@ -34,11 +34,19 @@ module WillItRuby
       true
     end
 
+    def maybe_nil?
+      true
+    end
+
     def definitely_truthy?
       false
     end
 
     def definitely_falsey?
+      false
+    end
+
+    def definitely_nil?
       false
     end
 
@@ -55,6 +63,10 @@ module WillItRuby
     end
 
     def |(other)
+      self
+    end
+
+    def without_nils
       self
     end
 

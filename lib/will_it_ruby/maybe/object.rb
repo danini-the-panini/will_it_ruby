@@ -1,6 +1,7 @@
 module WillItRuby
   module Maybe
     class Object
+      include ProcessorDelegateMethods
       attr_reader :possibilities
 
       def self.from_possibilities(*possibilities)
@@ -53,12 +54,20 @@ module WillItRuby
         @possibilities.any?(&:maybe_falsey?)
       end
 
+      def maybe_nil?
+        @possibilities.any?(&:maybe_nil?)
+      end
+
       def definitely_truthy?
         @possibilities.all?(&:definitely_truthy?)
       end
 
       def definitely_falsey?
         @possibilities.all?(&:definitely_falsey?)
+      end
+
+      def definitely_nil?
+        false
       end
 
       def resolve_truthy
@@ -87,6 +96,10 @@ module WillItRuby
 
       def |(other)
         Maybe::Object.from_possibilities(self, other)
+      end
+
+      def without_nils
+        Maybe::Object.from_possibilities(*@possibilities.reject { |p| p.class_definition == object_class.get_constant(:NilClass) })
       end
 
       private
