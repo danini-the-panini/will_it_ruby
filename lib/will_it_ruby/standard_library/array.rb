@@ -162,6 +162,7 @@ module WillItRuby
       # TODO: last
       # TODO: length
       
+      # TODO: return Enumerable if no block
       d.def_instance_method(:map, s(:args)) do |block|
         scope = create_scope([], block)
         if value_known?
