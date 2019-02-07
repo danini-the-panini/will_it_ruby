@@ -76,3 +76,8 @@ h1 {
   font-style: italic;
   color: #a00;
 }
+
+.codeflask__pre:after {
+  content: attr(data-result);
+  color: #999;
+}

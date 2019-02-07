@@ -12,7 +12,7 @@
     };
   }
 
-  async function getErrors(code) {
+  async function getEvaluation(code) {
     const response = await fetch('/check', {
       method: "POST",
       headers: { "Content-Type": "text/plain", },
@@ -23,7 +23,9 @@
 
   async function checkCode(code) {
     output.classList.add('loading');
-    setErrors(await getErrors(code));
+    const { errors, result } = await getEvaluation(code)
+    setErrors(errors);
+    setResult(result);
     output.classList.remove('loading');
   }
 
@@ -39,10 +41,16 @@
     });
   }
 
+  function setResult(result) {
+    if (!editor) return;
+    const pre = editor.editorRoot.querySelector('pre');
+    if (!pre) return;
+    pre.dataset.result = `#=> ${result}`;
+  }
+
   const debouncedCheckCode = debounce(checkCode, 300);
 
   document.addEventListener("DOMContentLoaded", function () {
-    editor = document.querySelector('#editor');
     output = document.querySelector('#output');
 
     window.editor = editor = new CodeFlask('#editor', {
