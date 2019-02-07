@@ -92,5 +92,9 @@ module WillItRuby
     def |(other)
       Maybe::Object.from_possibilities(self, other)
     end
+
+    def create_scope(expressions=[], block=nil)
+      MethodScope.new(processor, expressions, @class_definition.create_scope, self, block)
+    end
   end
 end

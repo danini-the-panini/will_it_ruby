@@ -267,6 +267,11 @@ module WillItRuby
         end
       end
 
+      # TODO: handle different bases e.g. hex, oct, etc.
+      numeric_class.def_instance_method(:to_s, s(:args)) do
+        object_class.get_constant(:String).create_instance(value: value&.to_s)
+      end
+
       # TODO: :clone, :coerce, :conj, :conjugate, :denominator, :div, :divmod, :dup, fdiv, :finite?, :i, :imag, :imaginary, :infinite?, :integer?, :magnitude, :modulo, :negative?, :nonzero?, :numerator, :phase, :polar, :positive?, :quo, :real, :real?, :rect, :rectangular, :remainder, :round, :singleton_method_added, :step, :to_c, :to_int, :truncate, :zero?
     end
   end

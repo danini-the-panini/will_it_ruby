@@ -161,7 +161,22 @@ module WillItRuby
       # TODO: keep_if
       # TODO: last
       # TODO: length
-      # TODO: map
+      
+      d.def_instance_method(:map, s(:args)) do |block|
+        scope = create_scope([], block)
+        if value_known?
+          new_value = value.map do |v|
+            call = PreprocessedCall.new([v])
+            scope.process_yield(call)
+          end
+          object_class.get_constant(:Array).create_instance(value: new_value)
+        else
+          call = PreprocessedCall.new([element_type])
+          new_element_type = scope.process_yield(call)
+          object_class.get_constant(:Array).create_instance(element_type: new_element_type | v_nil)
+        end
+      end
+
       # TODO: map!
       # TODO: max
       # TODO: min

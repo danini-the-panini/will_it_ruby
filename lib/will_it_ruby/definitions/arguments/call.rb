@@ -32,4 +32,17 @@ module WillItRuby
       return pargs, splats
     end
   end
+
+  class PreprocessedCall < Call
+    # TODO: splats and kwsplats
+
+    def initialize(pargs = [], kwargs = [])
+      @pargs = pargs
+      @kwargs = kwargs
+    end
+
+    def process
+      # do nothing
+    end
+  end
 end

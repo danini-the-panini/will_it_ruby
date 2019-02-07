@@ -36,9 +36,10 @@ module WillItRuby
     end
     
     def monkey_patch_expressions(expressions)
-      scope = ClassScope.new(@parent_scope.processor, expressions, @parent_scope, self)
-      @scopes << scope
-      scope.process
+      create_scope(expressions).tap do |scope|
+        @scopes << scope
+        scope.process
+      end
     end
 
     def get_method(name)
@@ -116,6 +117,10 @@ module WillItRuby
 
     def |(other)
       Maybe::Object.from_possibilities(self, other)
+    end
+
+    def create_scope(expressions=[])
+      ClassScope.new(processor, expressions, @parent_scope, self)
     end
   end
 end
