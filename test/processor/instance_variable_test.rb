@@ -43,7 +43,7 @@ module WillItRuby
       process <<-RUBY
         class Foo
           def set_foo(a, b)
-            if Object.new == Object.new
+            if [1, nil].sample
               @foo = a
             else
               @foo = b
@@ -94,7 +94,7 @@ module WillItRuby
     def test_yield_if_case
       process <<-RUBY
         def foo(a)
-          if Object.new == Object.new
+          if [1, nil].sample
             yield(-a)
           else
             yield(a)
@@ -131,7 +131,7 @@ module WillItRuby
         class Bar
           def bar(a)
             foo(a + 1) do |x|
-              if Object.new == Object.new
+              if [1, nil].sample
                 @bar = x * 2
               end
             end
@@ -159,7 +159,7 @@ module WillItRuby
 
         class Bar
           def bar(a)
-            if Object.new == Object.new
+            if [1, nil].sample
               foo(a + 1) do |x|
                 @bar = x * 2
               end

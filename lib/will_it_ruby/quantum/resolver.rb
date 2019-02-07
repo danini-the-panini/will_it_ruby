@@ -103,7 +103,7 @@ module WillItRuby
       end
 
       def process_lvar_expression(name)
-        resolve_value @scope.instance_variable_get(name)
+        resolve_value @scope.local_variable_get(name)
       end
 
       def process_self_expression
@@ -115,7 +115,7 @@ module WillItRuby
       end
 
       def process_call_expression(receiver, name, *args)
-        if receiver.nil? && local_variable_defined?(name)
+        if receiver.nil? && @scope.local_variable_defined?(name)
           process_lvar_expression(name)
         else
           call = Call.new(args, @scope)
@@ -208,7 +208,7 @@ module WillItRuby
       def resolve_value(val)
         resolved_value = truthy? ? val.resolve_truthy : val.resolve_falsey
         return if resolved_value.nil?
-        scope.add_override(val, resolved_value)
+        @scope.add_override(val, resolved_value)
       end
 
       def process_either(a, b)

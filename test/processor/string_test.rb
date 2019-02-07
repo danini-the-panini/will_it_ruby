@@ -23,7 +23,7 @@ module WillItRuby
     def test_dynamic_unknown_case
       process <<-'RUBY'
         foo = 'FOO'
-        if Object.new == Object.new
+        if [1, nil].sample
           foo = 'BAR'
         end
 

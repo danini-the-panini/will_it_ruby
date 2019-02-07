@@ -5,8 +5,8 @@ module WillItRuby
     def test_happy_case
       process <<-RUBY
         class Foo
-          def foo(a, b)
-            if a == b
+          def foo(x)
+            if x
               5
             else
               5.0
@@ -14,7 +14,7 @@ module WillItRuby
           end
         end
 
-        Foo.new.foo(Object.new, Object.new) / 2
+        Foo.new.foo([1, nil].sample) / 2
       RUBY
 
       assert_no_issues
@@ -24,8 +24,8 @@ module WillItRuby
     def test_sad_case
       process <<-RUBY
         class Foo
-          def foo(a, b)
-            if a == b
+          def foo(x)
+            if x
               5
             else
               nil
@@ -33,7 +33,7 @@ module WillItRuby
           end
         end
 
-        Foo.new.foo(Object.new, Object.new) / 2
+        Foo.new.foo([1, nil].sample) / 2
       RUBY
 
       assert_issues "(unknown):11 Undefined method `/' for nil:NilClass"
@@ -42,14 +42,14 @@ module WillItRuby
     def test_implicit_else_case
       process <<-RUBY
         class Foo
-          def foo(a, b)
-            if a == b
+          def foo(x)
+            if x
               5
             end
           end
         end
 
-        Foo.new.foo(Object.new, Object.new) / 2
+        Foo.new.foo([1, nil].sample) / 2
       RUBY
 
       assert_issues "(unknown):9 Undefined method `/' for nil:NilClass"
@@ -58,8 +58,8 @@ module WillItRuby
     def test_lasgn_case
       process <<-RUBY
         class Foo
-          def foo(a, b)
-            x = if a == b
+          def foo(x)
+            x = if x
                   5
                 else
                   5.0
@@ -69,7 +69,7 @@ module WillItRuby
           end
         end
 
-        Foo.new.foo(Object.new, Object.new) / 2
+        Foo.new.foo([1, nil].sample) / 2
       RUBY
 
       assert_no_issues
@@ -79,10 +79,10 @@ module WillItRuby
     def test_lasgn_inside_case
       process <<-RUBY
         class Foo
-          def foo(a, b)
+          def foo(a)
             x = nil
             
-            if a == b
+            if a
               x = 5
             else
               x = 5.0
@@ -92,7 +92,7 @@ module WillItRuby
           end
         end
 
-        Foo.new.foo(Object.new, Object.new) / 2
+        Foo.new.foo([1, nil].sample) / 2
       RUBY
 
       assert_no_issues
@@ -102,10 +102,10 @@ module WillItRuby
     def test_lasgn_sometimes_case
       process <<-RUBY
         class Foo
-          def foo(a, b)
+          def foo(a)
             x = 5.0
             
-            if a == b
+            if a
               x = 5
             end
 
@@ -113,7 +113,7 @@ module WillItRuby
           end
         end
 
-        Foo.new.foo(Object.new, Object.new) / 2
+        Foo.new.foo([1, nil].sample) / 2
       RUBY
 
       assert_no_issues
@@ -124,9 +124,9 @@ module WillItRuby
       process <<-RUBY
         class Foo
           def foo(a, b)
-            if a == b
+            if a
               5
-            elsif b.equal?(a)
+            elsif b
               5.0
             else
               0
@@ -134,7 +134,8 @@ module WillItRuby
           end
         end
 
-        Foo.new.foo(Object.new, Object.new) / 2
+        a = [1, nil]
+        Foo.new.foo(a.sample, a.sample) / 2
       RUBY
 
       assert_no_issues
@@ -146,9 +147,9 @@ module WillItRuby
         class Foo
           def foo(a, b)
             x = nil
-            if a == b
+            if a
               x = 5
-            elsif b.equal?(a)
+            elsif b
               x = 5.0
             else
               x = 0
@@ -157,7 +158,8 @@ module WillItRuby
           end
         end
 
-        Foo.new.foo(Object.new, Object.new) / 2
+        a = [1, nil]
+        Foo.new.foo(a.sample, a.sample) / 2
       RUBY
 
       assert_no_issues
@@ -276,15 +278,7 @@ module WillItRuby
 
     def test_quantum_type_checking_nil
       process <<-RUBY
-        def foo(a, b)
-          if a == b
-            1
-          else
-            nil
-          end
-        end
-
-        maybe = foo(Object.new, Object.new)
+        maybe = [1, nil].sample
 
         x = if maybe.nil?
           2.5
@@ -299,15 +293,7 @@ module WillItRuby
 
     def test_quantum_type_checking_not
       process <<-RUBY
-        def foo(a, b)
-          if a == b
-            1
-          else
-            nil
-          end
-        end
-
-        maybe = foo(Object.new, Object.new)
+        maybe = [1, nil].sample
 
         x = if !maybe.nil?
           maybe + 1
@@ -322,15 +308,7 @@ module WillItRuby
 
     def test_quantum_type_checking_is_a
       process <<-RUBY
-        def foo(a, b)
-          if a == b
-            1
-          else
-            :a
-          end
-        end
-
-        maybe = foo(Object.new, Object.new)
+        maybe = [1, :a].sample
 
         x = if maybe.is_a?(Symbol)
           2.5
@@ -345,17 +323,7 @@ module WillItRuby
 
     def test_quantum_type_checking_or
       process <<-RUBY
-        def foo(a, b, c)
-          if a == b
-            1
-          elsif a == c
-            1.5
-          else
-            nil
-          end
-        end
-
-        maybe = foo(Object.new, Object.new, Object.new)
+        maybe = [1, 1.5, nil].sample
 
         x = if maybe.is_a?(Integer) || maybe.is_a?(Float)
           maybe + 1
@@ -370,15 +338,7 @@ module WillItRuby
 
     def test_quantum_type_checking_or2
       process <<-RUBY
-        def foo(a, b)
-          if a == b
-            1
-          else
-            nil
-          end
-        end
-
-        maybe = foo(Object.new, Object.new)
+        maybe = [1, nil].sample
 
         if maybe.nil? || maybe <= 0
           2.5
@@ -393,15 +353,7 @@ module WillItRuby
 
     def test_quantum_type_checking_and
       process <<-RUBY
-        def foo(a, b)
-          if a == b
-            1
-          else
-            nil
-          end
-        end
-
-        maybe = foo(Object.new, Object.new)
+        maybe = [1, nil].sample
 
         if !maybe.nil? && maybe > 0
           maybe + 1
@@ -459,7 +411,7 @@ module WillItRuby
       assert_result :Integer, 1
 
       process <<-RUBY
-        foo(Object.new == Object.new)
+        foo([true, false].sample)
       RUBY
 
       assert_no_issues

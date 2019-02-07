@@ -148,14 +148,14 @@ module WillItRuby
 
     def test_yield_in_if
       process <<-RUBY
-        def foo(a, b)
-          if a == b
+        def foo(x)
+          if x
             yield
           end
         end
 
         a = 1
-        foo(Object.new, Object.new) do
+        foo([1, nil].sample) do
           a = 2
         end
 
@@ -168,15 +168,15 @@ module WillItRuby
 
     def test_yield_return_if
       process <<-RUBY
-        def foo(a, b)
-          if a == b
+        def foo(x)
+          if x
             yield
           end
           1
         end
 
         def bar
-          foo(Object.new, Object.new) do
+          foo([1, nil].sample) do
             return 7
           end
         end
@@ -196,7 +196,7 @@ module WillItRuby
 
         def bar
           foo do
-            if Object.new == Object.new
+            if [1, nil].sample
               return 7
             end
             1
@@ -220,7 +220,7 @@ module WillItRuby
           a = 7
           foo do
             foo do
-              if Object.new == Objet.new
+              if [1, nil].sample
                 return a
               end
               a += 2

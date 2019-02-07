@@ -26,10 +26,10 @@ module WillItRuby
 
     def test_sad_if_case
       process <<-RUBY
-        if Object.new == Object.new
+        if [1, nil].sample
           return
         else
-          if Object.new == Object.new
+          if [1, nil].sample
             return
           end
         end
@@ -43,15 +43,15 @@ module WillItRuby
 
     def test_if_case
       process <<-RUBY
-        def foo(a, b)
-          if a == b
+        def foo(x)
+          if x
             return 1
           else
             return :a
           end
         end
 
-        foo(Object.new, Object.new)
+        foo([1, nil].sample)
       RUBY
 
       assert_no_issues
@@ -80,7 +80,7 @@ module WillItRuby
       assert_result :Integer, 0
       
       process <<-RUBY
-        foo(Object.new == Object.new ? 1 : nil)
+        foo([1, nil].sample)
       RUBY
 
       assert_no_issues
@@ -114,7 +114,7 @@ module WillItRuby
       assert_result :NilClass
       
       process <<-RUBY
-        foo(Object.new == Object.new ? 1 : nil)
+        foo([1, nil].sample)
       RUBY
 
       assert_no_issues
@@ -149,7 +149,7 @@ module WillItRuby
       assert_result :Integer, 1
       
       process <<-RUBY
-        foo(Object.new == Object.new ? 42 : nil)
+        foo([42, nil].sample)
       RUBY
 
       assert_no_issues

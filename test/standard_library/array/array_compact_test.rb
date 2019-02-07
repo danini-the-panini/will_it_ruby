@@ -52,7 +52,7 @@ module WillItRuby
 
     def test_maybe_nil_in_array
       process <<-RUBY
-        maybe_nil = Object.new == Object.new ? 7 : nil
+        maybe_nil = [7, nil].sample
         a = [1, maybe_nil, 2]
         a.compact
       RUBY
