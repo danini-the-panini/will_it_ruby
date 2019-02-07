@@ -393,7 +393,6 @@ module WillItRuby
       # lvars
       all_affected_lvars = possible_scopes.map { |s| s.local_variables.keys }.reduce([]) { |a, b| a | b }
       new_lvars = all_affected_lvars - defined_local_variables
-      existing_affected_lvars = all_affected_lvars - new_lvars
 
       new_lvars.each do |k|
         local_variable_set(k, v_nil)
