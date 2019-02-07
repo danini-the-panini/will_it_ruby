@@ -90,15 +90,15 @@ module WillItRuby
     end
 
     def process_true_expression
-      q v_true
+      v_true
     end
 
     def process_false_expression
-      q v_false
+      v_false
     end
 
     def process_nil_expression
-      q v_nil
+      v_nil
     end
 
     def process_str_expression(value)

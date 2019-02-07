@@ -188,6 +188,30 @@ module WillItRuby
 
       assert_no_issues
       assert_result :Integer, 0
+
+      process <<-RUBY
+        foo([1, nil].sample)
+      RUBY
+
+      assert_no_issues
+      assert_maybe_result [:Integer, 0], [:Integer, 3]
+    end
+
+    def test_maybe_nil_check
+      process <<-RUBY
+        r = [1,nil].sample
+
+        x = if r.nil?
+              'asdf'
+            else
+              nil
+            end
+
+        x
+      RUBY
+
+      assert_no_issues
+      assert_maybe_result [:String, 'asdf'], [:NilClass]
     end
 
     def test_is_a_check

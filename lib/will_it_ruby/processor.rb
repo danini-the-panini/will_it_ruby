@@ -46,7 +46,7 @@ module WillItRuby
     end
 
     def last_evaluated_result
-      @last_file.scope.last_evaluated_result
+      @last_file&.scope&.last_evaluated_result
     end
 
     private
