@@ -1,7 +1,7 @@
 require "test_helper"
 
 module WillItRuby
-  class StandardLibrary::ArraySubscriptTest < ProcessorTest
+  class StandardLibrary::ArrayPushTest < ProcessorTest
     def test_basic_push
       process <<-RUBY
         a = [1,2,3]

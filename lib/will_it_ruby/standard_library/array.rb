@@ -224,7 +224,23 @@ module WillItRuby
       # TODO: rindex
       # TODO: rotate
       # TODO: rotate!
-      # TODO: sample
+      
+      # TODO: overloaded with args.. (n, random: rng)
+      d.def_instance_method(:sample, s(:args)) do
+        if value_known?
+          case value.size
+          when 0
+            v_nil
+          when 1
+            value.first
+          else
+            element_type
+          end
+        else
+          element_type
+        end
+      end
+
       # TODO: select
       # TODO: select!
       # TODO: shift
