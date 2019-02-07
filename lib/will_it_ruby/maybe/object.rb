@@ -90,6 +90,10 @@ module WillItRuby
         "(#{@possibilities.map(&:to_s).join(' | ')})"
       end
 
+      def to_s_simple
+        "(#{@possibilities.map(&:to_s_simple).join('|')})"
+      end
+
       def inspect
         "#<#{self.class.name} @possibilities=#{@possibilities.inspect}>"
       end

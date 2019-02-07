@@ -33,5 +33,13 @@ module WillItRuby
         @element_type |= v
       end
     end
+
+    def to_s
+      if value_known?
+        "[#{value.map(&:to_s_simple).join(', ')}]:#{@class_definition}"
+      else
+        "[#{element_type}]"
+      end
+    end
   end
 end

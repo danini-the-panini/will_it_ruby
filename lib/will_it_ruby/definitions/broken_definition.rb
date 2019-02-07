@@ -74,6 +74,10 @@ module WillItRuby
       "!Broken!"
     end
 
+    def to_s_simple
+      "!"
+    end
+
     class BrokenMethodDefinition < MethodDefinition
       def initialize(name)
         super(name, s(:args), [], nil, nil)

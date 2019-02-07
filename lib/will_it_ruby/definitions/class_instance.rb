@@ -30,6 +30,14 @@ module WillItRuby
       end
     end
 
+    def to_s_simple
+      if @value || @label
+        @value&.inspect || @label
+      else
+        "#<#{@class_definition}>"
+      end
+    end
+
     def inspect
       "#<#{self.class.name} @class_definition=#{class_definition.name.inspect} @label=#{label.inspect} @value=#{value.inspect}>"
     end

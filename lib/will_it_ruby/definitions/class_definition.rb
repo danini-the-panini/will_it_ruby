@@ -66,6 +66,10 @@ module WillItRuby
       name.to_s
     end
 
+    def to_s_simple
+      to_s
+    end
+
     def inspect
       "#<#{self.class.name} @name=#{name.inspect} @super_type=#{super_type&.name.inspect}>"
     end
