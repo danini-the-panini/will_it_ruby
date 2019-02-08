@@ -34,7 +34,7 @@ module WillItRuby
     end
 
     def process_string(source, path='(unknown)')
-      sexp = RubyParser.new.parse(source)
+      sexp = source.empty? ? [] : RubyParser.new.parse(source)
       @last_file = SourceFile.new(path, source, sexp_to_expressions(sexp), self)
       @last_file.process
     rescue Racc::ParseError => e
